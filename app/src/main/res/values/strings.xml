@@ -4,5 +4,5 @@
     <string name="time_line">Time line</string>
     <string name="signal">Signal</string>
     <string name="sensors">Sensors</string>
-    <string name="pulse_mapping">Pulse mapping</string>
+    <string name="signal_mapping">Pulse mapping</string>
 </resources>

@@ -9,12 +9,12 @@ import androidx.compose.ui.res.stringResource
 import com.joesemper.dronesettings.R
 
 @Composable
-fun PulseMappingSettingsScreen(
+fun SignalMappingSettingsScreen(
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier, contentAlignment = Alignment.Center
     ) {
-        Text(text = stringResource(R.string.pulse_mapping))
+        Text(text = stringResource(R.string.signal_mapping))
     }
 }
