@@ -10,8 +10,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.joesemper.dronesettings.ui.home.HomeScreen
+import com.joesemper.dronesettings.ui.settings.SettingsScreen
 
 const val HOME_ROUTE = "home"
+const val SETTINGS_ROUTE = "settings"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,6 +33,12 @@ fun AppNavHost(
                 route = HOME_ROUTE
             ) {
                 HomeScreen(navController)
+            }
+
+            composable(
+                route = SETTINGS_ROUTE
+            ) {
+                SettingsScreen(navController)
             }
 
         }

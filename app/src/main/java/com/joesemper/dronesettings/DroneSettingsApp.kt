@@ -1,6 +1,7 @@
 package com.joesemper.dronesettings
 
 import android.app.Application
+import com.joesemper.dronesettings.di.viewModelModule
 import org.koin.android.BuildConfig
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -16,7 +17,7 @@ class DroneSettingsApp: Application() {
             androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
             androidContext(this@DroneSettingsApp)
             modules(
-
+                viewModelModule
             )
         }
     }
