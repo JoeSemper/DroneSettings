@@ -1,23 +1,32 @@
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+
 package com.joesemper.dronesettings.ui.settings
 
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
@@ -26,18 +35,25 @@ import com.joesemper.dronesettings.ui.settings.sensors.SensorsSettingsScreen
 import com.joesemper.dronesettings.ui.settings.signal.SignalSettingsScreen
 import com.joesemper.dronesettings.ui.settings.timeline.TimeLineSettingsScreen
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.getViewModel
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: SettingsViewModel = getViewModel()
 ) {
 
-    val pages = rememberSaveable() {
+    val pages = rememberSaveable {
         listOf(
             Page(
                 titleRes = R.string.time_line,
-                content = { TimeLineSettingsScreen() }
+                content = {
+                    TimeLineSettingsScreen(
+                        state = viewModel.uiState.timelineScreenState,
+                        onInputDelayMinutes = { viewModel.onDelayTimeMinChange(it) },
+                        onInputDelaySeconds = { viewModel.onDelayTimeSecChange(it) }
+                    )
+                }
             ),
             Page(
                 titleRes = R.string.sensors,
@@ -53,48 +69,73 @@ fun SettingsScreen(
             )
         )
     }
-    val pagerState = rememberPagerState()
-    val scope = rememberCoroutineScope()
 
-    Scaffold { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-        ) {
-            ScrollableTabRow(
-                modifier = Modifier,
-                selectedTabIndex = pagerState.currentPage
-            ) {
-                pages.forEachIndexed { index, page ->
-                    Tab(text = { Text(text = stringResource(page.titleRes)) },
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            scope.launch {
-                                pagerState.scrollToPage(index)
-                            }
-                        }
-                    )
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = stringResource(id = R.string.settings)) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
+                    }
                 }
+            )
+        },
+        floatingActionButton = {
+            val context = LocalContext.current
+            FloatingActionButton(onClick = {
+                Toast.makeText(context, "Settings saved", Toast.LENGTH_SHORT).show()
+            }) {
+                Icon(imageVector = Icons.Default.Check, contentDescription = null)
             }
-            HorizontalPager(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxSize(),
-                pageCount = pages.size,
-                verticalAlignment = Alignment.CenterVertically,
-                state = pagerState
-            ) { page ->
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = stringResource(pages[page].titleRes))
-                }
+        }
+    ) { paddingValues ->
+        SettingsScreenContent(
+            modifier = Modifier.padding(paddingValues),
+            state = viewModel.uiState,
+            pages = pages
+        )
+    }
 
+}
+
+@Composable
+fun SettingsScreenContent(
+    modifier: Modifier = Modifier,
+    state: SettingsUiState,
+    pages: List<Page>
+) {
+    val pagerState = rememberPagerState()
+    val coroutineScope = rememberCoroutineScope()
+
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+        ScrollableTabRow(
+            modifier = Modifier,
+            selectedTabIndex = pagerState.currentPage
+        ) {
+            pages.forEachIndexed { index, page ->
+                Tab(text = { Text(text = stringResource(page.titleRes)) },
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.scrollToPage(index)
+                        }
+                    }
+                )
             }
         }
 
+        HorizontalPager(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize(),
+            pageCount = pages.size,
+            state = pagerState
+        ) { page ->
+            pages[page].content()
+        }
     }
 }
 

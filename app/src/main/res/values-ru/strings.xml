@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Drone Settings</string>
     <string name="settings">Settings</string>
     <string name="time_line">Time line</string>
     <string name="signal">Signal</string>
     <string name="sensors">Sensors</string>
     <string name="signal_mapping">Pulse mapping</string>
+    <string name="delay_time">Delay time</string>
+    <string name="delay_until_all_systems_activation">Delay until all systems activation</string>
+    <string name="minutes">Minutes</string>
+    <string name="seconds">Seconds</string>
 </resources>

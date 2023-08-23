@@ -5,4 +5,8 @@
     <string name="signal">Signal</string>
     <string name="sensors">Sensors</string>
     <string name="signal_mapping">Pulse mapping</string>
+    <string name="delay_time">Delay time</string>
+    <string name="delay_until_all_systems_activation">Delay until all systems activation</string>
+    <string name="minutes">Minutes</string>
+    <string name="seconds">Seconds</string>
 </resources>
