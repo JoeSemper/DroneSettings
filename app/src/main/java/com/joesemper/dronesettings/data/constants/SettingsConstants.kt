@@ -29,7 +29,7 @@ class SettingsConstants {
         const val MIN_TARGET_DISTANCE = 0
 
         // Максимальное расстояние на котором происходит срабатывание, метров
-        const val MAX_TARGET_DISTANCE = 5
+        const val MAX_TARGET_DISTANCE = 1
 
         // Минимальное напряжение срабатывания, значение по умолчанию, вольт
         const val MIN_VOLTAGE_DEFAULT_VALUE = 0

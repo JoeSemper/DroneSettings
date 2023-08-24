@@ -9,4 +9,21 @@
     <string name="delay_until_all_systems_activation">Delay until all systems activation</string>
     <string name="minutes">Minutes</string>
     <string name="seconds">Seconds</string>
+    <string name="cocking_time">Cocking time</string>
+    <string name="cocking_time_description">The time after which the cocking will begin</string>
+    <string name="activate_cocking_time">Activate cocking time</string>
+    <string name="maximum_time">Maximum time</string>
+    <string name="self_destruction_time">Self-destruction time</string>
+    <string name="target_sensor">Target sensor</string>
+    <string name="activation_distance">Activation distance</string>
+    <string name="meters">Meters</string>
+    <string name="battery">Battery</string>
+    <string name="minimum_activation_voltage">Minimum activation voltage</string>
+    <string name="volts">Volts</string>
+    <string name="accelerometer">Accelerometer</string>
+    <string name="overload_and_dead_time_activation">Overload and dead time activation</string>
+    <string name="enable_overload_activation">Enable overload activation</string>
+    <string name="enable_dead_time_activation">Enable dead time activation</string>
+    <string name="acceleration_recorded_during_test_flight">Acceleration recorded during test flight</string>
+    <string name="m_s">m/s</string>
 </resources>

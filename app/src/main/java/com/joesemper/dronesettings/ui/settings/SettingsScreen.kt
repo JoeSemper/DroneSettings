@@ -50,14 +50,32 @@ fun SettingsScreen(
                 content = {
                     TimeLineSettingsScreen(
                         state = viewModel.uiState.timelineScreenState,
-                        onInputDelayMinutes = { viewModel.onDelayTimeMinChange(it) },
-                        onInputDelaySeconds = { viewModel.onDelayTimeSecChange(it) }
+                        onInputDelayMinutes = { viewModel.onDelayTimeMinutesChange(it) },
+                        onInputDelaySeconds = { viewModel.onDelayTimeSecondsChange(it) },
+                        onInputCockingMinutes = { viewModel.onCockingTimeMinutesChange(it) },
+                        onInputCockingSeconds = { viewModel.onCockingTimeSecondsChange(it) },
+                        onActivateCockingTimeChange = { viewModel.onActivateCockingTimeChange(it) },
+                        onInputSelfDestructionTimeMinutes = {
+                            viewModel.onSelfDestructionTimeMinutesChange(it)
+                        },
+                        onInputSelfDestructionTimeSeconds = {
+                            viewModel.onSelfDestructionTimeSecondsChange(it)
+                        }
                     )
                 }
             ),
             Page(
                 titleRes = R.string.sensors,
-                content = { SensorsSettingsScreen() }
+                content = {
+                    SensorsSettingsScreen(
+                        state = viewModel.uiState.sensorsScreenState,
+                        onTargetDistanceChange = { viewModel.onTargetDistanceChange(it) },
+                        onMinVoltageChange = { viewModel.onMinVoltageChange(it) },
+                        onOverloadActivationChange = {viewModel.onOverloadActivationChange(it)},
+                        onDeadTimeActivationChange = {viewModel.onDeadTimeActivationChange(it)},
+                        onAccelerationChange = {viewModel.onAverageAccelerationChange(it)}
+                    )
+                }
             ),
             Page(
                 titleRes = R.string.signal_mapping,
