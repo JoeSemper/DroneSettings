@@ -35,4 +35,15 @@
     <string name="dead_time">Мертвое время</string>
     <string name="activation_time_on_reduced_overloads">Время срабатывания по уменшенным перегрузкам</string>
     <string name="sec">сек</string>
+    <string name="cocking">Взведение</string>
+    <string name="cocking_signal_settings">Настрока сигнала взведения</string>
+    <string name="milliseconds">Milliseconds</string>
+    <string name="amount">Шт</string>
+    <string name="ms">мс</string>
+    <string name="high_level">Высокий уровень</string>
+    <string name="low_level">Низкий уровень</string>
+    <string name="infinite_pulse_amount">Бесконечное количество импульсов</string>
+    <string name="pulse_amount">Количество импульсов</string>
+    <string name="activation">Срабатывание</string>
+    <string name="activation_signal_settings">Настрока сигнала срабатывания</string>
 </resources>

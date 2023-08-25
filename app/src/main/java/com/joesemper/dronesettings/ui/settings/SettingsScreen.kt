@@ -86,7 +86,19 @@ fun SettingsScreen(
             ),
             Page(
                 titleRes = R.string.signal,
-                content = { SignalSettingsScreen() }
+                content = {
+                    SignalSettingsScreen(
+                        state = viewModel.uiState.signalScreenState,
+                        onCockingPulseWidthHiChange = { viewModel.onCockingPulseWidthHiChange(it) },
+                        onCockingPulseWidthLoChange = { viewModel.onCockingPulseWidthLoChange(it) },
+                        onCockingPulseAmountChange = { viewModel.onCockingPulseAmountChange(it) },
+                        onInfiniteCockingPulseChange = { viewModel.onInfiniteCockingPulseRepeatChange(it) },
+                        onActivationPulseWidthHiChange = { viewModel.onActivationPulseWidthHiChange(it) },
+                        onActivationPulseWidthLoChange = { viewModel.onActivationPulseWidthLoChange(it) },
+                        onActivationPulseAmountChange = { viewModel.onActivationPulseAmountChange(it) },
+                        onInfiniteActivationPulseChange = { viewModel.onInfiniteActivationPulseRepeatChange(it) },
+                    )
+                }
             )
         )
     }

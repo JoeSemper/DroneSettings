@@ -34,4 +34,15 @@
     <string name="dead_time">Dead time</string>
     <string name="activation_time_on_reduced_overloads">Activation time on reduced overloads</string>
     <string name="sec">sec</string>
+    <string name="cocking">Cocking</string>
+    <string name="cocking_signal_settings">Cocking signal settings</string>
+    <string name="milliseconds">Milliseconds</string>
+    <string name="amount">Amount</string>
+    <string name="ms">ms</string>
+    <string name="high_level">High level</string>
+    <string name="low_level">Low level</string>
+    <string name="infinite_pulse_amount">Infinite pulse amount</string>
+    <string name="pulse_amount">Pulse amount</string>
+    <string name="activation">Activation</string>
+    <string name="activation_signal_settings">Activation signal settings</string>
 </resources>

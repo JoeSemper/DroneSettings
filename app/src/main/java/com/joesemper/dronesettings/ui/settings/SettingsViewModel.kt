@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.joesemper.dronesettings.domain.entity.SensorsConstants
+import com.joesemper.dronesettings.domain.entity.SignalConstants
 import com.joesemper.dronesettings.domain.entity.TimelineConstants
 
 class SettingsViewModel : ViewModel() {
@@ -44,6 +45,7 @@ class SettingsViewModel : ViewModel() {
     fun onTargetDistanceChange(newValue: Float) {
         uiState.sensorsScreenState.targetDistance.value = newValue
     }
+
     fun onMinVoltageChange(newValue: String) {
         uiState.sensorsScreenState.minVoltage.value = newValue
     }
@@ -59,21 +61,57 @@ class SettingsViewModel : ViewModel() {
     fun onAverageAccelerationChange(newValue: String) {
         uiState.sensorsScreenState.averageAcceleration.value = newValue
     }
+
     fun onAverageDeviationChange(newValue: String) {
         uiState.sensorsScreenState.averageDeviation.value = newValue
     }
+
     fun onDeviationCoefficientChange(newValue: String) {
         uiState.sensorsScreenState.deviationCoefficient.value = newValue
     }
+
     fun onDeadTimeChange(newValue: String) {
         uiState.sensorsScreenState.deadTime.value = newValue
+    }
+
+    fun onCockingPulseWidthHiChange(newValue: String) {
+        uiState.signalScreenState.cockingPulseWidthHi.value = newValue
+    }
+
+    fun onCockingPulseWidthLoChange(newValue: String) {
+        uiState.signalScreenState.cockingPulseWidthLo.value = newValue
+    }
+
+    fun onCockingPulseAmountChange(newValue: String) {
+        uiState.signalScreenState.cockingPulseAmount.value = newValue
+    }
+
+    fun onInfiniteCockingPulseRepeatChange(newValue: Boolean) {
+        uiState.signalScreenState.infiniteCockingPulseRepeat.value = newValue
+    }
+
+    fun onActivationPulseWidthHiChange(newValue: String) {
+        uiState.signalScreenState.activationPulseWidthHi.value = newValue
+    }
+
+    fun onActivationPulseWidthLoChange(newValue: String) {
+        uiState.signalScreenState.activationPulseWidthLo.value = newValue
+    }
+
+    fun onActivationPulseAmountChange(newValue: String) {
+        uiState.signalScreenState.cockingPulseAmount.value = newValue
+    }
+
+    fun onInfiniteActivationPulseRepeatChange(newValue: Boolean) {
+        uiState.signalScreenState.infiniteActivationPulseRepeat.value = newValue
     }
 
 }
 
 data class SettingsUiState(
     val timelineScreenState: TimelineScreenState = TimelineScreenState(),
-    val sensorsScreenState: SensorsScreenState = SensorsScreenState()
+    val sensorsScreenState: SensorsScreenState = SensorsScreenState(),
+    val signalScreenState: SignalSettingsState = SignalSettingsState()
 )
 
 data class TimelineScreenState(
@@ -97,4 +135,16 @@ data class SensorsScreenState(
     val averageDeviation: MutableState<String> = mutableStateOf(""),
     val deviationCoefficient: MutableState<String> = mutableStateOf(""),
     val deadTime: MutableState<String> = mutableStateOf("")
+)
+
+data class SignalSettingsState(
+    val constants: SignalConstants = SignalConstants(),
+    val cockingPulseWidthHi: MutableState<String> = mutableStateOf(""),
+    val cockingPulseWidthLo: MutableState<String> = mutableStateOf(""),
+    val cockingPulseAmount: MutableState<String> = mutableStateOf("0"),
+    val infiniteCockingPulseRepeat: MutableState<Boolean> = mutableStateOf(true),
+    val activationPulseWidthHi: MutableState<String> = mutableStateOf(""),
+    val activationPulseWidthLo: MutableState<String> = mutableStateOf(""),
+    val infiniteActivationPulseRepeat: MutableState<Boolean> = mutableStateOf(true),
+    val activationPulseAmount: MutableState<String> = mutableStateOf("0"),
 )
