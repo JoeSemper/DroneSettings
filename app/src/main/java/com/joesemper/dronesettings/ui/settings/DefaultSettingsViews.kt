@@ -27,7 +27,7 @@ fun TitleWithSubtitleView(
 
         Text(
             text = subtitle,
-            style = MaterialTheme.typography.titleSmall
+            style = MaterialTheme.typography.titleSmall,
         )
     }
 }

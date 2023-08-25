@@ -26,4 +26,12 @@
     <string name="enable_dead_time_activation">Enable dead time activation</string>
     <string name="acceleration_recorded_during_test_flight">Acceleration recorded during test flight</string>
     <string name="m_s">m/s</string>
+    <string name="average_acceleration">Average acceleration</string>
+    <string name="average_deviation">Average deviation</string>
+    <string name="noise_deviations_recorded_during_test_flight">Noise deviations recorded during test flight</string>
+    <string name="coefficient">Coefficient</string>
+    <string name="deviation_coefficient">Deviation coefficient</string>
+    <string name="dead_time">Dead time</string>
+    <string name="activation_time_on_reduced_overloads">Activation time on reduced overloads</string>
+    <string name="sec">sec</string>
 </resources>

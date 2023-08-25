@@ -71,9 +71,12 @@ fun SettingsScreen(
                         state = viewModel.uiState.sensorsScreenState,
                         onTargetDistanceChange = { viewModel.onTargetDistanceChange(it) },
                         onMinVoltageChange = { viewModel.onMinVoltageChange(it) },
-                        onOverloadActivationChange = {viewModel.onOverloadActivationChange(it)},
-                        onDeadTimeActivationChange = {viewModel.onDeadTimeActivationChange(it)},
-                        onAccelerationChange = {viewModel.onAverageAccelerationChange(it)}
+                        onOverloadActivationChange = { viewModel.onOverloadActivationChange(it) },
+                        onDeadTimeActivationChange = { viewModel.onDeadTimeActivationChange(it) },
+                        onAccelerationChange = { viewModel.onAverageAccelerationChange(it) },
+                        onDeviationChange = { viewModel.onAverageDeviationChange(it) },
+                        onDeviationCoefficientChange = { viewModel.onDeviationCoefficientChange(it) },
+                        onDeadTimeChange = { viewModel.onDeadTimeChange(it) }
                     )
                 }
             ),

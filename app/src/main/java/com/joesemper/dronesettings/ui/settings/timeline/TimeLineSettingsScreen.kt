@@ -2,8 +2,6 @@
 
 package com.joesemper.dronesettings.ui.settings.timeline
 
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,9 +12,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -46,11 +46,10 @@ fun TimeLineSettingsScreen(
 ) {
     Column(
         modifier = modifier
+            .verticalScroll(state = rememberScrollState())
+            .padding(horizontal = 16.dp)
             .fillMaxSize()
-            .scrollable(
-                state = rememberScrollState(),
-                orientation = Orientation.Vertical
-            )
+            .padding(bottom = 64.dp)
     ) {
         DelayTimeSettingsView(
             state = state,
@@ -58,12 +57,16 @@ fun TimeLineSettingsScreen(
             onInputSeconds = onInputDelaySeconds
         )
 
+        Divider(modifier = Modifier.fillMaxWidth())
+
         CockingTimeSettingsView(
             state = state,
             onInputMinutes = onInputCockingMinutes,
             onInputSeconds = onInputCockingSeconds,
             onActivateCockingTimeChange = onActivateCockingTimeChange
         )
+
+        Divider(modifier = Modifier.fillMaxWidth())
 
         MaximumTimeSettingsView(
             state = state,
@@ -73,6 +76,7 @@ fun TimeLineSettingsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DelayTimeSettingsView(
     modifier: Modifier = Modifier,
@@ -81,7 +85,7 @@ fun DelayTimeSettingsView(
     onInputSeconds: (String) -> Unit
 ) {
     Column(
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+        modifier = modifier.padding(vertical = 16.dp)
     ) {
 
         TitleWithSubtitleView(
@@ -138,7 +142,7 @@ fun CockingTimeSettingsView(
     onActivateCockingTimeChange: (Boolean) -> Unit
 ) {
     Column(
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+        modifier = modifier.padding(vertical = 16.dp)
     ) {
 
         TitleWithSubtitleView(
@@ -153,8 +157,13 @@ fun CockingTimeSettingsView(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = stringResource(R.string.activate_cocking_time))
+            Text(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                text = stringResource(R.string.activate_cocking_time)
+            )
+
             Checkbox(
+                modifier = modifier.padding(start = 32.dp),
                 checked = state.isCockingTimeActivated.value,
                 onCheckedChange = onActivateCockingTimeChange
             )
@@ -211,7 +220,7 @@ fun MaximumTimeSettingsView(
 ) {
     Column(
         modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .padding(vertical = 16.dp)
             .padding(bottom = 16.dp)
     ) {
 
@@ -249,7 +258,7 @@ fun MaximumTimeSettingsView(
                 modifier = Modifier
                     .width(128.dp)
                     .padding(horizontal = 8.dp),
-                value = state.selfDestructionTimeMinutes.value,
+                value = state.selfDestructionTimeSeconds.value,
                 onValueChange = { onInputSeconds(it) },
                 singleLine = true,
                 label = { Text(text = stringResource(R.string.seconds)) },
