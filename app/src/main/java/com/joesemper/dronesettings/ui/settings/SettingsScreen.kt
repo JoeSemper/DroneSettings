@@ -23,8 +23,8 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -40,10 +40,11 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun SettingsScreen(
     navController: NavController,
-    viewModel: SettingsViewModel = getViewModel()
 ) {
 
-    val pages = rememberSaveable {
+    val viewModel: SettingsViewModel = getViewModel()
+
+    val pages = remember {
         listOf(
             Page(
                 titleRes = R.string.time_line,
