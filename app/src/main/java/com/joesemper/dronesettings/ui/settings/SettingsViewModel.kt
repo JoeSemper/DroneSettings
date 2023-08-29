@@ -15,106 +15,106 @@ class SettingsViewModel : ViewModel() {
         private set
 
     fun onDelayTimeMinutesChange(newValue: String) {
-        uiState.timelineScreenState.delayTimeMinutes.value = newValue
+        uiState.timelineState.delayTimeMinutes.value = newValue
     }
 
     fun onDelayTimeSecondsChange(newValue: String) {
-        uiState.timelineScreenState.delayTimeSeconds.value = newValue
+        uiState.timelineState.delayTimeSeconds.value = newValue
     }
 
     fun onCockingTimeMinutesChange(newValue: String) {
-        uiState.timelineScreenState.cockingTimeMinutes.value = newValue
+        uiState.timelineState.cockingTimeMinutes.value = newValue
     }
 
     fun onCockingTimeSecondsChange(newValue: String) {
-        uiState.timelineScreenState.cockingTimeSeconds.value = newValue
+        uiState.timelineState.cockingTimeSeconds.value = newValue
     }
 
     fun onActivateCockingTimeChange(newValue: Boolean) {
-        uiState.timelineScreenState.isCockingTimeActivated.value = newValue
+        uiState.timelineState.isCockingTimeActivated.value = newValue
     }
 
     fun onSelfDestructionTimeMinutesChange(newValue: String) {
-        uiState.timelineScreenState.selfDestructionTimeMinutes.value = newValue
+        uiState.timelineState.selfDestructionTimeMinutes.value = newValue
     }
 
     fun onSelfDestructionTimeSecondsChange(newValue: String) {
-        uiState.timelineScreenState.selfDestructionTimeSeconds.value = newValue
+        uiState.timelineState.selfDestructionTimeSeconds.value = newValue
     }
 
     fun onTargetDistanceChange(newValue: Float) {
-        uiState.sensorsScreenState.targetDistance.value = newValue
+        uiState.sensorsState.targetDistance.value = newValue
     }
 
     fun onMinVoltageChange(newValue: String) {
-        uiState.sensorsScreenState.minVoltage.value = newValue
+        uiState.sensorsState.minVoltage.value = newValue
     }
 
     fun onOverloadActivationChange(newValue: Boolean) {
-        uiState.sensorsScreenState.isOverloadActivationEnabled.value = newValue
+        uiState.sensorsState.isOverloadActivationEnabled.value = newValue
     }
 
     fun onDeadTimeActivationChange(newValue: Boolean) {
-        uiState.sensorsScreenState.isDeadTimeActivationEnabled.value = newValue
+        uiState.sensorsState.isDeadTimeActivationEnabled.value = newValue
     }
 
     fun onAverageAccelerationChange(newValue: String) {
-        uiState.sensorsScreenState.averageAcceleration.value = newValue
+        uiState.sensorsState.averageAcceleration.value = newValue
     }
 
     fun onAverageDeviationChange(newValue: String) {
-        uiState.sensorsScreenState.averageDeviation.value = newValue
+        uiState.sensorsState.averageDeviation.value = newValue
     }
 
     fun onDeviationCoefficientChange(newValue: String) {
-        uiState.sensorsScreenState.deviationCoefficient.value = newValue
+        uiState.sensorsState.deviationCoefficient.value = newValue
     }
 
     fun onDeadTimeChange(newValue: String) {
-        uiState.sensorsScreenState.deadTime.value = newValue
+        uiState.sensorsState.deadTime.value = newValue
     }
 
     fun onCockingPulseWidthHiChange(newValue: String) {
-        uiState.signalScreenState.cockingPulseWidthHi.value = newValue
+        uiState.signalState.cockingPulseWidthHi.value = newValue
     }
 
     fun onCockingPulseWidthLoChange(newValue: String) {
-        uiState.signalScreenState.cockingPulseWidthLo.value = newValue
+        uiState.signalState.cockingPulseWidthLo.value = newValue
     }
 
     fun onCockingPulseAmountChange(newValue: String) {
-        uiState.signalScreenState.cockingPulseAmount.value = newValue
+        uiState.signalState.cockingPulseAmount.value = newValue
     }
 
     fun onInfiniteCockingPulseRepeatChange(newValue: Boolean) {
-        uiState.signalScreenState.infiniteCockingPulseRepeat.value = newValue
+        uiState.signalState.infiniteCockingPulseRepeat.value = newValue
     }
 
     fun onActivationPulseWidthHiChange(newValue: String) {
-        uiState.signalScreenState.activationPulseWidthHi.value = newValue
+        uiState.signalState.activationPulseWidthHi.value = newValue
     }
 
     fun onActivationPulseWidthLoChange(newValue: String) {
-        uiState.signalScreenState.activationPulseWidthLo.value = newValue
+        uiState.signalState.activationPulseWidthLo.value = newValue
     }
 
     fun onActivationPulseAmountChange(newValue: String) {
-        uiState.signalScreenState.cockingPulseAmount.value = newValue
+        uiState.signalState.cockingPulseAmount.value = newValue
     }
 
     fun onInfiniteActivationPulseRepeatChange(newValue: Boolean) {
-        uiState.signalScreenState.infiniteActivationPulseRepeat.value = newValue
+        uiState.signalState.infiniteActivationPulseRepeat.value = newValue
     }
 
 }
 
 data class SettingsUiState(
-    val timelineScreenState: TimelineScreenState = TimelineScreenState(),
-    val sensorsScreenState: SensorsScreenState = SensorsScreenState(),
-    val signalScreenState: SignalSettingsState = SignalSettingsState()
+    val timelineState: TimelineState = TimelineState(),
+    val sensorsState: SensorsState = SensorsState(),
+    val signalState: SignalSettingsState = SignalSettingsState()
 )
 
-data class TimelineScreenState(
+data class TimelineState(
     val constants: TimelineConstants = TimelineConstants(),
     val delayTimeMinutes: MutableState<String> = mutableStateOf(""),
     val delayTimeSeconds: MutableState<String> = mutableStateOf(""),
@@ -125,7 +125,7 @@ data class TimelineScreenState(
     val selfDestructionTimeSeconds: MutableState<String> = mutableStateOf(""),
 )
 
-data class SensorsScreenState(
+data class SensorsState(
     val constants: SensorsConstants = SensorsConstants(),
     val targetDistance: MutableState<Float> = mutableStateOf(0.5f),
     val minVoltage: MutableState<String> = mutableStateOf(""),

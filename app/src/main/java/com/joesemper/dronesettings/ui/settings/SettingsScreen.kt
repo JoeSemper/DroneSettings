@@ -34,15 +34,15 @@ import com.joesemper.dronesettings.ui.settings.mapping.SignalMappingSettingsScre
 import com.joesemper.dronesettings.ui.settings.sensors.SensorsSettingsScreen
 import com.joesemper.dronesettings.ui.settings.signal.SignalSettingsScreen
 import com.joesemper.dronesettings.ui.settings.timeline.TimeLineSettingsScreen
+import com.joesemper.dronesettings.ui.settings.timeline.rememberTimeLineSettingsScreenState
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun SettingsScreen(
     navController: NavController,
+    viewModel: SettingsViewModel = getViewModel()
 ) {
-
-    val viewModel: SettingsViewModel = getViewModel()
 
     val pages = remember {
         listOf(
@@ -50,18 +50,20 @@ fun SettingsScreen(
                 titleRes = R.string.time_line,
                 content = {
                     TimeLineSettingsScreen(
-                        state = viewModel.uiState.timelineScreenState,
-                        onInputDelayMinutes = { viewModel.onDelayTimeMinutesChange(it) },
-                        onInputDelaySeconds = { viewModel.onDelayTimeSecondsChange(it) },
-                        onInputCockingMinutes = { viewModel.onCockingTimeMinutesChange(it) },
-                        onInputCockingSeconds = { viewModel.onCockingTimeSecondsChange(it) },
-                        onActivateCockingTimeChange = { viewModel.onActivateCockingTimeChange(it) },
-                        onInputSelfDestructionTimeMinutes = {
-                            viewModel.onSelfDestructionTimeMinutesChange(it)
-                        },
-                        onInputSelfDestructionTimeSeconds = {
-                            viewModel.onSelfDestructionTimeSecondsChange(it)
-                        }
+                        state = rememberTimeLineSettingsScreenState(
+                            timelineState = viewModel.uiState.timelineState,
+                            onInputDelayMinutes = { viewModel.onDelayTimeMinutesChange(it) },
+                            onInputDelaySeconds = { viewModel.onDelayTimeSecondsChange(it) },
+                            onInputCockingMinutes = { viewModel.onCockingTimeMinutesChange(it) },
+                            onInputCockingSeconds = { viewModel.onCockingTimeSecondsChange(it) },
+                            onActivateCockingTimeChange = { viewModel.onActivateCockingTimeChange(it) },
+                            onInputSelfDestructionTimeMinutes = {
+                                viewModel.onSelfDestructionTimeMinutesChange(it)
+                            },
+                            onInputSelfDestructionTimeSeconds = {
+                                viewModel.onSelfDestructionTimeSecondsChange(it)
+                            }
+                        )
                     )
                 }
             ),
@@ -69,7 +71,7 @@ fun SettingsScreen(
                 titleRes = R.string.sensors,
                 content = {
                     SensorsSettingsScreen(
-                        state = viewModel.uiState.sensorsScreenState,
+                        state = viewModel.uiState.sensorsState,
                         onTargetDistanceChange = { viewModel.onTargetDistanceChange(it) },
                         onMinVoltageChange = { viewModel.onMinVoltageChange(it) },
                         onOverloadActivationChange = { viewModel.onOverloadActivationChange(it) },
@@ -89,7 +91,7 @@ fun SettingsScreen(
                 titleRes = R.string.signal,
                 content = {
                     SignalSettingsScreen(
-                        state = viewModel.uiState.signalScreenState,
+                        state = viewModel.uiState.signalState,
                         onCockingPulseWidthHiChange = { viewModel.onCockingPulseWidthHiChange(it) },
                         onCockingPulseWidthLoChange = { viewModel.onCockingPulseWidthLoChange(it) },
                         onCockingPulseAmountChange = { viewModel.onCockingPulseAmountChange(it) },

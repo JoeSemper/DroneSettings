@@ -15,7 +15,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,26 +22,60 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.joesemper.dronesettings.R
-import com.joesemper.dronesettings.ui.settings.TimelineScreenState
+import com.joesemper.dronesettings.ui.settings.CheckboxWithText
+import com.joesemper.dronesettings.ui.settings.TimelineState
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
+import com.joesemper.dronesettings.ui.settings.TwoFieldInputText
+
+@Stable
+class TimeLineSettingsScreenState(
+    val timelineState: TimelineState,
+    val onInputDelayMinutes: (String) -> Unit,
+    val onInputDelaySeconds: (String) -> Unit,
+    val onInputCockingMinutes: (String) -> Unit,
+    val onInputCockingSeconds: (String) -> Unit,
+    val onActivateCockingTimeChange: (Boolean) -> Unit,
+    val onInputSelfDestructionTimeMinutes: (String) -> Unit,
+    val onInputSelfDestructionTimeSeconds: (String) -> Unit
+)
 
 @Composable
-fun TimeLineSettingsScreen(
-    modifier: Modifier = Modifier,
-    state: TimelineScreenState,
+fun rememberTimeLineSettingsScreenState(
+    timelineState: TimelineState,
     onInputDelayMinutes: (String) -> Unit,
     onInputDelaySeconds: (String) -> Unit,
     onInputCockingMinutes: (String) -> Unit,
     onInputCockingSeconds: (String) -> Unit,
     onActivateCockingTimeChange: (Boolean) -> Unit,
     onInputSelfDestructionTimeMinutes: (String) -> Unit,
-    onInputSelfDestructionTimeSeconds: (String) -> Unit,
+    onInputSelfDestructionTimeSeconds: (String) -> Unit
+): TimeLineSettingsScreenState = remember() {
+    TimeLineSettingsScreenState(
+        timelineState,
+        onInputDelayMinutes,
+        onInputDelaySeconds,
+        onInputCockingMinutes,
+        onInputCockingSeconds,
+        onActivateCockingTimeChange,
+        onInputSelfDestructionTimeMinutes,
+        onInputSelfDestructionTimeSeconds
+    )
+}
+
+@Composable
+fun TimeLineSettingsScreen(
+    modifier: Modifier = Modifier,
+    state: TimeLineSettingsScreenState
 ) {
     Column(
         modifier = modifier
@@ -52,35 +85,34 @@ fun TimeLineSettingsScreen(
             .padding(bottom = 64.dp)
     ) {
         DelayTimeSettingsView(
-            state = state,
-            onInputMinutes = onInputDelayMinutes,
-            onInputSeconds = onInputDelaySeconds
+            state = state.timelineState,
+            onInputMinutes = state.onInputDelayMinutes,
+            onInputSeconds = state.onInputDelaySeconds
         )
 
         Divider(modifier = Modifier.fillMaxWidth())
 
         CockingTimeSettingsView(
-            state = state,
-            onInputMinutes = onInputCockingMinutes,
-            onInputSeconds = onInputCockingSeconds,
-            onActivateCockingTimeChange = onActivateCockingTimeChange
+            state = state.timelineState,
+            onInputMinutes = state.onInputCockingMinutes,
+            onInputSeconds = state.onInputCockingSeconds,
+            onActivateCockingTimeChange = state.onActivateCockingTimeChange
         )
 
         Divider(modifier = Modifier.fillMaxWidth())
 
         MaximumTimeSettingsView(
-            state = state,
-            onInputMinutes = onInputSelfDestructionTimeMinutes,
-            onInputSeconds = onInputSelfDestructionTimeSeconds
+            state = state.timelineState,
+            onInputMinutes = state.onInputSelfDestructionTimeMinutes,
+            onInputSeconds = state.onInputSelfDestructionTimeSeconds
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DelayTimeSettingsView(
     modifier: Modifier = Modifier,
-    state: TimelineScreenState,
+    state: TimelineState,
     onInputMinutes: (String) -> Unit,
     onInputSeconds: (String) -> Unit
 ) {
@@ -90,53 +122,38 @@ fun DelayTimeSettingsView(
 
         TitleWithSubtitleView(
             title = stringResource(R.string.delay_time),
-            subtitle = stringResource(R.string.delay_until_all_systems_activation)
+            subtitle = stringResource(R.string.delay_until_all_systems_activation),
         )
 
-        Row(
+        TwoFieldInputText(
             modifier = Modifier
-                .padding(vertical = 16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Icon(
-                modifier = Modifier.size(48.dp),
-                imageVector = Icons.Default.Star,
-                tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = null
-            )
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            textFirst = state.delayTimeMinutes.value,
+            textSecond = state.delayTimeSeconds.value,
+            firstTitle = stringResource(id = R.string.minutes),
+            secondTitle = stringResource(id = R.string.seconds),
+            onFirstTextChange = { onInputMinutes(it) },
+            onSecondTextChange = { onInputSeconds(it) },
+            icon = painterResource(id = R.drawable.alarm)
+        )
 
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(128.dp)
-                    .padding(horizontal = 8.dp),
-                value = state.delayTimeMinutes.value,
-                onValueChange = { onInputMinutes(it) },
-                singleLine = true,
-                label = { Text(text = stringResource(R.string.minutes)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-            )
-
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(128.dp)
-                    .padding(horizontal = 8.dp),
-                value = state.delayTimeSeconds.value,
-                onValueChange = { onInputSeconds(it) },
-                singleLine = true,
-                label = { Text(text = stringResource(R.string.seconds)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-            )
-        }
-
+//        TimeInputLayoutWithIcon(
+//            modifier = Modifier
+//                .padding(vertical = 16.dp)
+//                .fillMaxWidth(),
+//            minutes = state.delayTimeMinutes.value,
+//            seconds = state.delayTimeSeconds.value,
+//            onInputMinutes = { onInputMinutes(it) },
+//            onInputSeconds = { onInputSeconds(it) }
+//        )
     }
 }
 
 @Composable
 fun CockingTimeSettingsView(
     modifier: Modifier = Modifier,
-    state: TimelineScreenState,
+    state: TimelineState,
     onInputMinutes: (String) -> Unit,
     onInputSeconds: (String) -> Unit,
     onActivateCockingTimeChange: (Boolean) -> Unit
@@ -147,74 +164,50 @@ fun CockingTimeSettingsView(
 
         TitleWithSubtitleView(
             title = stringResource(R.string.cocking_time),
-            subtitle = stringResource(R.string.cocking_time_description)
+            subtitle = stringResource(R.string.cocking_time_description),
         )
 
-        Row(
+        TwoFieldInputText(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                text = stringResource(R.string.activate_cocking_time)
-            )
-
-            Checkbox(
-                modifier = modifier.padding(start = 32.dp),
-                checked = state.isCockingTimeActivated.value,
-                onCheckedChange = onActivateCockingTimeChange
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(vertical = 16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+                .padding(vertical = 16.dp),
+            textFirst = state.cockingTimeMinutes.value,
+            textSecond = state.cockingTimeSeconds.value,
+            firstTitle = stringResource(id = R.string.minutes),
+            secondTitle = stringResource(id = R.string.seconds),
+            enabled = state.isCockingTimeActivated.value,
+            onFirstTextChange = { onInputMinutes(it) },
+            onSecondTextChange = { onInputSeconds(it) },
+            icon = painterResource(id = R.drawable.hand_switch)
         )
-        {
-            Icon(
-                modifier = Modifier.size(48.dp),
-                imageVector = Icons.Default.Star,
-                tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = null
-            )
 
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(128.dp)
-                    .padding(horizontal = 8.dp),
-                value = state.cockingTimeMinutes.value,
-                onValueChange = { onInputMinutes(it) },
-                singleLine = true,
-                enabled = state.isCockingTimeActivated.value,
-                label = { Text(text = stringResource(R.string.minutes)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-            )
+        CheckboxWithText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            text = stringResource(R.string.activate_cocking_time),
+            checked = state.isCockingTimeActivated.value,
+            onCheckedChange = onActivateCockingTimeChange
+        )
 
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(128.dp)
-                    .padding(horizontal = 8.dp),
-                value = state.cockingTimeSeconds.value,
-                onValueChange = { onInputSeconds(it) },
-                singleLine = true,
-                enabled = state.isCockingTimeActivated.value,
-                label = { Text(text = stringResource(R.string.seconds)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-            )
-        }
+//        TimeInputLayoutWithIcon(
+//            modifier = Modifier
+//                .padding(vertical = 16.dp)
+//                .fillMaxWidth(),
+//            minutes = state.cockingTimeMinutes.value,
+//            seconds = state.cockingTimeSeconds.value,
+//            enabled = state.isCockingTimeActivated.value,
+//            onInputMinutes = { onInputMinutes(it) },
+//            onInputSeconds = { onInputSeconds(it) }
+//        )
+
     }
 }
 
 @Composable
 fun MaximumTimeSettingsView(
     modifier: Modifier = Modifier,
-    state: TimelineScreenState,
+    state: TimelineState,
     onInputMinutes: (String) -> Unit,
     onInputSeconds: (String) -> Unit
 ) {
@@ -229,42 +222,78 @@ fun MaximumTimeSettingsView(
             subtitle = stringResource(R.string.self_destruction_time)
         )
 
-        Row(
+        TwoFieldInputText(
             modifier = Modifier
-                .padding(vertical = 16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Icon(
-                modifier = Modifier.size(48.dp),
-                imageVector = Icons.Default.Star,
-                tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = null
-            )
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            textFirst = state.selfDestructionTimeMinutes.value,
+            textSecond = state.selfDestructionTimeSeconds.value,
+            firstTitle = stringResource(id = R.string.minutes),
+            secondTitle = stringResource(id = R.string.seconds),
+            onFirstTextChange = { onInputMinutes(it) },
+            onSecondTextChange = { onInputSeconds(it) },
+            icon = painterResource(id = R.drawable.hand_switch)
+        )
 
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(128.dp)
-                    .padding(horizontal = 8.dp),
-                value = state.selfDestructionTimeMinutes.value,
-                onValueChange = { onInputMinutes(it) },
-                singleLine = true,
-                label = { Text(text = stringResource(R.string.minutes)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-            )
+//        TimeInputLayoutWithIcon(
+//            modifier = Modifier
+//                .padding(vertical = 16.dp)
+//                .fillMaxWidth(),
+//            minutes = state.selfDestructionTimeMinutes.value,
+//            seconds = state.selfDestructionTimeSeconds.value,
+//            onInputMinutes = { onInputMinutes(it) },
+//            onInputSeconds = { onInputSeconds(it) }
+//        )
 
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(128.dp)
-                    .padding(horizontal = 8.dp),
-                value = state.selfDestructionTimeSeconds.value,
-                onValueChange = { onInputSeconds(it) },
-                singleLine = true,
-                label = { Text(text = stringResource(R.string.seconds)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-            )
-        }
+    }
+}
 
+@Composable
+fun TimeInputLayoutWithIcon(
+    modifier: Modifier = Modifier,
+    icon: Painter? = null,
+    minutes: String,
+    seconds: String,
+    enabled: Boolean = true,
+    onInputMinutes: (String) -> Unit,
+    onInputSeconds: (String) -> Unit
+) {
+    Row(
+        modifier = modifier
+            .padding(vertical = 16.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Icon(
+            modifier = Modifier.size(48.dp),
+            imageVector = Icons.Default.Star,
+            tint = MaterialTheme.colorScheme.secondary,
+            contentDescription = null
+        )
+
+        OutlinedTextField(
+            modifier = Modifier
+                .width(128.dp)
+                .padding(horizontal = 8.dp),
+            value = minutes,
+            onValueChange = { onInputMinutes(it) },
+            singleLine = true,
+            enabled = enabled,
+            label = { Text(text = stringResource(R.string.minutes)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+        )
+
+        OutlinedTextField(
+            modifier = Modifier
+                .width(128.dp)
+                .padding(horizontal = 8.dp),
+            value = seconds,
+            onValueChange = { onInputSeconds(it) },
+            singleLine = true,
+            enabled = enabled,
+            label = { Text(text = stringResource(R.string.seconds)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+        )
     }
 }

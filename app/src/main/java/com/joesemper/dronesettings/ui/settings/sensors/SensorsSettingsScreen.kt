@@ -13,13 +13,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -27,17 +23,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.joesemper.dronesettings.R
-import com.joesemper.dronesettings.ui.settings.SensorsScreenState
+import com.joesemper.dronesettings.ui.settings.CheckboxWithText
+import com.joesemper.dronesettings.ui.settings.SensorsState
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 
 @Composable
 fun SensorsSettingsScreen(
     modifier: Modifier = Modifier,
-    state: SensorsScreenState,
+    state: SensorsState,
     onTargetDistanceChange: (Float) -> Unit,
     onMinVoltageChange: (String) -> Unit,
     onOverloadActivationChange: (Boolean) -> Unit,
@@ -83,7 +81,7 @@ fun SensorsSettingsScreen(
 @Composable
 fun TargetSensorView(
     modifier: Modifier = Modifier,
-    state: SensorsScreenState,
+    state: SensorsState,
     onTargetDistanceChange: (Float) -> Unit
 ) {
     Column(
@@ -135,7 +133,7 @@ fun TargetSensorView(
 @Composable
 fun BatteryView(
     modifier: Modifier = Modifier,
-    state: SensorsScreenState,
+    state: SensorsState,
     onMinVoltageChange: (String) -> Unit,
 ) {
     Column(
@@ -155,8 +153,7 @@ fun BatteryView(
         ) {
             Icon(
                 modifier = Modifier.size(48.dp),
-                imageVector = Icons.Default.Star,
-                tint = MaterialTheme.colorScheme.secondary,
+                painter = painterResource(id = R.drawable.battery),
                 contentDescription = null
             )
 
@@ -178,7 +175,7 @@ fun BatteryView(
 @Composable
 fun AccelerometerView(
     modifier: Modifier = Modifier,
-    state: SensorsScreenState,
+    state: SensorsState,
     onOverloadActivationChange: (Boolean) -> Unit,
     onDeadTimeActivationChange: (Boolean) -> Unit,
     onAccelerationChange: (String) -> Unit,
@@ -194,181 +191,248 @@ fun AccelerometerView(
             subtitle = stringResource(R.string.overload_and_dead_time_activation)
         )
 
-        Row(
+        CheckboxWithText(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                text = stringResource(R.string.enable_overload_activation)
-            )
+            text = stringResource(R.string.enable_overload_activation),
+            checked = state.isOverloadActivationEnabled.value,
+            onCheckedChange = onOverloadActivationChange
+        )
 
-            Checkbox(
-                modifier = modifier.padding(start = 32.dp),
-                checked = state.isOverloadActivationEnabled.value,
-                onCheckedChange = onOverloadActivationChange
-            )
-        }
-
-        Row(
+        CheckboxWithText(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                text = stringResource(R.string.enable_dead_time_activation)
-            )
-
-            Checkbox(
-                modifier = modifier.padding(start = 32.dp),
-                checked = state.isDeadTimeActivationEnabled.value,
-                onCheckedChange = onDeadTimeActivationChange
-            )
-        }
+            text = stringResource(R.string.enable_dead_time_activation),
+            checked = state.isDeadTimeActivationEnabled.value,
+            onCheckedChange = onDeadTimeActivationChange
+        )
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 32.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                Text(
-                    text = stringResource(R.string.average_acceleration),
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.Start
+        ){
+            Icon(
+                modifier = Modifier.size(48.dp).padding(end = 8.dp),
+                painter = painterResource(id = R.drawable.chip),
+                contentDescription = null
+            )
+            Column(){
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    label = { Text(text = stringResource(R.string.average_acceleration)) },
+                    supportingText = { Text(text = stringResource(R.string.noise_deviations_recorded_during_test_flight)) },
+                    value = state.averageAcceleration.value,
+                    onValueChange = { onDeviationChange(it) },
+                    enabled = state.isOverloadActivationEnabled.value,
+                    trailingIcon = {
+                        Text(text = stringResource(id = R.string.m_s))
+                    },
                 )
-                Text(
-                    text = stringResource(R.string.acceleration_recorded_during_test_flight),
-                    style = MaterialTheme.typography.bodySmall
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    label = { Text(text = stringResource(R.string.average_deviation)) },
+                    supportingText = { Text(text = stringResource(R.string.acceleration_recorded_during_test_flight)) },
+                    value = state.averageDeviation.value,
+                    onValueChange = { onAccelerationChange(it) },
+                    enabled = state.isOverloadActivationEnabled.value,
+                )
+
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    label = { Text(text = stringResource(R.string.coefficient)) },
+                    supportingText = { Text(text = stringResource(R.string.deviation_coefficient)) },
+                    value = state.deviationCoefficient.value,
+                    onValueChange = { onDeviationCoefficientChange(it) },
+                    enabled = state.isOverloadActivationEnabled.value,
+                )
+
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    label = { Text(text = stringResource(R.string.dead_time)) },
+                    supportingText = { Text(text = stringResource(R.string.activation_time_on_reduced_overloads)) },
+                    value = state.deadTime.value,
+                    onValueChange = { onDeadTimeChange(it) },
+                    enabled = state.isDeadTimeActivationEnabled.value,
+                    trailingIcon = {
+                        Text(text = stringResource(id = R.string.sec))
+                    }
                 )
             }
-
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(128.dp)
-                    .padding(start = 64.dp),
-                value = state.averageAcceleration.value,
-                onValueChange = { onAccelerationChange(it) },
-                enabled = state.isOverloadActivationEnabled.value,
-                singleLine = true,
-                label = { Text(text = stringResource(R.string.m_s)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-            )
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 32.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
+//        OutlinedTextField(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 16.dp),
+//            label = { Text(text = stringResource(R.string.average_acceleration)) },
+//            supportingText = { Text(text = stringResource(R.string.noise_deviations_recorded_during_test_flight)) },
+//            value = state.averageAcceleration.value,
+//            onValueChange = { onDeviationChange(it) },
+//            enabled = state.isOverloadActivationEnabled.value,
+//            trailingIcon = {
+//                Text(text = stringResource(id = R.string.m_s))
+//            },
+//        )
+//        OutlinedTextField(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 16.dp),
+//            label = { Text(text = stringResource(R.string.average_deviation)) },
+//            supportingText = { Text(text = stringResource(R.string.acceleration_recorded_during_test_flight)) },
+//            value = state.averageDeviation.value,
+//            onValueChange = { onAccelerationChange(it) },
+//            enabled = state.isOverloadActivationEnabled.value,
+//        )
+//
+//        OutlinedTextField(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 16.dp),
+//            label = { Text(text = stringResource(R.string.coefficient)) },
+//            supportingText = { Text(text = stringResource(R.string.deviation_coefficient)) },
+//            value = state.deviationCoefficient.value,
+//            onValueChange = { onDeviationCoefficientChange(it) },
+//            enabled = state.isOverloadActivationEnabled.value,
+//        )
+//
+//        OutlinedTextField(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 16.dp),
+//            label = { Text(text = stringResource(R.string.dead_time)) },
+//            supportingText = { Text(text = stringResource(R.string.activation_time_on_reduced_overloads)) },
+//            value = state.deadTime.value,
+//            onValueChange = { onDeadTimeChange(it) },
+//            enabled = state.isDeadTimeActivationEnabled.value,
+//            trailingIcon = {
+//                Text(text = stringResource(id = R.string.sec))
+//            }
+//        )
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                Text(
-                    text = stringResource(R.string.average_deviation),
-                )
-                Text(
-                    text = stringResource(R.string.noise_deviations_recorded_during_test_flight),
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(128.dp)
-                    .padding(start = 64.dp),
-                value = state.averageDeviation.value,
-                onValueChange = { onDeviationChange(it) },
-                enabled = state.isOverloadActivationEnabled.value,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 32.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                Text(
-                    text = stringResource(R.string.coefficient),
-                )
-                Text(
-                    text = stringResource(R.string.deviation_coefficient),
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(128.dp)
-                    .padding(start = 64.dp),
-                value = state.deviationCoefficient.value,
-                onValueChange = { onDeviationCoefficientChange(it) },
-                enabled = state.isOverloadActivationEnabled.value,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 32.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                Text(
-                    text = stringResource(R.string.dead_time),
-                )
-                Text(
-                    text = stringResource(R.string.activation_time_on_reduced_overloads),
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(128.dp)
-                    .padding(start = 64.dp),
-                value = state.deadTime.value,
-                onValueChange = { onDeadTimeChange(it) },
-                label = { Text(text = stringResource(R.string.sec))},
-                enabled = state.isDeadTimeActivationEnabled.value,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-            )
-        }
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 32.dp),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceBetween
+//        ) {
+//
+//            TitleWithSubtitleSmallView(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .weight(1f),
+//                title = stringResource(R.string.average_acceleration),
+//                subtitle = stringResource(R.string.acceleration_recorded_during_test_flight)
+//            )
+//
+//            OutlinedTextField(
+//                modifier = Modifier
+//                    .width(128.dp)
+//                    .padding(start = 64.dp),
+//                value = state.averageAcceleration.value,
+//                onValueChange = { onAccelerationChange(it) },
+//                enabled = state.isOverloadActivationEnabled.value,
+//                singleLine = true,
+//                label = { Text(text = stringResource(R.string.m_s)) },
+//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+//            )
+//        }
+//
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 32.dp),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceBetween
+//        ) {
+//
+//            TitleWithSubtitleSmallView(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .weight(1f),
+//                title = stringResource(R.string.average_deviation),
+//                subtitle = stringResource(R.string.noise_deviations_recorded_during_test_flight)
+//            )
+//
+//            OutlinedTextField(
+//                modifier = Modifier
+//                    .width(128.dp)
+//                    .padding(start = 64.dp),
+//                value = state.averageDeviation.value,
+//                onValueChange = { onDeviationChange(it) },
+//                enabled = state.isOverloadActivationEnabled.value,
+//                singleLine = true,
+//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+//            )
+//        }
+//
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 32.dp),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceBetween
+//        ) {
+//
+//            TitleWithSubtitleSmallView(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .weight(1f),
+//                title = stringResource(R.string.coefficient),
+//                subtitle = stringResource(R.string.deviation_coefficient)
+//            )
+//
+//            OutlinedTextField(
+//                modifier = Modifier
+//                    .width(128.dp)
+//                    .padding(start = 64.dp),
+//                value = state.deviationCoefficient.value,
+//                onValueChange = { onDeviationCoefficientChange(it) },
+//                enabled = state.isOverloadActivationEnabled.value,
+//                singleLine = true,
+//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+//            )
+//        }
+//
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 32.dp),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceBetween
+//        ) {
+//
+//            TitleWithSubtitleSmallView(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .weight(1f),
+//                title = stringResource(R.string.dead_time),
+//                subtitle = stringResource(R.string.activation_time_on_reduced_overloads)
+//            )
+//
+//            OutlinedTextField(
+//                modifier = Modifier
+//                    .width(128.dp)
+//                    .padding(start = 64.dp),
+//                value = state.deadTime.value,
+//                onValueChange = { onDeadTimeChange(it) },
+//                label = { Text(text = stringResource(R.string.sec)) },
+//                enabled = state.isDeadTimeActivationEnabled.value,
+//                singleLine = true,
+//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+//            )
+//        }
 
 
     }
