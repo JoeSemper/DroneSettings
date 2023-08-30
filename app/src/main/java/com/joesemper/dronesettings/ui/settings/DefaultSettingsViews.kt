@@ -62,12 +62,13 @@ fun TwoFieldInputText(
     onSecondTextChange: (String) -> Unit,
     isError: Boolean = false,
     enabled: Boolean = true,
-    icon: Painter? = null
+    icon: Painter? = null,
+    units: String? = null
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top
     ) {
         icon?.let {
             Icon(
@@ -87,7 +88,12 @@ fun TwoFieldInputText(
             singleLine = true,
             enabled = enabled,
             label = { Text(text = firstTitle) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            trailingIcon = {
+                units?.let {
+                    Text(text = units)
+                }
+            }
         )
         OutlinedTextField(
             modifier = Modifier
@@ -98,7 +104,12 @@ fun TwoFieldInputText(
             singleLine = true,
             enabled = enabled,
             label = { Text(text = secondTitle) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            trailingIcon = {
+                units?.let {
+                    Text(text = units)
+                }
+            }
         )
     }
 }

@@ -137,16 +137,6 @@ fun DelayTimeSettingsView(
             onSecondTextChange = { onInputSeconds(it) },
             icon = painterResource(id = R.drawable.alarm)
         )
-
-//        TimeInputLayoutWithIcon(
-//            modifier = Modifier
-//                .padding(vertical = 16.dp)
-//                .fillMaxWidth(),
-//            minutes = state.delayTimeMinutes.value,
-//            seconds = state.delayTimeSeconds.value,
-//            onInputMinutes = { onInputMinutes(it) },
-//            onInputSeconds = { onInputSeconds(it) }
-//        )
     }
 }
 
@@ -167,6 +157,15 @@ fun CockingTimeSettingsView(
             subtitle = stringResource(R.string.cocking_time_description),
         )
 
+        CheckboxWithText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            text = stringResource(R.string.activate_cocking_time),
+            checked = state.isCockingTimeActivated.value,
+            onCheckedChange = onActivateCockingTimeChange
+        )
+
         TwoFieldInputText(
             modifier = Modifier
                 .fillMaxWidth()
@@ -180,26 +179,6 @@ fun CockingTimeSettingsView(
             onSecondTextChange = { onInputSeconds(it) },
             icon = painterResource(id = R.drawable.hand_switch)
         )
-
-        CheckboxWithText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            text = stringResource(R.string.activate_cocking_time),
-            checked = state.isCockingTimeActivated.value,
-            onCheckedChange = onActivateCockingTimeChange
-        )
-
-//        TimeInputLayoutWithIcon(
-//            modifier = Modifier
-//                .padding(vertical = 16.dp)
-//                .fillMaxWidth(),
-//            minutes = state.cockingTimeMinutes.value,
-//            seconds = state.cockingTimeSeconds.value,
-//            enabled = state.isCockingTimeActivated.value,
-//            onInputMinutes = { onInputMinutes(it) },
-//            onInputSeconds = { onInputSeconds(it) }
-//        )
 
     }
 }
@@ -234,16 +213,6 @@ fun MaximumTimeSettingsView(
             onSecondTextChange = { onInputSeconds(it) },
             icon = painterResource(id = R.drawable.hand_switch)
         )
-
-//        TimeInputLayoutWithIcon(
-//            modifier = Modifier
-//                .padding(vertical = 16.dp)
-//                .fillMaxWidth(),
-//            minutes = state.selfDestructionTimeMinutes.value,
-//            seconds = state.selfDestructionTimeSeconds.value,
-//            onInputMinutes = { onInputMinutes(it) },
-//            onInputSeconds = { onInputSeconds(it) }
-//        )
 
     }
 }
