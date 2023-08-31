@@ -32,7 +32,9 @@ import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.settings.mapping.SignalMappingSettingsScreen
 import com.joesemper.dronesettings.ui.settings.sensors.SensorsSettingsScreen
+import com.joesemper.dronesettings.ui.settings.sensors.rememberSensorsSettingsScreenState
 import com.joesemper.dronesettings.ui.settings.signal.SignalSettingsScreen
+import com.joesemper.dronesettings.ui.settings.signal.rememberSignalSettingsScreenState
 import com.joesemper.dronesettings.ui.settings.timeline.TimeLineSettingsScreen
 import com.joesemper.dronesettings.ui.settings.timeline.rememberTimeLineSettingsScreenState
 import kotlinx.coroutines.launch
@@ -71,15 +73,20 @@ fun SettingsScreen(
                 titleRes = R.string.sensors,
                 content = {
                     SensorsSettingsScreen(
-                        state = viewModel.uiState.sensorsState,
-                        onTargetDistanceChange = { viewModel.onTargetDistanceChange(it) },
-                        onMinVoltageChange = { viewModel.onMinVoltageChange(it) },
-                        onOverloadActivationChange = { viewModel.onOverloadActivationChange(it) },
-                        onDeadTimeActivationChange = { viewModel.onDeadTimeActivationChange(it) },
-                        onAccelerationChange = { viewModel.onAverageAccelerationChange(it) },
-                        onDeviationChange = { viewModel.onAverageDeviationChange(it) },
-                        onDeviationCoefficientChange = { viewModel.onDeviationCoefficientChange(it) },
-                        onDeadTimeChange = { viewModel.onDeadTimeChange(it) }
+                        state = rememberSensorsSettingsScreenState(
+                            sensorsState = viewModel.uiState.sensorsState,
+                            onTargetDistanceChange = { viewModel.onTargetDistanceChange(it) },
+                            onMinVoltageChange = { viewModel.onMinVoltageChange(it) },
+                            onOverloadActivationChange = { viewModel.onOverloadActivationChange(it) },
+                            onDeadTimeActivationChange = { viewModel.onDeadTimeActivationChange(it) },
+                            onAccelerationChange = { viewModel.onAverageAccelerationChange(it) },
+                            onDeviationChange = { viewModel.onAverageDeviationChange(it) },
+                            onDeviationCoefficientChange = {
+                                viewModel.onDeviationCoefficientChange(it)
+                            },
+                            onDeadTimeChange = { viewModel.onDeadTimeChange(it) }
+                        )
+
                     )
                 }
             ),
@@ -91,15 +98,27 @@ fun SettingsScreen(
                 titleRes = R.string.signal,
                 content = {
                     SignalSettingsScreen(
-                        state = viewModel.uiState.signalState,
-                        onCockingPulseWidthHiChange = { viewModel.onCockingPulseWidthHiChange(it) },
-                        onCockingPulseWidthLoChange = { viewModel.onCockingPulseWidthLoChange(it) },
-                        onCockingPulseAmountChange = { viewModel.onCockingPulseAmountChange(it) },
-                        onInfiniteCockingPulseChange = { viewModel.onInfiniteCockingPulseRepeatChange(it) },
-                        onActivationPulseWidthHiChange = { viewModel.onActivationPulseWidthHiChange(it) },
-                        onActivationPulseWidthLoChange = { viewModel.onActivationPulseWidthLoChange(it) },
-                        onActivationPulseAmountChange = { viewModel.onActivationPulseAmountChange(it) },
-                        onInfiniteActivationPulseChange = { viewModel.onInfiniteActivationPulseRepeatChange(it) },
+                        state = rememberSignalSettingsScreenState(
+                            signalState = viewModel.uiState.signalState,
+                            onCockingPulseWidthHiChange = { viewModel.onCockingPulseWidthHiChange(it) },
+                            onCockingPulseWidthLoChange = { viewModel.onCockingPulseWidthLoChange(it) },
+                            onCockingPulseAmountChange = { viewModel.onCockingPulseAmountChange(it) },
+                            onInfiniteCockingPulseChange = {
+                                viewModel.onInfiniteCockingPulseRepeatChange(it)
+                            },
+                            onActivationPulseWidthHiChange = {
+                                viewModel.onActivationPulseWidthHiChange(it)
+                            },
+                            onActivationPulseWidthLoChange = {
+                                viewModel.onActivationPulseWidthLoChange(it)
+                            },
+                            onActivationPulseAmountChange = {
+                                viewModel.onActivationPulseAmountChange(it)
+                            },
+                            onInfiniteActivationPulseChange = {
+                                viewModel.onInfiniteActivationPulseRepeatChange(it)
+                            },
+                        )
                     )
                 }
             )

@@ -20,6 +20,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,10 +34,22 @@ import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.SensorsState
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 
+@Stable
+class SensorsSettingsScreenState(
+    val sensorsState: SensorsState,
+    val onTargetDistanceChange: (Float) -> Unit,
+    val onMinVoltageChange: (String) -> Unit,
+    val onOverloadActivationChange: (Boolean) -> Unit,
+    val onDeadTimeActivationChange: (Boolean) -> Unit,
+    val onAccelerationChange: (String) -> Unit,
+    val onDeviationChange: (String) -> Unit,
+    val onDeviationCoefficientChange: (String) -> Unit,
+    val onDeadTimeChange: (String) -> Unit
+)
+
 @Composable
-fun SensorsSettingsScreen(
-    modifier: Modifier = Modifier,
-    state: SensorsState,
+fun rememberSensorsSettingsScreenState(
+    sensorsState: SensorsState,
     onTargetDistanceChange: (Float) -> Unit,
     onMinVoltageChange: (String) -> Unit,
     onOverloadActivationChange: (Boolean) -> Unit,
@@ -44,6 +58,24 @@ fun SensorsSettingsScreen(
     onDeviationChange: (String) -> Unit,
     onDeviationCoefficientChange: (String) -> Unit,
     onDeadTimeChange: (String) -> Unit
+): SensorsSettingsScreenState = remember() {
+    SensorsSettingsScreenState(
+        sensorsState,
+        onTargetDistanceChange,
+        onMinVoltageChange,
+        onOverloadActivationChange,
+        onDeadTimeActivationChange,
+        onAccelerationChange,
+        onDeviationChange,
+        onDeviationCoefficientChange,
+        onDeadTimeChange
+    )
+}
+
+@Composable
+fun SensorsSettingsScreen(
+    modifier: Modifier = Modifier,
+    state: SensorsSettingsScreenState
 ) {
     Column(
         modifier = modifier
@@ -53,27 +85,27 @@ fun SensorsSettingsScreen(
             .padding(bottom = 64.dp)
     ) {
         TargetSensorView(
-            state = state,
-            onTargetDistanceChange = onTargetDistanceChange
+            state = state.sensorsState,
+            onTargetDistanceChange = state.onTargetDistanceChange
         )
 
         Divider(modifier = Modifier.fillMaxWidth())
 
         BatteryView(
-            state = state,
-            onMinVoltageChange = onMinVoltageChange
+            state = state.sensorsState,
+            onMinVoltageChange = state.onMinVoltageChange
         )
 
         Divider(modifier = Modifier.fillMaxWidth())
 
         AccelerometerView(
-            state = state,
-            onOverloadActivationChange = onOverloadActivationChange,
-            onDeadTimeActivationChange = onDeadTimeActivationChange,
-            onAccelerationChange = onAccelerationChange,
-            onDeviationChange = onDeviationChange,
-            onDeviationCoefficientChange = onDeviationCoefficientChange,
-            onDeadTimeChange = onDeadTimeChange
+            state = state.sensorsState,
+            onOverloadActivationChange = state.onOverloadActivationChange,
+            onDeadTimeActivationChange = state.onDeadTimeActivationChange,
+            onAccelerationChange = state.onAccelerationChange,
+            onDeviationChange = state.onDeviationChange,
+            onDeviationCoefficientChange = state.onDeviationCoefficientChange,
+            onDeadTimeChange = state.onDeadTimeChange
         )
     }
 }

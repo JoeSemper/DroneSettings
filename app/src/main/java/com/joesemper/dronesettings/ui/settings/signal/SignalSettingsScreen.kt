@@ -12,6 +12,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,10 +25,22 @@ import com.joesemper.dronesettings.ui.settings.SignalSettingsState
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import com.joesemper.dronesettings.ui.settings.TwoFieldInputText
 
+@Stable
+class SignalSettingsScreenState(
+    val signalState: SignalSettingsState,
+    val onCockingPulseWidthHiChange: (String) -> Unit,
+    val onCockingPulseWidthLoChange: (String) -> Unit,
+    val onCockingPulseAmountChange: (String) -> Unit,
+    val onInfiniteCockingPulseChange: (Boolean) -> Unit,
+    val onActivationPulseWidthHiChange: (String) -> Unit,
+    val onActivationPulseWidthLoChange: (String) -> Unit,
+    val onActivationPulseAmountChange: (String) -> Unit,
+    val onInfiniteActivationPulseChange: (Boolean) -> Unit,
+)
+
 @Composable
-fun SignalSettingsScreen(
-    modifier: Modifier = Modifier,
-    state: SignalSettingsState,
+fun rememberSignalSettingsScreenState(
+    signalState: SignalSettingsState,
     onCockingPulseWidthHiChange: (String) -> Unit,
     onCockingPulseWidthLoChange: (String) -> Unit,
     onCockingPulseAmountChange: (String) -> Unit,
@@ -35,6 +49,24 @@ fun SignalSettingsScreen(
     onActivationPulseWidthLoChange: (String) -> Unit,
     onActivationPulseAmountChange: (String) -> Unit,
     onInfiniteActivationPulseChange: (Boolean) -> Unit,
+): SignalSettingsScreenState = remember() {
+    SignalSettingsScreenState(
+        signalState,
+        onCockingPulseWidthHiChange,
+        onCockingPulseWidthLoChange,
+        onCockingPulseAmountChange,
+        onInfiniteCockingPulseChange,
+        onActivationPulseWidthHiChange,
+        onActivationPulseWidthLoChange,
+        onActivationPulseAmountChange,
+        onInfiniteActivationPulseChange
+    )
+}
+
+@Composable
+fun SignalSettingsScreen(
+    modifier: Modifier = Modifier,
+    state: SignalSettingsScreenState
 ) {
     Column(
         modifier = modifier
@@ -44,21 +76,21 @@ fun SignalSettingsScreen(
             .padding(bottom = 64.dp)
     ) {
         CockingSettingsView(
-            state = state,
-            onCockingPulseWidthHiChange = onCockingPulseWidthHiChange,
-            onCockingPulseWidthLoChange = onCockingPulseWidthLoChange,
-            onCockingPulseAmountChange = onCockingPulseAmountChange,
-            onInfiniteCockingPulseChange = onInfiniteCockingPulseChange,
+            state = state.signalState,
+            onCockingPulseWidthHiChange = state.onCockingPulseWidthHiChange,
+            onCockingPulseWidthLoChange = state.onCockingPulseWidthLoChange,
+            onCockingPulseAmountChange = state.onCockingPulseAmountChange,
+            onInfiniteCockingPulseChange = state.onInfiniteCockingPulseChange,
         )
 
         Divider(modifier = Modifier.fillMaxWidth())
 
         ActivationSettingsView(
-            state = state,
-            onActivationPulseWidthHiChange = onActivationPulseWidthHiChange,
-            onActivationPulseWidthLoChange = onActivationPulseWidthLoChange,
-            onActivationPulseAmountChange = onActivationPulseAmountChange,
-            onInfiniteActivationPulseChange = onInfiniteActivationPulseChange,
+            state = state.signalState,
+            onActivationPulseWidthHiChange = state.onActivationPulseWidthHiChange,
+            onActivationPulseWidthLoChange = state.onActivationPulseWidthLoChange,
+            onActivationPulseAmountChange = state.onActivationPulseAmountChange,
+            onInfiniteActivationPulseChange = state.onInfiniteActivationPulseChange,
         )
 
 
