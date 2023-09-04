@@ -20,8 +20,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,52 +28,53 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.data.constants.SettingsConstants
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
-import com.joesemper.dronesettings.ui.settings.SensorsState
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 
-@Stable
-class SensorsSettingsScreenState(
-    val sensorsState: SensorsState,
-    val onTargetDistanceChange: (Float) -> Unit,
-    val onMinVoltageChange: (String) -> Unit,
-    val onOverloadActivationChange: (Boolean) -> Unit,
-    val onDeadTimeActivationChange: (Boolean) -> Unit,
-    val onAccelerationChange: (String) -> Unit,
-    val onDeviationChange: (String) -> Unit,
-    val onDeviationCoefficientChange: (String) -> Unit,
-    val onDeadTimeChange: (String) -> Unit
-)
-
-@Composable
-fun rememberSensorsSettingsScreenState(
-    sensorsState: SensorsState,
-    onTargetDistanceChange: (Float) -> Unit,
-    onMinVoltageChange: (String) -> Unit,
-    onOverloadActivationChange: (Boolean) -> Unit,
-    onDeadTimeActivationChange: (Boolean) -> Unit,
-    onAccelerationChange: (String) -> Unit,
-    onDeviationChange: (String) -> Unit,
-    onDeviationCoefficientChange: (String) -> Unit,
-    onDeadTimeChange: (String) -> Unit
-): SensorsSettingsScreenState = remember() {
-    SensorsSettingsScreenState(
-        sensorsState,
-        onTargetDistanceChange,
-        onMinVoltageChange,
-        onOverloadActivationChange,
-        onDeadTimeActivationChange,
-        onAccelerationChange,
-        onDeviationChange,
-        onDeviationCoefficientChange,
-        onDeadTimeChange
-    )
-}
+//@Stable
+//class SensorsSettingsScreenState(
+//    val sensorsState: SensorsState,
+//    val onTargetDistanceChange: (Float) -> Unit,
+//    val onMinVoltageChange: (String) -> Unit,
+//    val onOverloadActivationChange: (Boolean) -> Unit,
+//    val onDeadTimeActivationChange: (Boolean) -> Unit,
+//    val onAccelerationChange: (String) -> Unit,
+//    val onDeviationChange: (String) -> Unit,
+//    val onDeviationCoefficientChange: (String) -> Unit,
+//    val onDeadTimeChange: (String) -> Unit
+//)
+//
+//@Composable
+//fun rememberSensorsSettingsScreenState(
+//    sensorsState: SensorsState,
+//    onTargetDistanceChange: (Float) -> Unit,
+//    onMinVoltageChange: (String) -> Unit,
+//    onOverloadActivationChange: (Boolean) -> Unit,
+//    onDeadTimeActivationChange: (Boolean) -> Unit,
+//    onAccelerationChange: (String) -> Unit,
+//    onDeviationChange: (String) -> Unit,
+//    onDeviationCoefficientChange: (String) -> Unit,
+//    onDeadTimeChange: (String) -> Unit
+//): SensorsSettingsScreenState = remember() {
+//    SensorsSettingsScreenState(
+//        sensorsState,
+//        onTargetDistanceChange,
+//        onMinVoltageChange,
+//        onOverloadActivationChange,
+//        onDeadTimeActivationChange,
+//        onAccelerationChange,
+//        onDeviationChange,
+//        onDeviationCoefficientChange,
+//        onDeadTimeChange
+//    )
+//}
 
 @Composable
 fun SensorsSettingsScreen(
     modifier: Modifier = Modifier,
-    state: SensorsSettingsScreenState
+    state: SensorsUiState,
+    onUiEvent: (SensorsUiEvent) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -85,27 +84,22 @@ fun SensorsSettingsScreen(
             .padding(bottom = 64.dp)
     ) {
         TargetSensorView(
-            state = state.sensorsState,
-            onTargetDistanceChange = state.onTargetDistanceChange
+            state = state,
+            onUiEvent = onUiEvent
         )
 
         Divider(modifier = Modifier.fillMaxWidth())
 
         BatteryView(
-            state = state.sensorsState,
-            onMinVoltageChange = state.onMinVoltageChange
+            state = state,
+            onUiEvent = onUiEvent
         )
 
         Divider(modifier = Modifier.fillMaxWidth())
 
         AccelerometerView(
-            state = state.sensorsState,
-            onOverloadActivationChange = state.onOverloadActivationChange,
-            onDeadTimeActivationChange = state.onDeadTimeActivationChange,
-            onAccelerationChange = state.onAccelerationChange,
-            onDeviationChange = state.onDeviationChange,
-            onDeviationCoefficientChange = state.onDeviationCoefficientChange,
-            onDeadTimeChange = state.onDeadTimeChange
+            state = state,
+            onUiEvent = onUiEvent
         )
     }
 }
@@ -113,15 +107,15 @@ fun SensorsSettingsScreen(
 @Composable
 fun TargetSensorView(
     modifier: Modifier = Modifier,
-    state: SensorsState,
-    onTargetDistanceChange: (Float) -> Unit
+    state: SensorsUiState,
+    onUiEvent: (SensorsUiEvent) -> Unit
 ) {
     Column(
         modifier = modifier.padding(vertical = 16.dp)
     ) {
 
-        val sliderMinValue = rememberSaveable { state.constants.minTargetDistance.toFloat() }
-        val sliderMaxValue = rememberSaveable { state.constants.maxTargetDistance.toFloat() }
+        val sliderMinValue = rememberSaveable { SettingsConstants.MIN_TARGET_DISTANCE.toFloat() }
+        val sliderMaxValue = rememberSaveable { SettingsConstants.MAX_TARGET_DISTANCE.toFloat() }
         val sliderSteps = rememberSaveable { 9 }
 
         TitleWithSubtitleView(
@@ -140,17 +134,17 @@ fun TargetSensorView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                value = state.targetDistance.value,
+                value = state.targetDistance,
                 steps = sliderSteps,
                 valueRange = sliderMinValue..sliderMaxValue,
-                onValueChange = onTargetDistanceChange
+                onValueChange = { onUiEvent(SensorsUiEvent.TargetDistanceChange(it)) }
             )
 
             OutlinedTextField(
                 modifier = Modifier
                     .width(96.dp)
                     .padding(start = 8.dp),
-                value = state.targetDistance.value.toString(),
+                value = state.targetDistance.toString(),
                 onValueChange = { },
                 singleLine = true,
                 readOnly = true,
@@ -165,8 +159,8 @@ fun TargetSensorView(
 @Composable
 fun BatteryView(
     modifier: Modifier = Modifier,
-    state: SensorsState,
-    onMinVoltageChange: (String) -> Unit,
+    state: SensorsUiState,
+    onUiEvent: (SensorsUiEvent) -> Unit
 ) {
     Column(
         modifier = modifier.padding(vertical = 16.dp)
@@ -193,8 +187,8 @@ fun BatteryView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
-                value = state.minVoltage.value,
-                onValueChange = { onMinVoltageChange(it) },
+                value = state.minVoltage,
+                onValueChange = { onUiEvent(SensorsUiEvent.MinVoltageChange(it)) },
                 singleLine = true,
                 label = { Text(text = stringResource(R.string.volts)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
@@ -207,13 +201,8 @@ fun BatteryView(
 @Composable
 fun AccelerometerView(
     modifier: Modifier = Modifier,
-    state: SensorsState,
-    onOverloadActivationChange: (Boolean) -> Unit,
-    onDeadTimeActivationChange: (Boolean) -> Unit,
-    onAccelerationChange: (String) -> Unit,
-    onDeviationChange: (String) -> Unit,
-    onDeviationCoefficientChange: (String) -> Unit,
-    onDeadTimeChange: (String) -> Unit
+    state: SensorsUiState,
+    onUiEvent: (SensorsUiEvent) -> Unit
 ) {
     Column(
         modifier = modifier.padding(vertical = 16.dp)
@@ -228,8 +217,8 @@ fun AccelerometerView(
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             text = stringResource(R.string.enable_overload_activation),
-            checked = state.isOverloadActivationEnabled.value,
-            onCheckedChange = onOverloadActivationChange
+            checked = state.isOverloadActivationEnabled,
+            onCheckedChange = { onUiEvent(SensorsUiEvent.OverloadActivationChange(it)) }
         )
 
         CheckboxWithText(
@@ -237,8 +226,8 @@ fun AccelerometerView(
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             text = stringResource(R.string.enable_dead_time_activation),
-            checked = state.isDeadTimeActivationEnabled.value,
-            onCheckedChange = onDeadTimeActivationChange
+            checked = state.isDeadTimeActivationEnabled,
+            onCheckedChange = { onUiEvent(SensorsUiEvent.DeadTimeActivationChange(it)) }
         )
 
         Row(
@@ -260,13 +249,13 @@ fun AccelerometerView(
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text(text = stringResource(R.string.average_acceleration)) },
                     supportingText = { Text(text = stringResource(R.string.noise_deviations_recorded_during_test_flight)) },
-                    value = state.averageAcceleration.value,
-                    onValueChange = { onAccelerationChange(it) },
-                    enabled = state.isOverloadActivationEnabled.value,
+                    value = state.averageAcceleration,
+                    onValueChange = { onUiEvent(SensorsUiEvent.AverageAccelerationChange(it)) },
+                    enabled = state.isOverloadActivationEnabled,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     trailingIcon = {
                         Text(text = stringResource(id = R.string.m_s))
-                    },
+                    }
                 )
 
                 OutlinedTextField(
@@ -275,9 +264,9 @@ fun AccelerometerView(
                         .padding(top = 16.dp),
                     label = { Text(text = stringResource(R.string.average_deviation)) },
                     supportingText = { Text(text = stringResource(R.string.acceleration_recorded_during_test_flight)) },
-                    value = state.averageDeviation.value,
-                    onValueChange = { onDeviationChange(it) },
-                    enabled = state.isOverloadActivationEnabled.value,
+                    value = state.averageDeviation,
+                    onValueChange = { onUiEvent(SensorsUiEvent.AverageDeviationChange(it)) },
+                    enabled = state.isOverloadActivationEnabled,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 )
 
@@ -287,9 +276,9 @@ fun AccelerometerView(
                         .padding(top = 16.dp),
                     label = { Text(text = stringResource(R.string.coefficient)) },
                     supportingText = { Text(text = stringResource(R.string.deviation_coefficient)) },
-                    value = state.deviationCoefficient.value,
-                    onValueChange = { onDeviationCoefficientChange(it) },
-                    enabled = state.isOverloadActivationEnabled.value,
+                    value = state.deviationCoefficient,
+                    onValueChange = { onUiEvent(SensorsUiEvent.DeviationCoefficientChange(it)) },
+                    enabled = state.isOverloadActivationEnabled,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 )
 
@@ -299,9 +288,9 @@ fun AccelerometerView(
                         .padding(top = 16.dp),
                     label = { Text(text = stringResource(R.string.dead_time)) },
                     supportingText = { Text(text = stringResource(R.string.activation_time_on_reduced_overloads)) },
-                    value = state.deadTime.value,
-                    onValueChange = { onDeadTimeChange(it) },
-                    enabled = state.isDeadTimeActivationEnabled.value,
+                    value = state.deadTime,
+                    onValueChange = { onUiEvent(SensorsUiEvent.DeadTimeChange(it)) },
+                    enabled = state.isDeadTimeActivationEnabled,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     trailingIcon = {
                         Text(text = stringResource(id = R.string.sec))

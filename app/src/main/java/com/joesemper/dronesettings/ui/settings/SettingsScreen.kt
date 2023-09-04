@@ -30,13 +30,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
-import com.joesemper.dronesettings.ui.settings.mapping.SignalMappingSettingsScreen
 import com.joesemper.dronesettings.ui.settings.sensors.SensorsSettingsScreen
-import com.joesemper.dronesettings.ui.settings.sensors.rememberSensorsSettingsScreenState
-import com.joesemper.dronesettings.ui.settings.signal.SignalSettingsScreen
-import com.joesemper.dronesettings.ui.settings.signal.rememberSignalSettingsScreenState
 import com.joesemper.dronesettings.ui.settings.timeline.TimeLineSettingsScreen
-import com.joesemper.dronesettings.ui.settings.timeline.rememberTimeLineSettingsScreenState
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
@@ -49,79 +44,59 @@ fun SettingsScreen(
     val pages = remember {
         listOf(
             Page(
+                id = 0,
                 titleRes = R.string.time_line,
                 content = {
                     TimeLineSettingsScreen(
-                        state = rememberTimeLineSettingsScreenState(
-                            timelineState = viewModel.uiState.timelineState,
-                            onInputDelayMinutes = { viewModel.onDelayTimeMinutesChange(it) },
-                            onInputDelaySeconds = { viewModel.onDelayTimeSecondsChange(it) },
-                            onInputCockingMinutes = { viewModel.onCockingTimeMinutesChange(it) },
-                            onInputCockingSeconds = { viewModel.onCockingTimeSecondsChange(it) },
-                            onActivateCockingTimeChange = { viewModel.onActivateCockingTimeChange(it) },
-                            onInputSelfDestructionTimeMinutes = {
-                                viewModel.onSelfDestructionTimeMinutesChange(it)
-                            },
-                            onInputSelfDestructionTimeSeconds = {
-                                viewModel.onSelfDestructionTimeSecondsChange(it)
-                            }
-                        )
+                        state = viewModel.uiState.timelineState,
+                        onUiEvent = { viewModel.onTimelineUiEvent(it) }
                     )
                 }
             ),
             Page(
+                id = 1,
                 titleRes = R.string.sensors,
                 content = {
                     SensorsSettingsScreen(
-                        state = rememberSensorsSettingsScreenState(
-                            sensorsState = viewModel.uiState.sensorsState,
-                            onTargetDistanceChange = { viewModel.onTargetDistanceChange(it) },
-                            onMinVoltageChange = { viewModel.onMinVoltageChange(it) },
-                            onOverloadActivationChange = { viewModel.onOverloadActivationChange(it) },
-                            onDeadTimeActivationChange = { viewModel.onDeadTimeActivationChange(it) },
-                            onAccelerationChange = { viewModel.onAverageAccelerationChange(it) },
-                            onDeviationChange = { viewModel.onAverageDeviationChange(it) },
-                            onDeviationCoefficientChange = {
-                                viewModel.onDeviationCoefficientChange(it)
-                            },
-                            onDeadTimeChange = { viewModel.onDeadTimeChange(it) }
-                        )
-
+                        state = viewModel.uiState.sensorsState,
+                        onUiEvent = { viewModel.onSensorsUiEvent(it) }
                     )
                 }
             ),
-            Page(
-                titleRes = R.string.signal_mapping,
-                content = { SignalMappingSettingsScreen() }
-            ),
-            Page(
-                titleRes = R.string.signal,
-                content = {
-                    SignalSettingsScreen(
-                        state = rememberSignalSettingsScreenState(
-                            signalState = viewModel.uiState.signalState,
-                            onCockingPulseWidthHiChange = { viewModel.onCockingPulseWidthHiChange(it) },
-                            onCockingPulseWidthLoChange = { viewModel.onCockingPulseWidthLoChange(it) },
-                            onCockingPulseAmountChange = { viewModel.onCockingPulseAmountChange(it) },
-                            onInfiniteCockingPulseChange = {
-                                viewModel.onInfiniteCockingPulseRepeatChange(it)
-                            },
-                            onActivationPulseWidthHiChange = {
-                                viewModel.onActivationPulseWidthHiChange(it)
-                            },
-                            onActivationPulseWidthLoChange = {
-                                viewModel.onActivationPulseWidthLoChange(it)
-                            },
-                            onActivationPulseAmountChange = {
-                                viewModel.onActivationPulseAmountChange(it)
-                            },
-                            onInfiniteActivationPulseChange = {
-                                viewModel.onInfiniteActivationPulseRepeatChange(it)
-                            },
-                        )
-                    )
-                }
-            )
+//            Page(
+//                id = 2,
+//                titleRes = R.string.signal_mapping,
+//                content = { SignalMappingSettingsScreen() }
+//            ),
+//            Page(
+//                id = 3,
+//                titleRes = R.string.signal,
+//                content = {
+//                    SignalSettingsScreen(
+//                        state = rememberSignalSettingsScreenState(
+//                            signalState = viewModel.uiState.signalState,
+//                            onCockingPulseWidthHiChange = { viewModel.onCockingPulseWidthHiChange(it) },
+//                            onCockingPulseWidthLoChange = { viewModel.onCockingPulseWidthLoChange(it) },
+//                            onCockingPulseAmountChange = { viewModel.onCockingPulseAmountChange(it) },
+//                            onInfiniteCockingPulseChange = {
+//                                viewModel.onInfiniteCockingPulseRepeatChange(it)
+//                            },
+//                            onActivationPulseWidthHiChange = {
+//                                viewModel.onActivationPulseWidthHiChange(it)
+//                            },
+//                            onActivationPulseWidthLoChange = {
+//                                viewModel.onActivationPulseWidthLoChange(it)
+//                            },
+//                            onActivationPulseAmountChange = {
+//                                viewModel.onActivationPulseAmountChange(it)
+//                            },
+//                            onInfiniteActivationPulseChange = {
+//                                viewModel.onInfiniteActivationPulseRepeatChange(it)
+//                            },
+//                        )
+//                    )
+//                }
+//            )
         )
     }
 
@@ -187,7 +162,8 @@ fun SettingsScreenContent(
                 .weight(1f)
                 .fillMaxSize(),
             pageCount = pages.size,
-            state = pagerState
+            state = pagerState,
+            key = { pages[it].id }
         ) { page ->
             pages[page].content()
         }
@@ -195,6 +171,7 @@ fun SettingsScreenContent(
 }
 
 data class Page(
+    val id: Int,
     @StringRes
     val titleRes: Int,
     val content: @Composable () -> Unit

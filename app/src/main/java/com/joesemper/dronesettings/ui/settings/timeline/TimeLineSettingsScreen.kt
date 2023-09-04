@@ -22,8 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -33,49 +31,49 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
-import com.joesemper.dronesettings.ui.settings.TimelineState
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import com.joesemper.dronesettings.ui.settings.TwoFieldInputText
 
-@Stable
-class TimeLineSettingsScreenState(
-    val timelineState: TimelineState,
-    val onInputDelayMinutes: (String) -> Unit,
-    val onInputDelaySeconds: (String) -> Unit,
-    val onInputCockingMinutes: (String) -> Unit,
-    val onInputCockingSeconds: (String) -> Unit,
-    val onActivateCockingTimeChange: (Boolean) -> Unit,
-    val onInputSelfDestructionTimeMinutes: (String) -> Unit,
-    val onInputSelfDestructionTimeSeconds: (String) -> Unit
-)
-
-@Composable
-fun rememberTimeLineSettingsScreenState(
-    timelineState: TimelineState,
-    onInputDelayMinutes: (String) -> Unit,
-    onInputDelaySeconds: (String) -> Unit,
-    onInputCockingMinutes: (String) -> Unit,
-    onInputCockingSeconds: (String) -> Unit,
-    onActivateCockingTimeChange: (Boolean) -> Unit,
-    onInputSelfDestructionTimeMinutes: (String) -> Unit,
-    onInputSelfDestructionTimeSeconds: (String) -> Unit
-): TimeLineSettingsScreenState = remember() {
-    TimeLineSettingsScreenState(
-        timelineState,
-        onInputDelayMinutes,
-        onInputDelaySeconds,
-        onInputCockingMinutes,
-        onInputCockingSeconds,
-        onActivateCockingTimeChange,
-        onInputSelfDestructionTimeMinutes,
-        onInputSelfDestructionTimeSeconds
-    )
-}
+//@Stable
+//class TimeLineSettingsScreenState(
+//    val timelineState: TimelineState,
+//    val onInputDelayMinutes: (String) -> Unit,
+//    val onInputDelaySeconds: (String) -> Unit,
+//    val onInputCockingMinutes: (String) -> Unit,
+//    val onInputCockingSeconds: (String) -> Unit,
+//    val onActivateCockingTimeChange: (Boolean) -> Unit,
+//    val onInputSelfDestructionTimeMinutes: (String) -> Unit,
+//    val onInputSelfDestructionTimeSeconds: (String) -> Unit
+//)
+//
+//@Composable
+//fun rememberTimeLineSettingsScreenState(
+//    timelineState: TimelineState,
+//    onInputDelayMinutes: (String) -> Unit,
+//    onInputDelaySeconds: (String) -> Unit,
+//    onInputCockingMinutes: (String) -> Unit,
+//    onInputCockingSeconds: (String) -> Unit,
+//    onActivateCockingTimeChange: (Boolean) -> Unit,
+//    onInputSelfDestructionTimeMinutes: (String) -> Unit,
+//    onInputSelfDestructionTimeSeconds: (String) -> Unit
+//): TimeLineSettingsScreenState = remember() {
+//    TimeLineSettingsScreenState(
+//        timelineState,
+//        onInputDelayMinutes,
+//        onInputDelaySeconds,
+//        onInputCockingMinutes,
+//        onInputCockingSeconds,
+//        onActivateCockingTimeChange,
+//        onInputSelfDestructionTimeMinutes,
+//        onInputSelfDestructionTimeSeconds
+//    )
+//}
 
 @Composable
 fun TimeLineSettingsScreen(
     modifier: Modifier = Modifier,
-    state: TimeLineSettingsScreenState
+    state: TimelineUiState,
+    onUiEvent: (TimelineUiEvent) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -85,26 +83,22 @@ fun TimeLineSettingsScreen(
             .padding(bottom = 64.dp)
     ) {
         DelayTimeSettingsView(
-            state = state.timelineState,
-            onInputMinutes = state.onInputDelayMinutes,
-            onInputSeconds = state.onInputDelaySeconds
+            state = state,
+            onUiEvent = onUiEvent
         )
 
         Divider(modifier = Modifier.fillMaxWidth())
 
         CockingTimeSettingsView(
-            state = state.timelineState,
-            onInputMinutes = state.onInputCockingMinutes,
-            onInputSeconds = state.onInputCockingSeconds,
-            onActivateCockingTimeChange = state.onActivateCockingTimeChange
+            state = state,
+            onUiEvent = onUiEvent
         )
 
         Divider(modifier = Modifier.fillMaxWidth())
 
         MaximumTimeSettingsView(
-            state = state.timelineState,
-            onInputMinutes = state.onInputSelfDestructionTimeMinutes,
-            onInputSeconds = state.onInputSelfDestructionTimeSeconds
+            state = state,
+            onUiEvent = onUiEvent
         )
     }
 }
@@ -112,9 +106,8 @@ fun TimeLineSettingsScreen(
 @Composable
 fun DelayTimeSettingsView(
     modifier: Modifier = Modifier,
-    state: TimelineState,
-    onInputMinutes: (String) -> Unit,
-    onInputSeconds: (String) -> Unit
+    state: TimelineUiState,
+    onUiEvent: (TimelineUiEvent) -> Unit
 ) {
     Column(
         modifier = modifier.padding(vertical = 16.dp)
@@ -129,12 +122,12 @@ fun DelayTimeSettingsView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp),
-            textFirst = state.delayTimeMinutes.value,
-            textSecond = state.delayTimeSeconds.value,
+            textFirst = state.delayTimeMinutes,
+            textSecond = state.delayTimeSeconds,
             firstTitle = stringResource(id = R.string.minutes),
             secondTitle = stringResource(id = R.string.seconds),
-            onFirstTextChange = { onInputMinutes(it) },
-            onSecondTextChange = { onInputSeconds(it) },
+            onFirstTextChange = { onUiEvent(TimelineUiEvent.DelayTimeMinutesChange(it)) },
+            onSecondTextChange = { onUiEvent(TimelineUiEvent.DelayTimeSecondsChange(it)) },
             icon = painterResource(id = R.drawable.alarm)
         )
     }
@@ -143,10 +136,8 @@ fun DelayTimeSettingsView(
 @Composable
 fun CockingTimeSettingsView(
     modifier: Modifier = Modifier,
-    state: TimelineState,
-    onInputMinutes: (String) -> Unit,
-    onInputSeconds: (String) -> Unit,
-    onActivateCockingTimeChange: (Boolean) -> Unit
+    state: TimelineUiState,
+    onUiEvent: (TimelineUiEvent) -> Unit
 ) {
     Column(
         modifier = modifier.padding(vertical = 16.dp)
@@ -162,21 +153,21 @@ fun CockingTimeSettingsView(
                 .fillMaxWidth()
                 .padding(bottom = 8.dp),
             text = stringResource(R.string.activate_cocking_time),
-            checked = state.isCockingTimeActivated.value,
-            onCheckedChange = onActivateCockingTimeChange
+            checked = state.isCockingTimeActivated,
+            onCheckedChange = { onUiEvent(TimelineUiEvent.CockingTimeActivationChange(it)) }
         )
 
         TwoFieldInputText(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp),
-            textFirst = state.cockingTimeMinutes.value,
-            textSecond = state.cockingTimeSeconds.value,
+            textFirst = state.cockingTimeMinutes,
+            textSecond = state.cockingTimeSeconds,
             firstTitle = stringResource(id = R.string.minutes),
             secondTitle = stringResource(id = R.string.seconds),
-            enabled = state.isCockingTimeActivated.value,
-            onFirstTextChange = { onInputMinutes(it) },
-            onSecondTextChange = { onInputSeconds(it) },
+            enabled = state.isCockingTimeActivated,
+            onFirstTextChange = { onUiEvent(TimelineUiEvent.CockingTimeMinutesChange(it)) },
+            onSecondTextChange = {  onUiEvent(TimelineUiEvent.CockingTimeSecondsChange(it)) },
             icon = painterResource(id = R.drawable.hand_switch)
         )
 
@@ -186,9 +177,8 @@ fun CockingTimeSettingsView(
 @Composable
 fun MaximumTimeSettingsView(
     modifier: Modifier = Modifier,
-    state: TimelineState,
-    onInputMinutes: (String) -> Unit,
-    onInputSeconds: (String) -> Unit
+    state: TimelineUiState,
+    onUiEvent: (TimelineUiEvent) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -205,12 +195,12 @@ fun MaximumTimeSettingsView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp),
-            textFirst = state.selfDestructionTimeMinutes.value,
-            textSecond = state.selfDestructionTimeSeconds.value,
+            textFirst = state.selfDestructionTimeMinutes,
+            textSecond = state.selfDestructionTimeSeconds,
             firstTitle = stringResource(id = R.string.minutes),
             secondTitle = stringResource(id = R.string.seconds),
-            onFirstTextChange = { onInputMinutes(it) },
-            onSecondTextChange = { onInputSeconds(it) },
+            onFirstTextChange = { onUiEvent(TimelineUiEvent.SelfDestructionTimeMinutesChange(it)) },
+            onSecondTextChange = { onUiEvent(TimelineUiEvent.SelfDestructionTimeSecondsChange(it)) },
             icon = painterResource(id = R.drawable.hand_switch)
         )
 
