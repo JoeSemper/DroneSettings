@@ -207,6 +207,7 @@ fun MaximumTimeSettingsView(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimeInputLayoutWithIcon(
     modifier: Modifier = Modifier,

@@ -30,7 +30,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.ui.settings.mapping.SignalMappingSettingsScreen
 import com.joesemper.dronesettings.ui.settings.sensors.SensorsSettingsScreen
+import com.joesemper.dronesettings.ui.settings.signal.SignalSettingsScreen
 import com.joesemper.dronesettings.ui.settings.timeline.TimeLineSettingsScreen
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -63,40 +65,21 @@ fun SettingsScreen(
                     )
                 }
             ),
-//            Page(
-//                id = 2,
-//                titleRes = R.string.signal_mapping,
-//                content = { SignalMappingSettingsScreen() }
-//            ),
-//            Page(
-//                id = 3,
-//                titleRes = R.string.signal,
-//                content = {
-//                    SignalSettingsScreen(
-//                        state = rememberSignalSettingsScreenState(
-//                            signalState = viewModel.uiState.signalState,
-//                            onCockingPulseWidthHiChange = { viewModel.onCockingPulseWidthHiChange(it) },
-//                            onCockingPulseWidthLoChange = { viewModel.onCockingPulseWidthLoChange(it) },
-//                            onCockingPulseAmountChange = { viewModel.onCockingPulseAmountChange(it) },
-//                            onInfiniteCockingPulseChange = {
-//                                viewModel.onInfiniteCockingPulseRepeatChange(it)
-//                            },
-//                            onActivationPulseWidthHiChange = {
-//                                viewModel.onActivationPulseWidthHiChange(it)
-//                            },
-//                            onActivationPulseWidthLoChange = {
-//                                viewModel.onActivationPulseWidthLoChange(it)
-//                            },
-//                            onActivationPulseAmountChange = {
-//                                viewModel.onActivationPulseAmountChange(it)
-//                            },
-//                            onInfiniteActivationPulseChange = {
-//                                viewModel.onInfiniteActivationPulseRepeatChange(it)
-//                            },
-//                        )
-//                    )
-//                }
-//            )
+            Page(
+                id = 2,
+                titleRes = R.string.signal_mapping,
+                content = { SignalMappingSettingsScreen() }
+            ),
+            Page(
+                id = 3,
+                titleRes = R.string.signal,
+                content = {
+                    SignalSettingsScreen(
+                        state = viewModel.uiState.signalState,
+                        onSignalUiEvent = { viewModel.onSignalUiEvent(it) }
+                    )
+                }
+            )
         )
     }
 
