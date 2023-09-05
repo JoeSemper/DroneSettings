@@ -45,4 +45,10 @@
     <string name="pulse_amount">Pulse amount</string>
     <string name="activation">Activation</string>
     <string name="activation_signal_settings">Activation signal settings</string>
+    <string name="relay_1">Relay №1</string>
+    <string name="none">None</string>
+    <string name="relay_2">Relay №2</string>
+    <string name="pulse_1">Pulse №1</string>
+    <string name="pulse_2">Pulse №2</string>
+    <string name="pulse_3">Pulse №3</string>
 </resources>

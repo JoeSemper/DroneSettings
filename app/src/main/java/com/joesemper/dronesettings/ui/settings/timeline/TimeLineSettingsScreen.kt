@@ -34,41 +34,6 @@ import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import com.joesemper.dronesettings.ui.settings.TwoFieldInputText
 
-//@Stable
-//class TimeLineSettingsScreenState(
-//    val timelineState: TimelineState,
-//    val onInputDelayMinutes: (String) -> Unit,
-//    val onInputDelaySeconds: (String) -> Unit,
-//    val onInputCockingMinutes: (String) -> Unit,
-//    val onInputCockingSeconds: (String) -> Unit,
-//    val onActivateCockingTimeChange: (Boolean) -> Unit,
-//    val onInputSelfDestructionTimeMinutes: (String) -> Unit,
-//    val onInputSelfDestructionTimeSeconds: (String) -> Unit
-//)
-//
-//@Composable
-//fun rememberTimeLineSettingsScreenState(
-//    timelineState: TimelineState,
-//    onInputDelayMinutes: (String) -> Unit,
-//    onInputDelaySeconds: (String) -> Unit,
-//    onInputCockingMinutes: (String) -> Unit,
-//    onInputCockingSeconds: (String) -> Unit,
-//    onActivateCockingTimeChange: (Boolean) -> Unit,
-//    onInputSelfDestructionTimeMinutes: (String) -> Unit,
-//    onInputSelfDestructionTimeSeconds: (String) -> Unit
-//): TimeLineSettingsScreenState = remember() {
-//    TimeLineSettingsScreenState(
-//        timelineState,
-//        onInputDelayMinutes,
-//        onInputDelaySeconds,
-//        onInputCockingMinutes,
-//        onInputCockingSeconds,
-//        onActivateCockingTimeChange,
-//        onInputSelfDestructionTimeMinutes,
-//        onInputSelfDestructionTimeSeconds
-//    )
-//}
-
 @Composable
 fun TimeLineSettingsScreen(
     modifier: Modifier = Modifier,
@@ -226,7 +191,7 @@ fun TimeInputLayoutWithIcon(
         horizontalArrangement = Arrangement.Start
     ) {
         Icon(
-            modifier = Modifier.size(48.dp),
+            modifier = Modifier.size(32.dp),
             imageVector = Icons.Default.Star,
             tint = MaterialTheme.colorScheme.secondary,
             contentDescription = null

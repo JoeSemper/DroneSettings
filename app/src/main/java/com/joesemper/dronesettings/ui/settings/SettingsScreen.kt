@@ -68,7 +68,10 @@ fun SettingsScreen(
             Page(
                 id = 2,
                 titleRes = R.string.signal_mapping,
-                content = { SignalMappingSettingsScreen() }
+                content = { SignalMappingSettingsScreen(
+                    state = viewModel.uiState.mappingUiState,
+                    onUiEvent = { viewModel.onMappingUiEvent(it) }
+                ) }
             ),
             Page(
                 id = 3,

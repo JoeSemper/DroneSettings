@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 fun TitleWithSubtitleView(
     modifier: Modifier = Modifier,
     title: String,
-    subtitle: String,
+    subtitle: String? = null,
 ) {
     Row(
         modifier = modifier,
@@ -40,12 +40,15 @@ fun TitleWithSubtitleView(
                 style = MaterialTheme.typography.titleMedium
             )
 
-            Spacer(modifier = Modifier.size(4.dp))
+            if (!subtitle.isNullOrBlank()) {
+                Spacer(modifier = Modifier.size(4.dp))
 
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.titleSmall,
-            )
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.titleSmall,
+                )
+            }
+
         }
     }
 }
@@ -73,7 +76,7 @@ fun TwoFieldInputText(
         icon?.let {
             Icon(
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(32.dp)
                     .padding(end = 8.dp),
                 painter = icon, contentDescription = null
             )

@@ -4,6 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.joesemper.dronesettings.ui.settings.mapping.MappingUiEvent
+import com.joesemper.dronesettings.ui.settings.mapping.MappingUiState
 import com.joesemper.dronesettings.ui.settings.sensors.SensorsUiEvent
 import com.joesemper.dronesettings.ui.settings.sensors.SensorsUiState
 import com.joesemper.dronesettings.ui.settings.signal.SignalUiEvent
@@ -116,6 +118,36 @@ class SettingsViewModel : ViewModel() {
         }
     }
 
+    fun onMappingUiEvent(event: MappingUiEvent) {
+        when (event) {
+            is MappingUiEvent.PulseOneStateChange -> {
+                uiState = uiState.copy(
+                    mappingUiState = uiState.mappingUiState.copy(pulseOneState = event.selected)
+                )
+            }
+            is MappingUiEvent.PulseThreeStateChange -> {
+                uiState = uiState.copy(
+                    mappingUiState = uiState.mappingUiState.copy(pulseThreeState = event.selected)
+                )
+            }
+            is MappingUiEvent.PulseTwoStateChange -> {
+                uiState = uiState.copy(
+                    mappingUiState = uiState.mappingUiState.copy(pulseTwoState = event.selected)
+                )
+            }
+            is MappingUiEvent.RelayOneStateChange -> {
+                uiState = uiState.copy(
+                    mappingUiState = uiState.mappingUiState.copy(relayOneState = event.selected)
+                )
+            }
+            is MappingUiEvent.RelayTwoStateChange -> {
+                uiState = uiState.copy(
+                    mappingUiState = uiState.mappingUiState.copy(relayTwoState = event.selected)
+                )
+            }
+        }
+    }
+
     fun onSignalUiEvent(event: SignalUiEvent) {
         when (event) {
             is SignalUiEvent.ActivationPulseAmountChange -> {
@@ -173,5 +205,6 @@ class SettingsViewModel : ViewModel() {
 data class SettingsUiState(
     val timelineState: TimelineUiState = TimelineUiState(),
     val sensorsState: SensorsUiState = SensorsUiState(),
+    val mappingUiState: MappingUiState = MappingUiState(),
     val signalState: SignalUiState = SignalUiState()
 )

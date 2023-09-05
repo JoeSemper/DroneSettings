@@ -32,44 +32,6 @@ import com.joesemper.dronesettings.data.constants.SettingsConstants
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 
-//@Stable
-//class SensorsSettingsScreenState(
-//    val sensorsState: SensorsState,
-//    val onTargetDistanceChange: (Float) -> Unit,
-//    val onMinVoltageChange: (String) -> Unit,
-//    val onOverloadActivationChange: (Boolean) -> Unit,
-//    val onDeadTimeActivationChange: (Boolean) -> Unit,
-//    val onAccelerationChange: (String) -> Unit,
-//    val onDeviationChange: (String) -> Unit,
-//    val onDeviationCoefficientChange: (String) -> Unit,
-//    val onDeadTimeChange: (String) -> Unit
-//)
-//
-//@Composable
-//fun rememberSensorsSettingsScreenState(
-//    sensorsState: SensorsState,
-//    onTargetDistanceChange: (Float) -> Unit,
-//    onMinVoltageChange: (String) -> Unit,
-//    onOverloadActivationChange: (Boolean) -> Unit,
-//    onDeadTimeActivationChange: (Boolean) -> Unit,
-//    onAccelerationChange: (String) -> Unit,
-//    onDeviationChange: (String) -> Unit,
-//    onDeviationCoefficientChange: (String) -> Unit,
-//    onDeadTimeChange: (String) -> Unit
-//): SensorsSettingsScreenState = remember() {
-//    SensorsSettingsScreenState(
-//        sensorsState,
-//        onTargetDistanceChange,
-//        onMinVoltageChange,
-//        onOverloadActivationChange,
-//        onDeadTimeActivationChange,
-//        onAccelerationChange,
-//        onDeviationChange,
-//        onDeviationCoefficientChange,
-//        onDeadTimeChange
-//    )
-//}
-
 @Composable
 fun SensorsSettingsScreen(
     modifier: Modifier = Modifier,
@@ -178,7 +140,7 @@ fun BatteryView(
             horizontalArrangement = Arrangement.Start
         ) {
             Icon(
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier.size(32.dp),
                 painter = painterResource(id = R.drawable.battery),
                 contentDescription = null
             )
@@ -239,7 +201,7 @@ fun AccelerometerView(
         ) {
             Icon(
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(32.dp)
                     .padding(end = 8.dp),
                 painter = painterResource(id = R.drawable.chip),
                 contentDescription = null

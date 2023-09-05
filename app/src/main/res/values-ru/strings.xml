@@ -46,4 +46,10 @@
     <string name="pulse_amount">Количество импульсов</string>
     <string name="activation">Срабатывание</string>
     <string name="activation_signal_settings">Настрока сигнала срабатывания</string>
+    <string name="relay_1">Реле №1</string>
+    <string name="none">Нет</string>
+    <string name="relay_2">Реле №2</string>
+    <string name="pulse_1">Импульс №1</string>
+    <string name="pulse_2">Импульс №2</string>
+    <string name="pulse_3">Импульс №3</string>
 </resources>
