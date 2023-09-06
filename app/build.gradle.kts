@@ -82,6 +82,12 @@ dependencies {
     implementation ("io.insert-koin:koin-androidx-compose:3.3.0")
     implementation ("io.insert-koin:koin-androidx-navigation:3.3.0")
 
+    //Room
+    implementation ("androidx.room:room-runtime:2.5.2")
+    implementation ("androidx.room:room-ktx:2.5.2")
+    implementation ("androidx.room:room-testing:2.5.2")
+    kapt ("androidx.room:room-compiler:2.5.2")
+
     // Test
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

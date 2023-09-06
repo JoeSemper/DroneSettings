@@ -118,6 +118,7 @@ fun TargetSensorView(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BatteryView(
     modifier: Modifier = Modifier,
