@@ -5,11 +5,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class TimelinePreset(
+data class MappingPreset(
     @PrimaryKey val id: Int,
     @ColumnInfo val presetId: Int,
-    @ColumnInfo val delayTimeSec: Int,
-    @ColumnInfo val cockingTimeSec: Int,
-    @ColumnInfo val cockingTimeEnabled: Boolean,
-    @ColumnInfo val selfDestructionTimeSec: Int
+    @ColumnInfo val relyOneState: Int,
+    @ColumnInfo val relyTwoState: Int,
+    @ColumnInfo val pulseOneState: Int,
+    @ColumnInfo val pulseTwoState: Int,
+    @ColumnInfo val pulseThreeState: Int
 )

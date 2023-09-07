@@ -66,6 +66,7 @@ fun SensorsSettingsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TargetSensorView(
     modifier: Modifier = Modifier,
