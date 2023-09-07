@@ -1,6 +1,7 @@
 package com.joesemper.dronesettings.ui.settings
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -195,13 +196,21 @@ fun SettingsDefaultScreenContainer(
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.padding(paddingValues).fillMaxSize()
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxWidth()
         ) {
 
-            content()
+            Box(
+                modifier = Modifier.weight(1f).fillMaxSize()
+            ) {
+                content()
+            }
 
             Button(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 onClick = onNavigateNext,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
             ) {

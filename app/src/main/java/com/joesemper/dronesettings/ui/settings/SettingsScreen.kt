@@ -31,7 +31,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.settings.mapping.SignalMappingSettingsScreen
-import com.joesemper.dronesettings.ui.settings.sensors.SensorsSettingsScreen
 import com.joesemper.dronesettings.ui.settings.signal.SignalSettingsScreen
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -54,16 +53,16 @@ fun SettingsScreen(
 //                    )
 //                }
 //            ),
-            Page(
-                id = 1,
-                titleRes = R.string.sensors,
-                content = {
-                    SensorsSettingsScreen(
-                        state = viewModel.uiState.sensorsState,
-                        onUiEvent = { viewModel.onSensorsUiEvent(it) }
-                    )
-                }
-            ),
+//            Page(
+//                id = 1,
+//                titleRes = R.string.sensors,
+//                content = {
+//                    SensorsSettingsScreen(
+//                        state = viewModel.uiState.sensorsState,
+//                        onUiEvent = { viewModel.onSensorsUiEvent(it) }
+//                    )
+//                }
+//            ),
             Page(
                 id = 2,
                 titleRes = R.string.signal_mapping,

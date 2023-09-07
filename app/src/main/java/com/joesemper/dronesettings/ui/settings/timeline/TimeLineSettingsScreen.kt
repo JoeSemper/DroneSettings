@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.ui.SENSORS_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
@@ -45,9 +46,9 @@ fun TimeLineSettingsScreen(
     SettingsDefaultScreenContainer(
         title = stringResource(id = R.string.time_line),
         onNavigateBack = { navController.navigateUp() },
-        onNavigateNext = { }
+        onNavigateNext = { navController.navigate(SENSORS_ROUTE) }
     ) {
-        TimelineSettingsContent(
+        TimelineScreenContent(
             modifier = Modifier
                 .verticalScroll(state = rememberScrollState())
                 .padding(16.dp)
@@ -59,7 +60,7 @@ fun TimeLineSettingsScreen(
 }
 
 @Composable
-fun TimelineSettingsContent(
+fun TimelineScreenContent(
     modifier: Modifier = Modifier,
     state: TimelineUiState,
     onUiEvent: (TimelineUiEvent) -> Unit

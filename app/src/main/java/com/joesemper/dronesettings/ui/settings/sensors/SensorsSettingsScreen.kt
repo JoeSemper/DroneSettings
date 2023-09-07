@@ -27,23 +27,44 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.data.constants.SettingsConstants
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
+import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun SensorsSettingsScreen(
+    navController: NavController,
+    viewModel: SensorsViewModel = getViewModel()
+) {
+
+    SettingsDefaultScreenContainer(
+        title = stringResource(id = R.string.sensors),
+        onNavigateBack = { navController.navigateUp() },
+        onNavigateNext = { }
+    ) {
+        SensorsScreenContent(
+            modifier = Modifier
+                .verticalScroll(state = rememberScrollState())
+                .padding(16.dp)
+                .fillMaxSize(),
+            state = viewModel.uiState,
+            onUiEvent = { viewModel.onSensorsUiEvent(it) }
+        )
+    }
+}
+
+@Composable
+fun SensorsScreenContent(
     modifier: Modifier = Modifier,
     state: SensorsUiState,
     onUiEvent: (SensorsUiEvent) -> Unit
 ) {
     Column(
         modifier = modifier
-            .verticalScroll(state = rememberScrollState())
-            .padding(horizontal = 16.dp)
-            .fillMaxSize()
-            .padding(bottom = 64.dp)
     ) {
         TargetSensorView(
             state = state,
