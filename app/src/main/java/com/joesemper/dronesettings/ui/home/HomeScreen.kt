@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
-import com.joesemper.dronesettings.ui.SETTINGS_ROUTE
+import com.joesemper.dronesettings.ui.TIMELINE_ROUTE
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,7 +27,7 @@ fun HomeScreen(
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Button(onClick = { navController.navigate(SETTINGS_ROUTE) }) {
+            Button(onClick = { navController.navigate(TIMELINE_ROUTE) }) {
                 Text(text = stringResource(R.string.settings))
             }
         }

@@ -33,7 +33,6 @@ import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.settings.mapping.SignalMappingSettingsScreen
 import com.joesemper.dronesettings.ui.settings.sensors.SensorsSettingsScreen
 import com.joesemper.dronesettings.ui.settings.signal.SignalSettingsScreen
-import com.joesemper.dronesettings.ui.settings.timeline.TimeLineSettingsScreen
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
@@ -45,16 +44,16 @@ fun SettingsScreen(
 
     val pages = remember {
         listOf(
-            Page(
-                id = 0,
-                titleRes = R.string.time_line,
-                content = {
-                    TimeLineSettingsScreen(
-                        state = viewModel.uiState.timelineState,
-                        onUiEvent = { viewModel.onTimelineUiEvent(it) }
-                    )
-                }
-            ),
+//            Page(
+//                id = 0,
+//                titleRes = R.string.time_line,
+//                content = {
+//                    TimeLineSettingsScreen(
+//                        state = viewModel.uiState.timelineState,
+//                        onUiEvent = { viewModel.onTimelineUiEvent(it) }
+//                    )
+//                }
+//            ),
             Page(
                 id = 1,
                 titleRes = R.string.sensors,

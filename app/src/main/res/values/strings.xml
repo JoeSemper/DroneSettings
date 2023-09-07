@@ -51,4 +51,6 @@
     <string name="pulse_1">Pulse №1</string>
     <string name="pulse_2">Pulse №2</string>
     <string name="pulse_3">Pulse №3</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
 </resources>

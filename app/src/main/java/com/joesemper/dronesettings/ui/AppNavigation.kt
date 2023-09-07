@@ -11,9 +11,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.joesemper.dronesettings.ui.home.HomeScreen
 import com.joesemper.dronesettings.ui.settings.SettingsScreen
+import com.joesemper.dronesettings.ui.settings.timeline.TimeLineSettingsScreen
 
 const val HOME_ROUTE = "home"
 const val SETTINGS_ROUTE = "settings"
+const val TIMELINE_ROUTE = "timeline"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +41,12 @@ fun AppNavHost(
                 route = SETTINGS_ROUTE
             ) {
                 SettingsScreen(navController)
+            }
+
+            composable(
+                route = TIMELINE_ROUTE
+            ) {
+                TimeLineSettingsScreen(navController)
             }
 
         }

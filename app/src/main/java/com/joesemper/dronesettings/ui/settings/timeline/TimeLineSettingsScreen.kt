@@ -29,23 +29,43 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
+import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import com.joesemper.dronesettings.ui.settings.TwoFieldInputText
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun TimeLineSettingsScreen(
+    navController: NavController,
+    viewModel: TimelineViewModel = getViewModel()
+) {
+    SettingsDefaultScreenContainer(
+        title = stringResource(id = R.string.time_line),
+        onNavigateBack = { navController.navigateUp() },
+        onNavigateNext = { }
+    ) {
+        TimelineSettingsContent(
+            modifier = Modifier
+                .verticalScroll(state = rememberScrollState())
+                .padding(16.dp)
+                .fillMaxSize(),
+            state = viewModel.uiState,
+            onUiEvent = { viewModel.onTimelineUiEvent(it) }
+        )
+    }
+}
+
+@Composable
+fun TimelineSettingsContent(
     modifier: Modifier = Modifier,
     state: TimelineUiState,
     onUiEvent: (TimelineUiEvent) -> Unit
 ) {
     Column(
         modifier = modifier
-            .verticalScroll(state = rememberScrollState())
-            .padding(horizontal = 16.dp)
-            .fillMaxSize()
-            .padding(bottom = 64.dp)
     ) {
         DelayTimeSettingsView(
             state = state,
@@ -132,7 +152,7 @@ fun CockingTimeSettingsView(
             secondTitle = stringResource(id = R.string.seconds),
             enabled = state.isCockingTimeActivated,
             onFirstTextChange = { onUiEvent(TimelineUiEvent.CockingTimeMinutesChange(it)) },
-            onSecondTextChange = {  onUiEvent(TimelineUiEvent.CockingTimeSecondsChange(it)) },
+            onSecondTextChange = { onUiEvent(TimelineUiEvent.CockingTimeSecondsChange(it)) },
             icon = painterResource(id = R.drawable.hand_switch)
         )
 
