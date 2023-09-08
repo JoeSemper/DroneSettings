@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.data.constants.SettingsConstants
+import com.joesemper.dronesettings.ui.MAPPING_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
@@ -44,7 +45,7 @@ fun SensorsSettingsScreen(
     SettingsDefaultScreenContainer(
         title = stringResource(id = R.string.sensors),
         onNavigateBack = { navController.navigateUp() },
-        onNavigateNext = { }
+        onNavigateNext = { navController.navigate(MAPPING_ROUTE) }
     ) {
         SensorsScreenContent(
             modifier = Modifier

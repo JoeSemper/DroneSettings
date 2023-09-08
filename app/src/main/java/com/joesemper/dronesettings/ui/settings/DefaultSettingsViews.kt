@@ -45,6 +45,10 @@ fun TitleWithSubtitleView(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
+//        Icon(
+//            modifier = Modifier.padding(end = 8.dp),
+//            imageVector = Icons.Default.Settings, contentDescription = null
+//        )
         Column(
             modifier = Modifier
         ) {
@@ -185,7 +189,7 @@ fun SettingsDefaultScreenContainer(
     onNavigateBack: () -> Unit,
     onNavigateNext: () -> Unit,
     content: @Composable() () -> Unit
-){
+) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -202,7 +206,9 @@ fun SettingsDefaultScreenContainer(
         ) {
 
             Box(
-                modifier = Modifier.weight(1f).fillMaxSize()
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize()
             ) {
                 content()
             }

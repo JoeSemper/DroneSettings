@@ -20,27 +20,34 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.ui.SIGNAL_ROUTE
+import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun SignalMappingSettingsScreen(
-    modifier: Modifier = Modifier,
-    state: MappingUiState,
-    onUiEvent: (MappingUiEvent) -> Unit
+    navController: NavController,
+    viewModel: MappingViewModel = getViewModel()
 ) {
-    Column(
-        modifier = modifier
-            .verticalScroll(state = rememberScrollState())
-            .padding(horizontal = 16.dp)
-            .fillMaxSize()
-            .padding(bottom = 64.dp)
+
+    SettingsDefaultScreenContainer(
+        title = stringResource(id = R.string.signal_mapping),
+        onNavigateBack = { navController.navigateUp() },
+        onNavigateNext = { navController.navigate(SIGNAL_ROUTE) }
     ) {
         SignalMappingScreenContent(
-            state = state,
-            onUiEvent = onUiEvent
+            modifier = Modifier
+                .verticalScroll(state = rememberScrollState())
+                .padding(16.dp)
+                .fillMaxSize(),
+            state = viewModel.uiState,
+            onUiEvent = { viewModel.onMappingUiEvent(it) }
         )
     }
+
 }
 
 @Composable
