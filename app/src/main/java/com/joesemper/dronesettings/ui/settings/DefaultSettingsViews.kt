@@ -9,18 +9,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,6 +29,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -40,33 +42,24 @@ fun TitleWithSubtitleView(
     title: String,
     subtitle: String? = null,
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
+    Column(
+        modifier = modifier
     ) {
-//        Icon(
-//            modifier = Modifier.padding(end = 8.dp),
-//            imageVector = Icons.Default.Settings, contentDescription = null
-//        )
-        Column(
-            modifier = Modifier
-        ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        if (!subtitle.isNullOrBlank()) {
+            Spacer(modifier = Modifier.size(2.dp))
+
             Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium
+                text = subtitle,
+                color = Color.Gray,
+                style = MaterialTheme.typography.titleSmall,
             )
-
-            if (!subtitle.isNullOrBlank()) {
-                Spacer(modifier = Modifier.size(4.dp))
-
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.titleSmall,
-                )
-            }
-
         }
+
     }
 }
 
@@ -194,8 +187,7 @@ fun SettingsDefaultScreenContainer(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             SettingsDefaultTopBar(
-                title = title,
-                onNavigationClick = onNavigateBack
+                title = title
             )
         }
     ) { paddingValues ->
@@ -213,18 +205,37 @@ fun SettingsDefaultScreenContainer(
                 content()
             }
 
-            Button(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                onClick = onNavigateNext,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                horizontalArrangement = Arrangement.spacedBy(32.dp)
             ) {
-                Text(text = stringResource(R.string.next))
-                Spacer(modifier = Modifier.width(4.dp))
-                Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = null)
+                OutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    onClick = onNavigateBack
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(end = 4.dp),
+                        imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = null
+                    )
+                    Text(text = stringResource(R.string.back))
+                }
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    onClick = onNavigateNext
+                ) {
+                    Text(
+                        modifier = Modifier.padding(end = 4.dp),
+                        text = stringResource(R.string.next)
+                    )
+                    Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = null)
+                }
             }
-
         }
 
     }
@@ -234,17 +245,20 @@ fun SettingsDefaultScreenContainer(
 @Composable
 fun SettingsDefaultTopBar(
     title: String,
-    onNavigationClick: () -> Unit
 ) {
     TopAppBar(
         navigationIcon = {
-            IconButton(onClick = onNavigationClick) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(imageVector = Icons.Default.Close, contentDescription = null)
             }
-
         },
         title = {
             Text(text = title)
+        },
+        actions = {
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(imageVector = Icons.Default.Info, contentDescription = null)
+            }
         }
     )
 }

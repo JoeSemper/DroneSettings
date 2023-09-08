@@ -54,4 +54,5 @@
     <string name="pulse_3">Импульс №3</string>
     <string name="next">Next</string>
     <string name="back">Back</string>
+    <string name="min">мин</string>
 </resources>
