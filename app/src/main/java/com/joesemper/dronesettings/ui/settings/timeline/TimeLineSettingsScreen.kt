@@ -8,21 +8,27 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.SENSORS_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
@@ -37,12 +43,14 @@ fun TimeLineSettingsScreen(
     SettingsDefaultScreenContainer(
         title = stringResource(id = R.string.time_line),
         onNavigateBack = { navController.navigateUp() },
-        onNavigateNext = { navController.navigate(SENSORS_ROUTE) }
+        onNavigateNext = { navController.navigate(SENSORS_ROUTE) },
+        onTopBarNavigationClick = { navController.navigate(HOME_ROUTE) }
     ) {
         TimelineScreenContent(
             modifier = Modifier
                 .verticalScroll(state = rememberScrollState())
-                .padding(16.dp)
+                .padding(top = 8.dp, bottom = 16.dp)
+                .padding(horizontal = 16.dp)
                 .fillMaxSize(),
             state = viewModel.uiState,
             onUiEvent = { viewModel.onTimelineUiEvent(it) }
@@ -97,25 +105,14 @@ fun DelayTimeSettingsView(
 
         TimeInputLayout(
             modifier = Modifier.padding(vertical = 16.dp),
-            title = "Time",
+            title = stringResource(R.string.time),
+            supportingText = stringResource(R.string.from_0_to_3_minutes),
             minutes = state.delayTimeMinutes,
             seconds = state.delayTimeSeconds,
             onInputMinutes = { onUiEvent(TimelineUiEvent.DelayTimeMinutesChange(it)) },
             onInputSeconds = { onUiEvent(TimelineUiEvent.DelayTimeSecondsChange(it)) },
         )
 
-//        TwoFieldInputText(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(vertical = 16.dp),
-//            textFirst = state.delayTimeMinutes,
-//            textSecond = state.delayTimeSeconds,
-//            firstTitle = stringResource(id = R.string.minutes),
-//            secondTitle = stringResource(id = R.string.seconds),
-//            onFirstTextChange = { onUiEvent(TimelineUiEvent.DelayTimeMinutesChange(it)) },
-//            onSecondTextChange = { onUiEvent(TimelineUiEvent.DelayTimeSecondsChange(it)) },
-//            icon = painterResource(id = R.drawable.alarm)
-//        )
     }
 }
 
@@ -144,27 +141,15 @@ fun CockingTimeSettingsView(
         )
 
         TimeInputLayout(
-            modifier = Modifier.padding(vertical = 16.dp),
-            title = "Time",
+            modifier = Modifier.padding(bottom = 16.dp),
+            title = stringResource(R.string.time),
+            supportingText = stringResource(R.string.from_0_to_3_minutes),
             minutes = state.cockingTimeMinutes,
             seconds = state.cockingTimeSeconds,
+            enabled = state.isCockingTimeActivated,
             onInputMinutes = { onUiEvent(TimelineUiEvent.CockingTimeMinutesChange(it)) },
             onInputSeconds = { onUiEvent(TimelineUiEvent.CockingTimeSecondsChange(it)) },
         )
-
-//        TwoFieldInputText(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(bottom = 16.dp),
-//            textFirst = state.cockingTimeMinutes,
-//            textSecond = state.cockingTimeSeconds,
-//            firstTitle = stringResource(id = R.string.minutes),
-//            secondTitle = stringResource(id = R.string.seconds),
-//            enabled = state.isCockingTimeActivated,
-//            onFirstTextChange = { onUiEvent(TimelineUiEvent.CockingTimeMinutesChange(it)) },
-//            onSecondTextChange = { onUiEvent(TimelineUiEvent.CockingTimeSecondsChange(it)) },
-//            icon = painterResource(id = R.drawable.hand_switch)
-//        )
 
     }
 }
@@ -188,25 +173,13 @@ fun MaximumTimeSettingsView(
 
         TimeInputLayout(
             modifier = Modifier.padding(vertical = 16.dp),
-            title = "Time",
+            title = stringResource(R.string.time),
+            supportingText = stringResource(R.string.from_0_to_10_minutes),
             minutes = state.selfDestructionTimeMinutes,
             seconds = state.selfDestructionTimeSeconds,
             onInputMinutes = { onUiEvent(TimelineUiEvent.SelfDestructionTimeMinutesChange(it)) },
             onInputSeconds = { onUiEvent(TimelineUiEvent.SelfDestructionTimeSecondsChange(it)) },
         )
-
-//        TwoFieldInputText(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(vertical = 16.dp),
-//            textFirst = state.selfDestructionTimeMinutes,
-//            textSecond = state.selfDestructionTimeSeconds,
-//            firstTitle = stringResource(id = R.string.minutes),
-//            secondTitle = stringResource(id = R.string.seconds),
-//            onFirstTextChange = { onUiEvent(TimelineUiEvent.SelfDestructionTimeMinutesChange(it)) },
-//            onSecondTextChange = { onUiEvent(TimelineUiEvent.SelfDestructionTimeSecondsChange(it)) },
-//            icon = painterResource(id = R.drawable.hand_switch)
-//        )
 
     }
 }
@@ -216,6 +189,7 @@ fun MaximumTimeSettingsView(
 fun TimeInputLayout(
     modifier: Modifier = Modifier,
     title: String? = null,
+    supportingText: String? = null,
     minutes: String,
     seconds: String,
     enabled: Boolean = true,
@@ -239,16 +213,24 @@ fun TimeInputLayout(
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
+                    .weight(0.6f),
                 value = minutes,
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End),
                 onValueChange = { onInputMinutes(it) },
                 singleLine = true,
                 enabled = enabled,
+                leadingIcon = {
+                    Icon(
+                        modifier = Modifier.size(32.dp),
+                        painter = painterResource(id = R.drawable.alarm),
+                        contentDescription = null
+                    )
+                },
                 trailingIcon = {
                     Text(text = stringResource(R.string.min))
                 },
                 supportingText = {
-                    Text(text = "From 0 to 3 min.")
+                    supportingText?.let { Text(text = supportingText) }
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
             )
@@ -256,8 +238,9 @@ fun TimeInputLayout(
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
+                    .weight(0.4f),
                 value = seconds,
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End),
                 onValueChange = { onInputSeconds(it) },
                 singleLine = true,
                 enabled = enabled,

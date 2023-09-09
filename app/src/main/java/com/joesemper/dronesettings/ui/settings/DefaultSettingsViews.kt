@@ -1,5 +1,6 @@
 package com.joesemper.dronesettings.ui.settings
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,10 +32,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.joesemper.dronesettings.R
+import java.time.Duration
 
 @Composable
 fun TitleWithSubtitleView(
@@ -47,7 +51,7 @@ fun TitleWithSubtitleView(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleLarge
         )
 
         if (!subtitle.isNullOrBlank()) {
@@ -181,13 +185,20 @@ fun SettingsDefaultScreenContainer(
     title: String,
     onNavigateBack: () -> Unit,
     onNavigateNext: () -> Unit,
+    onTopBarNavigationClick: () -> Unit,
     content: @Composable() () -> Unit
 ) {
+    val context = LocalContext.current
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             SettingsDefaultTopBar(
-                title = title
+                title = title,
+                onActionClick = {
+                    Toast.makeText(context, "Help", Toast.LENGTH_SHORT).show()
+                },
+                onNavigationClick = onTopBarNavigationClick
             )
         }
     ) { paddingValues ->
@@ -218,8 +229,8 @@ fun SettingsDefaultScreenContainer(
                     onClick = onNavigateBack
                 ) {
                     Icon(
-                        modifier = Modifier.padding(end = 4.dp),
-                        imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = null
+                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        contentDescription = null
                     )
                     Text(text = stringResource(R.string.back))
                 }
@@ -230,10 +241,13 @@ fun SettingsDefaultScreenContainer(
                     onClick = onNavigateNext
                 ) {
                     Text(
-                        modifier = Modifier.padding(end = 4.dp),
                         text = stringResource(R.string.next)
                     )
-                    Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowRight,
+                        contentDescription = null
+                    )
+
                 }
             }
         }
@@ -245,10 +259,12 @@ fun SettingsDefaultScreenContainer(
 @Composable
 fun SettingsDefaultTopBar(
     title: String,
+    onNavigationClick: () -> Unit,
+    onActionClick: () -> Unit
 ) {
     TopAppBar(
         navigationIcon = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = onNavigationClick) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = null)
             }
         },
@@ -256,8 +272,11 @@ fun SettingsDefaultTopBar(
             Text(text = title)
         },
         actions = {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Default.Info, contentDescription = null)
+            IconButton(onClick = onActionClick) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_help_outline_24),
+                    contentDescription = null
+                )
             }
         }
     )

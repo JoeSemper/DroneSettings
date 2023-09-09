@@ -17,7 +17,7 @@
     <string name="self_destruction_time">Время самоуничтожения</string>
     <string name="target_sensor">Датчик цели</string>
     <string name="activation_distance">Растояние на котором происходит срабатывание</string>
-    <string name="meters">Метры</string>
+    <string name="meters">метров</string>
     <string name="battery">Батарея</string>
     <string name="minimum_activation_voltage">Минимальное напряжение срабатывания</string>
     <string name="volts">Вольт</string>
@@ -29,7 +29,7 @@
     <string name="m_s">м/c</string>
     <string name="average_acceleration">Среднее ускорение</string>
     <string name="average_deviation">Среднее отклонение</string>
-    <string name="noise_deviations_recorded_during_test_flight">Шумовые отклонения записанные во время ткстового полета</string>
+    <string name="noise_deviations_recorded_during_test_flight">Шумовые отклонения записанные во время тестового полета</string>
     <string name="coefficient">Коэффициент</string>
     <string name="deviation_coefficient">Коэффициент отклонения</string>
     <string name="dead_time">Мертвое время</string>
@@ -55,4 +55,9 @@
     <string name="next">Next</string>
     <string name="back">Back</string>
     <string name="min">мин</string>
+    <string name="time">Время</string>
+    <string name="from_0_to_3_minutes">От 0 до 3 минут</string>
+    <string name="from_0_to_10_minutes">От 0 до 10 минут</string>
+    <string name="voltage">Напряжение</string>
+    <string name="pulse_width">Ширина импульса</string>
 </resources>

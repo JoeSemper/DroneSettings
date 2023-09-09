@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.SIGNAL_ROUTE
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
@@ -36,13 +37,14 @@ fun SignalMappingSettingsScreen(
     SettingsDefaultScreenContainer(
         title = stringResource(id = R.string.signal_mapping),
         onNavigateBack = { navController.navigateUp() },
-        onNavigateNext = { navController.navigate(SIGNAL_ROUTE) }
+        onNavigateNext = { navController.navigate(SIGNAL_ROUTE) },
+        onTopBarNavigationClick = { navController.navigate(HOME_ROUTE) }
     ) {
         SignalMappingScreenContent(
             modifier = Modifier
                 .verticalScroll(state = rememberScrollState())
-                .padding(16.dp)
-                .fillMaxSize(),
+                .padding(top = 8.dp, bottom = 16.dp)
+                .padding(horizontal = 16.dp)                .fillMaxSize(),
             state = viewModel.uiState,
             onUiEvent = { viewModel.onMappingUiEvent(it) }
         )

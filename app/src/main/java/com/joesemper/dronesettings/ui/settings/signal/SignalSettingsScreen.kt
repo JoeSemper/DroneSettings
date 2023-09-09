@@ -1,6 +1,8 @@
 package com.joesemper.dronesettings.ui.settings.signal
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -19,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
@@ -33,12 +37,14 @@ fun SignalSettingsScreen(
     SettingsDefaultScreenContainer(
         title = stringResource(id = R.string.signal),
         onNavigateBack = { navController.navigateUp() },
-        onNavigateNext = { }
+        onNavigateNext = { },
+        onTopBarNavigationClick = { navController.navigate(HOME_ROUTE) }
     ) {
         SignalScreenContent(
             modifier = Modifier
                 .verticalScroll(state = rememberScrollState())
-                .padding(16.dp)
+                .padding(top = 8.dp, bottom = 16.dp)
+                .padding(horizontal = 16.dp)
                 .fillMaxSize(),
             state = viewModel.uiState,
             onUiEvent = { viewModel.onSignalUiEvent(it) }
@@ -85,28 +91,55 @@ fun CockingSettingsView(
             title = stringResource(R.string.cocking),
             subtitle = stringResource(R.string.cocking_signal_settings)
         )
+        
+        Text(
+            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+            text = stringResource(R.string.pulse_width)
+        )
 
-        TwoFieldInputText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            textFirst = state.cockingPulseWidthHi,
-            textSecond = state.cockingPulseWidthLo,
-            firstTitle = stringResource(R.string.high_level),
-            secondTitle = stringResource(R.string.low_level),
-            onFirstTextChange = { onSignalUiEvent(SignalUiEvent.CockingPulseWidthHiChange(it)) },
-            onSecondTextChange = { onSignalUiEvent(SignalUiEvent.CockingPulseWidthLoChange(it)) },
-            icon = painterResource(id = R.drawable.chart_wave),
-            units = stringResource(id = R.string.ms)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                value = state.cockingPulseWidthHi,
+                onValueChange = { onSignalUiEvent(SignalUiEvent.CockingPulseWidthHiChange(it)) },
+                label = { Text(text = stringResource(R.string.high_level)) },
+                trailingIcon = {
+                    Text(text = stringResource(id = R.string.ms))
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+            )
+
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                value = state.cockingPulseWidthLo,
+                onValueChange = { onSignalUiEvent(SignalUiEvent.CockingPulseWidthLoChange(it)) },
+                label = { Text(text = stringResource(R.string.low_level)) },
+                trailingIcon = {
+                    Text(text = stringResource(id = R.string.ms))
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+            )
+        }
+
+        Text(
+            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+            text = stringResource(R.string.pulse_amount)
         )
 
         OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 54.dp, top = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             value = state.cockingPulseAmount,
             onValueChange = { onSignalUiEvent(SignalUiEvent.CockingPulseAmountChange(it)) },
-            label = { Text(text = stringResource(R.string.pulse_amount)) },
             enabled = !state.infiniteCockingPulseRepeat,
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
@@ -140,27 +173,55 @@ fun ActivationSettingsView(
             subtitle = stringResource(R.string.activation_signal_settings)
         )
 
-        TwoFieldInputText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            textFirst = state.activationPulseWidthHi,
-            textSecond = state.activationPulseWidthLo,
-            firstTitle = stringResource(R.string.high_level),
-            secondTitle = stringResource(R.string.low_level),
-            onFirstTextChange = { onSignalUiEvent(SignalUiEvent.ActivationPulseWidthHiChange(it)) },
-            onSecondTextChange = { onSignalUiEvent(SignalUiEvent.ActivationPulseWidthLoChange(it)) },
-            icon = painterResource(id = R.drawable.chart_wave),
-            units = stringResource(id = R.string.ms)
+
+        Text(
+            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+            text = stringResource(R.string.pulse_width)
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                value = state.activationPulseWidthHi,
+                onValueChange = { onSignalUiEvent(SignalUiEvent.ActivationPulseWidthHiChange(it)) },
+                label = { Text(text = stringResource(R.string.high_level)) },
+                trailingIcon = {
+                    Text(text = stringResource(id = R.string.ms))
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+            )
+
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                value = state.activationPulseWidthLo,
+                onValueChange = { onSignalUiEvent(SignalUiEvent.ActivationPulseWidthLoChange(it)) },
+                label = { Text(text = stringResource(R.string.low_level)) },
+                trailingIcon = {
+                    Text(text = stringResource(id = R.string.ms))
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+            )
+        }
+
+        Text(
+            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+            text = stringResource(R.string.pulse_amount)
         )
 
         OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 54.dp, top = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             value = state.activationPulseAmount,
             onValueChange = { onSignalUiEvent(SignalUiEvent.ActivationPulseAmountChange(it)) },
-            label = { Text(text = stringResource(R.string.pulse_amount)) },
             enabled = !state.infiniteActivationPulseRepeat,
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)

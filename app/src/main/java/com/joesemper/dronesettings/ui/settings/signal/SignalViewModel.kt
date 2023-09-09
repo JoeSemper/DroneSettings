@@ -32,7 +32,7 @@ class SignalViewModel(): ViewModel() {
             }
 
             is SignalUiEvent.CockingPulseWidthLoChange -> {
-                uiState = uiState.copy(activationPulseWidthLo = event.width)
+                uiState = uiState.copy(cockingPulseWidthLo = event.width)
             }
 
             is SignalUiEvent.InfiniteActivationPulseRepeatChange -> {

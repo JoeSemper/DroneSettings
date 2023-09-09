@@ -16,7 +16,7 @@
     <string name="self_destruction_time">Self-destruction time</string>
     <string name="target_sensor">Target sensor</string>
     <string name="activation_distance">Activation distance</string>
-    <string name="meters">Meters</string>
+    <string name="meters">meters</string>
     <string name="battery">Battery</string>
     <string name="minimum_activation_voltage">Minimum activation voltage</string>
     <string name="volts">Volts</string>
@@ -54,4 +54,9 @@
     <string name="next">Next</string>
     <string name="back">Back</string>
     <string name="min">min</string>
+    <string name="time">Time</string>
+    <string name="from_0_to_3_minutes">From 0 to 3 minutes</string>
+    <string name="from_0_to_10_minutes">From 0 to 10 minutes</string>
+    <string name="voltage">Voltage</string>
+    <string name="pulse_width">Pulse width</string>
 </resources>
