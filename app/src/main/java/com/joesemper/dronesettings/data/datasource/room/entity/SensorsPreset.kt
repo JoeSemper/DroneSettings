@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class SensorsPreset(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo val presetId: Int,
     @ColumnInfo val targetDistance: Int,
     @ColumnInfo val minVoltage: Int,

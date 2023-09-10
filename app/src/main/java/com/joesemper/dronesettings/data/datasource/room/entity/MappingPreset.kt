@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class MappingPreset(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo val presetId: Int,
     @ColumnInfo val relyOneState: Int,
     @ColumnInfo val relyTwoState: Int,

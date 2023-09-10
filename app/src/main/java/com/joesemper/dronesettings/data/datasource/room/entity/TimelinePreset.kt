@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class TimelinePreset(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo val presetId: Int,
     @ColumnInfo val delayTimeSec: Int,
     @ColumnInfo val cockingTimeSec: Int,
