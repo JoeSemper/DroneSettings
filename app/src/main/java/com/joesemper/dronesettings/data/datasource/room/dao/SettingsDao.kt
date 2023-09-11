@@ -26,6 +26,12 @@ interface SettingsDao {
     @Query("SELECT * FROM SettingsPreset WHERE rowId = :rowId")
     fun getSettingsPresetByRowId(rowId: Long): SettingsPreset
 
+    @Update
+    suspend fun updateSettingsPreset(settingsPreset: SettingsPreset)
+
+    @Query ("DELETE FROM SettingsPreset WHERE presetId = :presetId")
+    suspend fun deleteSettingsPreset(presetId: Int)
+
     //Timeline
 
     @Insert
@@ -38,10 +44,13 @@ interface SettingsDao {
     fun getTimelinePresetBySettingsPresetId(settingsPresetId: Int): Flow<TimelinePreset>
 
     @Update
-    fun updateTimelinePreset(timelinePreset: TimelinePreset)
+    suspend fun updateTimelinePreset(timelinePreset: TimelinePreset)
 
     @Query("SELECT EXISTS(SELECT * FROM TimelinePreset WHERE id = :id)")
     suspend fun isTimelineRowWithPresetIdExists(id: Int): Boolean
+
+    @Query ("DELETE FROM TimelinePreset WHERE presetId = :presetId")
+    suspend fun deleteTimelinePreset(presetId: Int)
 
     //Sensors
 
@@ -51,6 +60,18 @@ interface SettingsDao {
     @Query("SELECT * FROM SensorsPreset WHERE rowId = :rowId")
     fun getSensorsPresetByRowId(rowId: Long): Flow<SensorsPreset>
 
+    @Query("SELECT * FROM SensorsPreset WHERE presetId = :settingsPresetId")
+    fun getSensorsPresetBySettingsPresetId(settingsPresetId: Int): Flow<SensorsPreset>
+
+    @Update
+    suspend fun updateSensorsPreset(sensorsPreset: SensorsPreset)
+
+    @Query("SELECT EXISTS(SELECT * FROM SensorsPreset WHERE id = :id)")
+    suspend fun isSensorsRowWithPresetIdExists(id: Int): Boolean
+
+    @Query ("DELETE FROM SensorsPreset WHERE presetId = :presetId")
+    suspend fun deleteSensorsPreset(presetId: Int)
+
     //Mapping
 
     @Insert
@@ -59,6 +80,18 @@ interface SettingsDao {
     @Query("SELECT * FROM MappingPreset WHERE rowId = :rowId")
     fun getMappingPresetByRowId(rowId: Long): Flow<MappingPreset>
 
+    @Query("SELECT * FROM MappingPreset WHERE presetId = :settingsPresetId")
+    fun getMappingPresetBySettingsPresetId(settingsPresetId: Int): Flow<MappingPreset>
+
+    @Update
+    suspend fun updateMappingPreset(mappingPreset: MappingPreset)
+
+    @Query("SELECT EXISTS(SELECT * FROM MappingPreset WHERE id = :id)")
+    suspend fun isMappingRowWithPresetIdExists(id: Int): Boolean
+
+    @Query ("DELETE FROM MappingPreset WHERE presetId = :presetId")
+    suspend fun deleteMappingPreset(presetId: Int)
+
     //Signal
 
     @Insert
@@ -66,5 +99,17 @@ interface SettingsDao {
 
     @Query("SELECT * FROM SignalPreset WHERE rowId = :rowId")
     fun getSignalPresetByRowId(rowId: Long): Flow<SignalPreset>
+
+    @Query("SELECT * FROM SignalPreset WHERE presetId = :settingsPresetId")
+    fun getSignalPresetBySettingsPresetId(settingsPresetId: Int): Flow<SignalPreset>
+
+    @Update
+    suspend fun updateSignalPreset(signalPreset: SignalPreset)
+
+    @Query("SELECT EXISTS(SELECT * FROM SignalPreset WHERE id = :id)")
+    suspend fun isSignalRowWithPresetIdExists(id: Int): Boolean
+
+    @Query ("DELETE FROM SignalPreset WHERE presetId = :presetId")
+    suspend fun deleteSignalPreset(presetId: Int)
 
 }
