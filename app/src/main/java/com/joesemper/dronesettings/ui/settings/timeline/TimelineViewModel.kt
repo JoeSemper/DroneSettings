@@ -3,33 +3,45 @@ package com.joesemper.dronesettings.ui.settings.timeline
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.joesemper.dronesettings.domain.use_case.CreateNewSettingsPresetUseCase
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
+import com.joesemper.dronesettings.data.datasource.room.entity.TimelinePreset
+import com.joesemper.dronesettings.domain.use_case.GetOrCreateTimelinePresetUseCase
 import kotlinx.coroutines.launch
 
 class TimelineViewModel(
-    val createNewSettingsPreset: CreateNewSettingsPresetUseCase
-): ViewModel() {
+    savedStateHandle: SavedStateHandle,
+    val getOrCreateTimelinePresetUseCase: GetOrCreateTimelinePresetUseCase
+) : ViewModel() {
 
     var uiState by mutableStateOf(TimelineUiState())
         private set
 
-    private val eventChannel = Channel<Int>()
-    val channel = eventChannel.receiveAsFlow()
+    private val settingsPresetId: Int = checkNotNull(savedStateHandle["settingsPresetId"])
 
     init {
-        createNewPreset()
+        subscribeOnPreset()
     }
 
-    private fun createNewPreset() {
+    private fun subscribeOnPreset() {
         viewModelScope.launch {
-            createNewSettingsPreset().collect {
-                eventChannel.send(it.presetId)
+            getOrCreateTimelinePresetUseCase(settingsPresetId).collect { preset ->
+                updateUiStateData(preset)
             }
         }
+    }
+
+    private fun updateUiStateData(preset: TimelinePreset) {
+        uiState = uiState.copy(
+            delayTimeMinutes = (preset.delayTimeSec / 60).toString(),
+            delayTimeSeconds = (preset.delayTimeSec % 60).toString(),
+            cockingTimeMinutes = (preset.cockingTimeSec / 60).toString(),
+            cockingTimeSeconds = (preset.cockingTimeSec % 60).toString(),
+            isCockingTimeEnabled = preset.cockingTimeEnabled,
+            selfDestructionTimeMinutes = (preset.selfDestructionTimeSec / 60).toString(),
+            selfDestructionTimeSeconds = (preset.selfDestructionTimeSec % 60).toString()
+        )
     }
 
     fun onTimelineUiEvent(event: TimelineUiEvent) {
@@ -45,7 +57,7 @@ class TimelineViewModel(
             }
 
             is TimelineUiEvent.CockingTimeActivationChange -> {
-                uiState = uiState.copy(isCockingTimeActivated = event.isActivated)
+                uiState = uiState.copy(isCockingTimeEnabled = event.isActivated)
             }
 
             is TimelineUiEvent.CockingTimeMinutesChange -> {

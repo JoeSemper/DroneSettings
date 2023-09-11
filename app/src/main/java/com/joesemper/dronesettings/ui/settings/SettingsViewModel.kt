@@ -35,7 +35,7 @@ class SettingsViewModel : ViewModel() {
 
             is TimelineUiEvent.CockingTimeActivationChange -> {
                 uiState = uiState.copy(
-                    timelineState = uiState.timelineState.copy(isCockingTimeActivated = event.isActivated)
+                    timelineState = uiState.timelineState.copy(isCockingTimeEnabled = event.isActivated)
                 )
             }
 

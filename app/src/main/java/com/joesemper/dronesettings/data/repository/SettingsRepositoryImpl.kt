@@ -16,8 +16,12 @@ class SettingsRepositoryImpl(private val dao: SettingsDao) : SettingsRepository 
         return dao.createNewSettingsPreset(preset)
     }
 
-    override fun getSettingsPresetByRowId(rowId: Long): Flow<SettingsPreset> {
+    override suspend fun getSettingsPresetByRowId(rowId: Long): SettingsPreset {
         return dao.getSettingsPresetByRowId(rowId)
+    }
+
+    override fun getTimelinePresetBySettingsPresetId(settingsPresetId: Int): Flow<TimelinePreset> {
+        return dao.getTimelinePresetBySettingsPresetId(settingsPresetId)
     }
 
     override suspend fun createNewTimelinePreset(preset: TimelinePreset): Long {
@@ -30,6 +34,10 @@ class SettingsRepositoryImpl(private val dao: SettingsDao) : SettingsRepository 
 
     override fun updateTimelinePreset(timelinePreset: TimelinePreset) {
         dao.updateTimelinePreset(timelinePreset)
+    }
+
+    override suspend fun isTimelinePresetExists(settingsPresetId: Int): Boolean {
+        return dao.isTimelineRowWithPresetIdExists(settingsPresetId)
     }
 
 }

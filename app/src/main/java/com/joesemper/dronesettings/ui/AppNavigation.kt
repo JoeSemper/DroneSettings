@@ -6,9 +6,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.joesemper.dronesettings.ui.home.HomeScreen
 import com.joesemper.dronesettings.ui.settings.SettingsScreen
 import com.joesemper.dronesettings.ui.settings.mapping.SignalMappingSettingsScreen
@@ -44,13 +46,14 @@ fun AppNavHost(
             }
 
             composable(
-                route = SETTINGS_ROUTE
+                route = SETTINGS_ROUTE,
             ) {
                 SettingsScreen(navController)
             }
 
             composable(
-                route = TIMELINE_ROUTE
+                route = "$TIMELINE_ROUTE/{settingsPresetId}",
+                arguments = listOf(navArgument("settingsPresetId") { type = NavType.IntType })
             ) {
                 TimeLineSettingsScreen(navController)
             }

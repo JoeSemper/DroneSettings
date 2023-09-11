@@ -2,7 +2,6 @@
 
 package com.joesemper.dronesettings.ui.settings.timeline
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +19,6 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -44,14 +42,7 @@ fun TimeLineSettingsScreen(
     viewModel: TimelineViewModel = getViewModel()
 ) {
     val context = LocalContext.current
-    
-    LaunchedEffect(key1 = context) {
-        viewModel.channel.collect {
-            Toast.makeText(context, it.toString(), Toast.LENGTH_LONG).show()
-        }
 
-    }
-    
     SettingsDefaultScreenContainer(
         title = stringResource(id = R.string.time_line),
         onNavigateBack = { navController.navigateUp() },
@@ -148,7 +139,7 @@ fun CockingTimeSettingsView(
                 .fillMaxWidth()
                 .padding(vertical = 16.dp),
             text = stringResource(R.string.activate_cocking_time),
-            checked = state.isCockingTimeActivated,
+            checked = state.isCockingTimeEnabled,
             onCheckedChange = { onUiEvent(TimelineUiEvent.CockingTimeActivationChange(it)) }
         )
 
@@ -158,7 +149,7 @@ fun CockingTimeSettingsView(
             supportingText = stringResource(R.string.from_0_to_3_minutes),
             minutes = state.cockingTimeMinutes,
             seconds = state.cockingTimeSeconds,
-            enabled = state.isCockingTimeActivated,
+            enabled = state.isCockingTimeEnabled,
             onInputMinutes = { onUiEvent(TimelineUiEvent.CockingTimeMinutesChange(it)) },
             onInputSeconds = { onUiEvent(TimelineUiEvent.CockingTimeSecondsChange(it)) },
         )

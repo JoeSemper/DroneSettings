@@ -5,7 +5,7 @@ data class TimelineUiState(
     val delayTimeSeconds: String = "",
     val cockingTimeMinutes: String = "",
     val cockingTimeSeconds: String = "",
-    val isCockingTimeActivated: Boolean = true,
+    val isCockingTimeEnabled: Boolean = true,
     val selfDestructionTimeMinutes: String = "",
     val selfDestructionTimeSeconds: String = "",
 )

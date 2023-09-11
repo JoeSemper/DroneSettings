@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class SettingsPreset(
-    @PrimaryKey(autoGenerate = true) val presetId: Int,
-    @ColumnInfo val name: String,
-    @ColumnInfo val description: String,
-    @ColumnInfo val date: Long
+    @PrimaryKey(autoGenerate = true) val presetId: Int = 0,
+    @ColumnInfo val name: String = "",
+    @ColumnInfo val description: String = "",
+    @ColumnInfo val date: Long = 0
 )
