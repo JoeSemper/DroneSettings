@@ -3,7 +3,7 @@ package com.joesemper.dronesettings.data.repository
 import com.joesemper.dronesettings.data.datasource.room.dao.SettingsDao
 import com.joesemper.dronesettings.data.datasource.room.entity.MappingPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.SensorsPreset
-import com.joesemper.dronesettings.data.datasource.room.entity.SettingsPreset
+import com.joesemper.dronesettings.data.datasource.room.entity.SettingsSet
 import com.joesemper.dronesettings.data.datasource.room.entity.SignalPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.TimelinePreset
 import com.joesemper.dronesettings.domain.repository.SettingsRepository
@@ -11,28 +11,24 @@ import kotlinx.coroutines.flow.Flow
 
 class SettingsRepositoryImpl(private val dao: SettingsDao) : SettingsRepository {
 
-    override fun getAllSettingsPresets(): Flow<List<SettingsPreset>> {
-        return dao.getAllSettingsPresets()
+    override fun getAllSettingsPresets(): Flow<List<SettingsSet>> {
+        return dao.getAllSettingsSets()
     }
 
-    override suspend fun createNewSettingsPreset(preset: SettingsPreset): Long {
-        return dao.createNewSettingsPreset(preset)
+    override suspend fun createNewSettingsSet(set: SettingsSet): Long {
+        return dao.createNewSettingsSet(set)
     }
 
-    override suspend fun getSettingsPresetByRowId(rowId: Long): SettingsPreset {
+    override suspend fun getSettingsSetByRowId(rowId: Long): SettingsSet {
         return dao.getSettingsPresetByRowId(rowId)
     }
 
-    override suspend fun deleteSettingsPreset(presetId: Int) {
-        dao.deleteSettingsPreset(presetId)
-        dao.deleteTimelinePreset(presetId)
-        dao.deleteSensorsPreset(presetId)
-        dao.deleteMappingPreset(presetId)
-        dao.deleteSignalPreset(presetId)
+    override suspend fun deleteSettingsSet(setId: Int) {
+        dao.deleteSettingsSet(setId)
     }
 
-    override fun getTimelinePresetBySettingsPresetId(settingsPresetId: Int): Flow<TimelinePreset> {
-        return dao.getTimelinePresetBySettingsPresetId(settingsPresetId)
+    override fun getTimelinePresetBySettingsSetId(settingsSetId: Int): Flow<TimelinePreset> {
+        return dao.getTimelinePresetBySettingsSetId(settingsSetId)
     }
 
     override suspend fun createNewTimelinePreset(preset: TimelinePreset): Long {
@@ -59,8 +55,8 @@ class SettingsRepositoryImpl(private val dao: SettingsDao) : SettingsRepository 
         return dao.getSensorsPresetByRowId(rowId)
     }
 
-    override fun getSensorsPresetBySettingsPresetId(settingsPresetId: Int): Flow<SensorsPreset> {
-        return dao.getSensorsPresetBySettingsPresetId(settingsPresetId)
+    override fun getSensorsPresetBySettingsSetId(settingsSetId: Int): Flow<SensorsPreset> {
+        return dao.getSensorsPresetBySettingsSetId(settingsSetId)
     }
 
     override suspend fun updateSensorsPreset(sensorsPreset: SensorsPreset) {
@@ -79,8 +75,8 @@ class SettingsRepositoryImpl(private val dao: SettingsDao) : SettingsRepository 
         return dao.getMappingPresetByRowId(rowId)
     }
 
-    override fun getMappingPresetBySettingsPresetId(settingsPresetId: Int): Flow<MappingPreset> {
-        return dao.getMappingPresetBySettingsPresetId(settingsPresetId)
+    override fun getMappingPresetBySettingsSetId(settingsSetId: Int): Flow<MappingPreset> {
+        return dao.getMappingPresetBySettingsSetId(settingsSetId)
     }
 
     override suspend fun updateMappingPreset(mappingPreset: MappingPreset) {
@@ -99,8 +95,8 @@ class SettingsRepositoryImpl(private val dao: SettingsDao) : SettingsRepository 
         return dao.getSignalPresetByRowId(rowId)
     }
 
-    override fun getSignalPresetBySettingsPresetId(settingsPresetId: Int): Flow<SignalPreset> {
-        return dao.getSignalPresetBySettingsPresetId(settingsPresetId)
+    override fun getSignalPresetBySettingsSetId(settingsSetId: Int): Flow<SignalPreset> {
+        return dao.getSignalPresetBySettingsSetId(settingsSetId)
     }
 
     override suspend fun updateSignalPreset(signalPreset: SignalPreset) {

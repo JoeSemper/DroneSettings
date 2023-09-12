@@ -19,6 +19,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -32,6 +33,7 @@ import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.SENSORS_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
+import com.joesemper.dronesettings.ui.settings.PresetUiAction
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import org.koin.androidx.compose.getViewModel
@@ -43,11 +45,29 @@ fun TimeLineSettingsScreen(
 ) {
     val context = LocalContext.current
 
+    LaunchedEffect(key1 = context) {
+        viewModel.uiActions.collect { action ->
+            when (action) {
+                PresetUiAction.Close -> {
+                    navController.navigate(HOME_ROUTE)
+                }
+
+                PresetUiAction.NavigateBack -> {
+                    navController.navigateUp()
+                }
+
+                is PresetUiAction.NavigateNext -> {
+                    navController.navigate("$SENSORS_ROUTE/${action.argument}")
+                }
+            }
+        }
+    }
+
     SettingsDefaultScreenContainer(
         title = stringResource(id = R.string.time_line),
-        onNavigateBack = { navController.navigateUp() },
-        onNavigateNext = { navController.navigate(SENSORS_ROUTE) },
-        onTopBarNavigationClick = { navController.navigate(HOME_ROUTE) }
+        onNavigateBack = { viewModel.onTimelineUiEvent(TimelineUiEvent.BackButtonClick) },
+        onNavigateNext = { viewModel.onTimelineUiEvent(TimelineUiEvent.NextButtonClick) },
+        onTopBarNavigationClick = { viewModel.onTimelineUiEvent(TimelineUiEvent.CloseClick) }
     ) {
         TimelineScreenContent(
             modifier = Modifier

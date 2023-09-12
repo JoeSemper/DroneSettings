@@ -7,18 +7,35 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joesemper.dronesettings.data.datasource.room.entity.TimelinePreset
+import com.joesemper.dronesettings.domain.use_case.DeleteSettingsSetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetOrCreateTimelinePresetUseCase
+import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase
+import com.joesemper.dronesettings.ui.SETTINGS_SET_ID_ARG
+import com.joesemper.dronesettings.ui.settings.PresetUiAction
+import com.joesemper.dronesettings.utils.Constants
+import com.joesemper.dronesettings.utils.getSecondsFromMinutesAndSeconds
+import com.joesemper.dronesettings.utils.roundToMinutes
+import com.joesemper.dronesettings.utils.roundToSeconds
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class TimelineViewModel(
     savedStateHandle: SavedStateHandle,
-    val getOrCreateTimelinePresetUseCase: GetOrCreateTimelinePresetUseCase
+    val getOrCreateTimelinePreset: GetOrCreateTimelinePresetUseCase,
+    val deleteSettingsSet: DeleteSettingsSetUseCase,
+    val updatePreset: UpdatePresetUseCase
+
 ) : ViewModel() {
 
     var uiState by mutableStateOf(TimelineUiState())
         private set
 
-    private val settingsPresetId: Int = checkNotNull(savedStateHandle["settingsPresetId"])
+    private val actions = Channel<PresetUiAction>()
+    val uiActions = actions.receiveAsFlow()
+
+    private val settingsSetId: Int = checkNotNull(savedStateHandle[SETTINGS_SET_ID_ARG])
+    private var currentPreset: TimelinePreset? = null
 
     init {
         subscribeOnPreset()
@@ -26,23 +43,12 @@ class TimelineViewModel(
 
     private fun subscribeOnPreset() {
         viewModelScope.launch {
-            getOrCreateTimelinePresetUseCase(settingsPresetId).collect { preset ->
+            getOrCreateTimelinePreset(settingsSetId).collect { preset ->
                 updateUiStateData(preset)
             }
         }
     }
 
-    private fun updateUiStateData(preset: TimelinePreset) {
-        uiState = uiState.copy(
-            delayTimeMinutes = (preset.delayTimeSec / 60).toString(),
-            delayTimeSeconds = (preset.delayTimeSec % 60).toString(),
-            cockingTimeMinutes = (preset.cockingTimeSec / 60).toString(),
-            cockingTimeSeconds = (preset.cockingTimeSec % 60).toString(),
-            isCockingTimeEnabled = preset.cockingTimeEnabled,
-            selfDestructionTimeMinutes = (preset.selfDestructionTimeSec / 60).toString(),
-            selfDestructionTimeSeconds = (preset.selfDestructionTimeSec % 60).toString()
-        )
-    }
 
     fun onTimelineUiEvent(event: TimelineUiEvent) {
         when (event) {
@@ -75,6 +81,77 @@ class TimelineViewModel(
             is TimelineUiEvent.SelfDestructionTimeSecondsChange -> {
                 uiState = uiState.copy(selfDestructionTimeSeconds = event.seconds)
             }
+
+            TimelineUiEvent.BackButtonClick -> {
+                viewModelScope.launch {
+                    deleteSettingsSet(settingsSetId)
+                    actions.send(PresetUiAction.NavigateBack)
+                }
+            }
+
+            TimelineUiEvent.NextButtonClick -> {
+                savePresetData()
+                viewModelScope.launch {
+                    actions.send(PresetUiAction.NavigateNext(settingsSetId))
+                }
+            }
+
+            TimelineUiEvent.CloseClick -> {
+                viewModelScope.launch {
+                    deleteSettingsSet(settingsSetId)
+                    actions.send(PresetUiAction.Close)
+                }
+            }
+
         }
     }
+
+    private fun updateUiStateData(newPreset: TimelinePreset) {
+        currentPreset = newPreset
+        currentPreset?.let { preset ->
+            if (preset.date != Constants.DATE_NOT_SET) {
+                uiState = uiState.copy(
+                    delayTimeMinutes = preset.delayTimeSec.roundToMinutes().toString(),
+                    delayTimeSeconds = preset.delayTimeSec.roundToSeconds().toString(),
+                    cockingTimeMinutes = preset.cockingTimeSec.roundToMinutes().toString(),
+                    cockingTimeSeconds = preset.cockingTimeSec.roundToSeconds().toString(),
+                    isCockingTimeEnabled = preset.cockingTimeEnabled,
+                    selfDestructionTimeMinutes = preset.selfDestructionTimeSec.roundToMinutes()
+                        .toString(),
+                    selfDestructionTimeSeconds = preset.selfDestructionTimeSec.roundToSeconds()
+                        .toString()
+                )
+            }
+        }
+    }
+
+    private fun savePresetData() {
+        viewModelScope.launch {
+            currentPreset?.let { preset ->
+                updatePreset(
+                    TimelinePreset(
+                        id = preset.id,
+                        setId = preset.setId,
+                        date = preset.date,
+                        delayTimeSec = getSecondsFromMinutesAndSeconds(
+                            uiState.delayTimeMinutes.toInt(),
+                            uiState.delayTimeSeconds.toInt()
+                        ),
+                        cockingTimeSec = getSecondsFromMinutesAndSeconds(
+                            uiState.cockingTimeMinutes.toInt(),
+                            uiState.cockingTimeMinutes.toInt()
+                        ),
+                        cockingTimeEnabled = uiState.isCockingTimeEnabled,
+                        selfDestructionTimeSec = getSecondsFromMinutesAndSeconds(
+                            uiState.selfDestructionTimeMinutes.toInt(),
+                            uiState.selfDestructionTimeSeconds.toInt()
+                        )
+                    )
+                )
+            }
+
+        }
+    }
+
+
 }

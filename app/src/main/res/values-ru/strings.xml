@@ -60,4 +60,5 @@
     <string name="from_0_to_10_minutes">От 0 до 10 минут</string>
     <string name="voltage">Напряжение</string>
     <string name="pulse_width">Ширина импульса</string>
+    <string name="add_new_settings_preset">Add new settings preset</string>
 </resources>

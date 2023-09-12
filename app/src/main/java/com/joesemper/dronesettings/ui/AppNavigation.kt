@@ -24,6 +24,7 @@ const val TIMELINE_ROUTE = "timeline"
 const val SENSORS_ROUTE = "sensors"
 const val MAPPING_ROUTE = "mapping"
 const val SIGNAL_ROUTE = "signal"
+const val SETTINGS_SET_ID_ARG = "settingsSetId"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,14 +53,15 @@ fun AppNavHost(
             }
 
             composable(
-                route = "$TIMELINE_ROUTE/{settingsPresetId}",
-                arguments = listOf(navArgument("settingsPresetId") { type = NavType.IntType })
+                route = "$TIMELINE_ROUTE/{$SETTINGS_SET_ID_ARG}",
+                arguments = listOf(navArgument(SETTINGS_SET_ID_ARG) { type = NavType.IntType })
             ) {
                 TimeLineSettingsScreen(navController)
             }
 
             composable(
-                route = SENSORS_ROUTE
+                route = "$SENSORS_ROUTE/{$SETTINGS_SET_ID_ARG}",
+                arguments = listOf(navArgument(SETTINGS_SET_ID_ARG) { type = NavType.IntType })
             ) {
                 SensorsSettingsScreen(navController)
             }

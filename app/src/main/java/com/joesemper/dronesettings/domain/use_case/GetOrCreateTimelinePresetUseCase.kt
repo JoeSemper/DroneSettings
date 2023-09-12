@@ -13,11 +13,11 @@ class GetOrCreateTimelinePresetUseCase(
     suspend operator fun invoke(settingsPresetId: Int) =
         withContext(defaultDispatcher) {
             if (repository.isTimelinePresetExists(settingsPresetId)) {
-                repository.getTimelinePresetBySettingsPresetId(settingsPresetId)
+                repository.getTimelinePresetBySettingsSetId(settingsPresetId)
             } else {
                 val rowId = repository.createNewTimelinePreset(
                     TimelinePreset(
-                        presetId = settingsPresetId
+                        setId = settingsPresetId
                     )
                 )
 

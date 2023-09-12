@@ -62,6 +62,10 @@ class SettingsViewModel : ViewModel() {
                     timelineState = uiState.timelineState.copy(selfDestructionTimeSeconds = event.seconds)
                 )
             }
+
+            TimelineUiEvent.BackButtonClick -> TODO()
+            TimelineUiEvent.CloseClick -> TODO()
+            TimelineUiEvent.NextButtonClick -> TODO()
         }
     }
 
