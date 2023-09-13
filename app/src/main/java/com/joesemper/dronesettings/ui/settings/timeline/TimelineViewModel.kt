@@ -79,7 +79,7 @@ class TimelineViewModel(
 
             TimelineUiEvent.BackButtonClick -> {
                 viewModelScope.launch {
-                    deleteSettingsSet(settingsSetId)
+//                    deleteSettingsSet(settingsSetId)
                     actions.send(PresetUiAction.NavigateBack)
                 }
             }

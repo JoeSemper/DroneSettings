@@ -11,4 +11,5 @@ data class SettingsSet(
     @ColumnInfo val name: String = "",
     @ColumnInfo val description: String = "",
     @ColumnInfo val date: Long = Constants.DATE_NOT_SET,
+    @ColumnInfo val saved: Boolean = false,
 )

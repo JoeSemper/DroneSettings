@@ -3,6 +3,7 @@ package com.joesemper.dronesettings.ui.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -25,7 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
-import com.joesemper.dronesettings.data.datasource.room.entity.SettingsSet
 import com.joesemper.dronesettings.ui.TIMELINE_ROUTE
 import org.koin.androidx.compose.getViewModel
 
@@ -68,6 +69,9 @@ fun HomeScreen(
                     onClick = { viewModel.onNewSettingsPresetClick() }
                 )
             }
+            item {
+                Spacer(modifier = Modifier.height(4.dp))
+            }
             items(state.size) {
                 PresetItem(
                     state = state[it],
@@ -96,20 +100,35 @@ fun AddNewPresetItem(
 @Composable
 fun PresetItem(
     modifier: Modifier = Modifier,
-    state: SettingsSet,
+    state: SettingsSetUiState,
     onClick: () -> Unit
 ) {
-    Row(
+    Column(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Text(text = state.setId.toString())
-        Column(horizontalAlignment = Alignment.Start)
-        {
-            Text(text = state.name)
-            Text(text = state.description)
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(text = state.name)
+                Text(text = state.description)
+            }
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(text = state.date)
+                Text(text = state.time)
+            }
         }
-        Text(text = state.date.toString())
+
+        Divider(
+            modifier = Modifier.fillMaxWidth()
+        )
     }
+
 }
