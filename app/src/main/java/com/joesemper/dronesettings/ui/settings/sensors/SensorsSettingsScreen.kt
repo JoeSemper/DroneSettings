@@ -2,6 +2,8 @@
 
 package com.joesemper.dronesettings.ui.settings.sensors
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -76,15 +78,21 @@ fun SensorsSettingsScreen(
         onNavigateNext = { viewModel.onSensorsUiEvent(SensorsUiEvent.NextButtonClick) },
         onTopBarNavigationClick = { viewModel.onSensorsUiEvent(SensorsUiEvent.CloseClick) }
     ) {
-        SensorsScreenContent(
-            modifier = Modifier
-                .verticalScroll(state = rememberScrollState())
-                .padding(top = 8.dp, bottom = 16.dp)
-                .padding(horizontal = 16.dp)
-                .fillMaxSize(),
-            state = viewModel.uiState,
-            onUiEvent = { viewModel.onSensorsUiEvent(it) }
-        )
+        AnimatedVisibility(
+            visible = viewModel.uiState.isLoaded,
+            enter = fadeIn()
+        ) {
+            SensorsScreenContent(
+                modifier = Modifier
+                    .verticalScroll(state = rememberScrollState())
+                    .padding(top = 8.dp, bottom = 16.dp)
+                    .padding(horizontal = 16.dp)
+                    .fillMaxSize(),
+                state = viewModel.uiState,
+                onUiEvent = { viewModel.onSensorsUiEvent(it) }
+            )
+        }
+
     }
 }
 

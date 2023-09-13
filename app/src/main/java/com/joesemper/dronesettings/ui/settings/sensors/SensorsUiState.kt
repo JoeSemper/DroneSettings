@@ -1,6 +1,7 @@
 package com.joesemper.dronesettings.ui.settings.sensors
 
 data class SensorsUiState(
+    val isLoaded: Boolean = false,
     val targetDistance: Float = 0f,
     val minVoltage: String = "",
     val isOverloadActivationEnabled: Boolean = true,

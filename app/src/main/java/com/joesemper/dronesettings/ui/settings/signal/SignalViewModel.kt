@@ -104,6 +104,7 @@ class SignalViewModel(
         currentPreset = newPreset
         currentPreset?.let { preset ->
             uiState = uiState.copy(
+                isLoaded = true,
                 cockingPulseWidthHi = preset.cockingPulseWidthHi,
                 cockingPulseWidthLo = preset.cockingPulseWidthLo,
                 cockingPulseAmount = preset.cockingPulseAmount,

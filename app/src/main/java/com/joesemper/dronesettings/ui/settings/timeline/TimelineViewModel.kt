@@ -104,6 +104,7 @@ class TimelineViewModel(
         currentPreset = newPreset
         currentPreset?.let { preset ->
             uiState = uiState.copy(
+                isLoaded = true,
                 delayTimeMinutes = preset.delayTimeMin,
                 delayTimeSeconds = preset.delayTimeSec,
                 cockingTimeMinutes = preset.cockingTimeMin,

@@ -1,6 +1,7 @@
 package com.joesemper.dronesettings.ui.settings.signal
 
 data class SignalUiState (
+    val isLoaded: Boolean = false,
     val cockingPulseWidthHi: String = "",
     val cockingPulseWidthLo: String = "",
     val cockingPulseAmount: String = "",

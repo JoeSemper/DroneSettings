@@ -2,6 +2,8 @@
 
 package com.joesemper.dronesettings.ui.settings.timeline
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -69,15 +71,21 @@ fun TimeLineSettingsScreen(
         onNavigateNext = { viewModel.onTimelineUiEvent(TimelineUiEvent.NextButtonClick) },
         onTopBarNavigationClick = { viewModel.onTimelineUiEvent(TimelineUiEvent.CloseClick) }
     ) {
-        TimelineScreenContent(
-            modifier = Modifier
-                .verticalScroll(state = rememberScrollState())
-                .padding(top = 8.dp, bottom = 16.dp)
-                .padding(horizontal = 16.dp)
-                .fillMaxSize(),
-            state = viewModel.uiState,
-            onUiEvent = { viewModel.onTimelineUiEvent(it) }
-        )
+        AnimatedVisibility(
+            visible = viewModel.uiState.isLoaded,
+            enter = fadeIn()
+        ) {
+            TimelineScreenContent(
+                modifier = Modifier
+                    .verticalScroll(state = rememberScrollState())
+                    .padding(top = 8.dp, bottom = 16.dp)
+                    .padding(horizontal = 16.dp)
+                    .fillMaxSize(),
+                state = viewModel.uiState,
+                onUiEvent = { viewModel.onTimelineUiEvent(it) }
+            )
+        }
+
     }
 }
 

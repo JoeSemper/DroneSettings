@@ -106,6 +106,7 @@ class SensorsViewModel(
         currentPreset = newPreset
         currentPreset?.let { preset ->
             uiState = uiState.copy(
+                isLoaded = true,
                 targetDistance = preset.targetDistance,
                 minVoltage = preset.minVoltage,
                 isOverloadActivationEnabled = preset.overloadActivationEnabled,

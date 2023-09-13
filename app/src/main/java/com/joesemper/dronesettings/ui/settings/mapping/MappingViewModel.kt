@@ -93,6 +93,7 @@ class MappingViewModel(
         currentPreset = newPreset
         currentPreset?.let { preset ->
             uiState = uiState.copy(
+                isLoaded = true,
                 relayOneState = preset.relayOneState.asMappingSelectOption(),
                 relayTwoState = preset.relayTwoState.asMappingSelectOption(),
                 pulseOneState = preset.pulseOneState.asMappingSelectOption(),

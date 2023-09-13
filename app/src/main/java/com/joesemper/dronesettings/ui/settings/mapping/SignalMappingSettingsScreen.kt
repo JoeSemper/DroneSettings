@@ -1,6 +1,8 @@
 package com.joesemper.dronesettings.ui.settings.mapping
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -63,15 +65,21 @@ fun SignalMappingSettingsScreen(
         onNavigateNext = { viewModel.onMappingUiEvent(MappingUiEvent.NextButtonClick) },
         onTopBarNavigationClick = { viewModel.onMappingUiEvent(MappingUiEvent.CloseClick) }
     ) {
-        SignalMappingScreenContent(
-            modifier = Modifier
-                .verticalScroll(state = rememberScrollState())
-                .padding(top = 8.dp, bottom = 16.dp)
-                .padding(horizontal = 16.dp)
-                .fillMaxSize(),
-            state = viewModel.uiState,
-            onUiEvent = { viewModel.onMappingUiEvent(it) }
-        )
+        AnimatedVisibility(
+            visible = viewModel.uiState.isLoaded,
+            enter = fadeIn()
+        ) {
+            SignalMappingScreenContent(
+                modifier = Modifier
+                    .verticalScroll(state = rememberScrollState())
+                    .padding(top = 8.dp, bottom = 16.dp)
+                    .padding(horizontal = 16.dp)
+                    .fillMaxSize(),
+                state = viewModel.uiState,
+                onUiEvent = { viewModel.onMappingUiEvent(it) }
+            )
+        }
+
     }
 
 }
