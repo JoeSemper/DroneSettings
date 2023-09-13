@@ -10,14 +10,14 @@ class GetOrCreateTimelinePresetUseCase(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val repository: SettingsRepository
 ) {
-    suspend operator fun invoke(settingsPresetId: Int) =
+    suspend operator fun invoke(settingsSetId: Int) =
         withContext(defaultDispatcher) {
-            if (repository.isTimelinePresetExists(settingsPresetId)) {
-                repository.getTimelinePresetBySettingsSetId(settingsPresetId)
+            if (repository.isTimelinePresetExists(settingsSetId)) {
+                repository.getTimelinePresetBySettingsSetId(settingsSetId)
             } else {
                 val rowId = repository.createNewTimelinePreset(
                     TimelinePreset(
-                        setId = settingsPresetId
+                        setId = settingsSetId
                     )
                 )
 

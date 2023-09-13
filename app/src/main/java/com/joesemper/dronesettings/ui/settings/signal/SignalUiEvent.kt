@@ -9,4 +9,7 @@ sealed class SignalUiEvent {
     class ActivationPulseWidthLoChange(val width: String): SignalUiEvent()
     class ActivationPulseAmountChange(val amount: String): SignalUiEvent()
     class InfiniteActivationPulseRepeatChange(val enabled: Boolean): SignalUiEvent()
+    object NextButtonClick: SignalUiEvent()
+    object BackButtonClick: SignalUiEvent()
+    object CloseClick: SignalUiEvent()
 }

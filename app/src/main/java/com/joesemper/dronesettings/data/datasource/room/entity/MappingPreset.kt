@@ -15,12 +15,12 @@ import com.joesemper.dronesettings.utils.Constants
     )]
 )
 data class MappingPreset(
-    @PrimaryKey(autoGenerate = true) val id: Int,
-    @ColumnInfo val setId: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo val setId: Int = -1,
     @ColumnInfo val date: Long = Constants.DATE_NOT_SET,
-    @ColumnInfo val relyOneState: Int,
-    @ColumnInfo val relyTwoState: Int,
-    @ColumnInfo val pulseOneState: Int,
-    @ColumnInfo val pulseTwoState: Int,
-    @ColumnInfo val pulseThreeState: Int
+    @ColumnInfo val relayOneState: Int = 0,
+    @ColumnInfo val relayTwoState: Int = 0,
+    @ColumnInfo val pulseOneState: Int = 0,
+    @ColumnInfo val pulseTwoState: Int = 0,
+    @ColumnInfo val pulseThreeState: Int = 0
 )

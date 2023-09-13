@@ -15,15 +15,15 @@ import com.joesemper.dronesettings.utils.Constants
     )]
 )
 data class SignalPreset(
-    @PrimaryKey(autoGenerate = true) val id: Int,
-    @ColumnInfo val setId: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo val setId: Int = -1,
     @ColumnInfo val date: Long = Constants.DATE_NOT_SET,
-    @ColumnInfo val cockingPulseWidthHi: Int,
-    @ColumnInfo val cockingPulseWidthLo: Int,
-    @ColumnInfo val cockingPulseAmount: Int,
-    @ColumnInfo val cockingPulseInfiniteEnabled: Boolean,
-    @ColumnInfo val activationPulseWidthHi: Int,
-    @ColumnInfo val activationPulseWidthLo: Int,
-    @ColumnInfo val activationPulseAmount: Int,
-    @ColumnInfo val activationPulseInfiniteEnabled: Boolean,
+    @ColumnInfo val cockingPulseWidthHi: String = "",
+    @ColumnInfo val cockingPulseWidthLo: String = "",
+    @ColumnInfo val cockingPulseAmount: String = "",
+    @ColumnInfo val cockingPulseInfiniteEnabled: Boolean = true,
+    @ColumnInfo val activationPulseWidthHi: String = "",
+    @ColumnInfo val activationPulseWidthLo: String = "",
+    @ColumnInfo val activationPulseAmount: String = "",
+    @ColumnInfo val activationPulseInfiniteEnabled: Boolean = true,
 )

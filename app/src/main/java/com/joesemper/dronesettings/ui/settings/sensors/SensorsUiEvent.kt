@@ -9,4 +9,7 @@ sealed class SensorsUiEvent {
     class AverageDeviationChange(val deviation: String): SensorsUiEvent()
     class DeviationCoefficientChange(val coefficient: String): SensorsUiEvent()
     class DeadTimeChange(val deadTime: String): SensorsUiEvent()
+    object NextButtonClick: SensorsUiEvent()
+    object BackButtonClick: SensorsUiEvent()
+    object CloseClick: SensorsUiEvent()
 }

@@ -6,4 +6,7 @@ sealed class MappingUiEvent {
     class PulseOneStateChange(val selected: MappingSelectOption): MappingUiEvent()
     class PulseTwoStateChange(val selected: MappingSelectOption): MappingUiEvent()
     class PulseThreeStateChange(val selected: MappingSelectOption): MappingUiEvent()
+    object NextButtonClick: MappingUiEvent()
+    object BackButtonClick: MappingUiEvent()
+    object CloseClick: MappingUiEvent()
 }

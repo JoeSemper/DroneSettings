@@ -16,10 +16,13 @@ import com.joesemper.dronesettings.utils.Constants
 )
 data class TimelinePreset(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo val setId: Int = 0,
+    @ColumnInfo val setId: Int = -1,
     @ColumnInfo val date: Long = Constants.DATE_NOT_SET,
-    @ColumnInfo val delayTimeSec: Int = 0,
-    @ColumnInfo val cockingTimeSec: Int = 0,
+    @ColumnInfo val delayTimeSec: String = "",
+    @ColumnInfo val delayTimeMin: String = "",
+    @ColumnInfo val cockingTimeSec: String = "",
+    @ColumnInfo val cockingTimeMin: String = "",
     @ColumnInfo val cockingTimeEnabled: Boolean = true,
-    @ColumnInfo val selfDestructionTimeSec: Int = 0
+    @ColumnInfo val selfDestructionTimeSec: String = "",
+    @ColumnInfo val selfDestructionTimeMin: String = ""
 )

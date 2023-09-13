@@ -14,9 +14,11 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -24,6 +26,7 @@ import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.SIGNAL_ROUTE
+import com.joesemper.dronesettings.ui.settings.PresetUiAction
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import org.koin.androidx.compose.getViewModel
@@ -34,17 +37,38 @@ fun SignalMappingSettingsScreen(
     viewModel: MappingViewModel = getViewModel()
 ) {
 
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = context) {
+        viewModel.uiActions.collect { action ->
+            when (action) {
+                PresetUiAction.Close -> {
+                    navController.navigate(HOME_ROUTE)
+                }
+
+                PresetUiAction.NavigateBack -> {
+                    navController.navigateUp()
+                }
+
+                is PresetUiAction.NavigateNext -> {
+                    navController.navigate("$SIGNAL_ROUTE/${action.argument}")
+                }
+            }
+        }
+    }
+
     SettingsDefaultScreenContainer(
         title = stringResource(id = R.string.signal_mapping),
-        onNavigateBack = { navController.navigateUp() },
-        onNavigateNext = { navController.navigate(SIGNAL_ROUTE) },
-        onTopBarNavigationClick = { navController.navigate(HOME_ROUTE) }
+        onNavigateBack = { viewModel.onMappingUiEvent(MappingUiEvent.BackButtonClick) },
+        onNavigateNext = { viewModel.onMappingUiEvent(MappingUiEvent.NextButtonClick) },
+        onTopBarNavigationClick = { viewModel.onMappingUiEvent(MappingUiEvent.CloseClick) }
     ) {
         SignalMappingScreenContent(
             modifier = Modifier
                 .verticalScroll(state = rememberScrollState())
                 .padding(top = 8.dp, bottom = 16.dp)
-                .padding(horizontal = 16.dp)                .fillMaxSize(),
+                .padding(horizontal = 16.dp)
+                .fillMaxSize(),
             state = viewModel.uiState,
             onUiEvent = { viewModel.onMappingUiEvent(it) }
         )

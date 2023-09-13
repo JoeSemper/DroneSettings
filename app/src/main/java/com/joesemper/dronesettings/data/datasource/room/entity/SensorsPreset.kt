@@ -15,15 +15,15 @@ import com.joesemper.dronesettings.utils.Constants
     )]
 )
 data class SensorsPreset(
-    @PrimaryKey(autoGenerate = true) val id: Int,
-    @ColumnInfo val setId: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo val setId: Int = -1,
     @ColumnInfo val date: Long = Constants.DATE_NOT_SET,
-    @ColumnInfo val targetDistance: Int,
-    @ColumnInfo val minVoltage: Int,
-    @ColumnInfo val averageAcceleration: Int,
-    @ColumnInfo val averageDeviation: Int,
-    @ColumnInfo val deviationCoefficient: Int,
-    @ColumnInfo val deadTime: Int,
-    @ColumnInfo val overloadActivationEnabled: Boolean,
-    @ColumnInfo val deadTimeEnabled: Boolean
+    @ColumnInfo val targetDistance: Float = 0f,
+    @ColumnInfo val minVoltage: String = "",
+    @ColumnInfo val averageAcceleration: String = "",
+    @ColumnInfo val averageDeviation: String = "",
+    @ColumnInfo val deviationCoefficient: String = "",
+    @ColumnInfo val deadTime: String = "",
+    @ColumnInfo val overloadActivationEnabled: Boolean = true,
+    @ColumnInfo val deadTimeActivationEnabled: Boolean = true
 )

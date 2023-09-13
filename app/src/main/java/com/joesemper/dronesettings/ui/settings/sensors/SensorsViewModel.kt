@@ -5,20 +5,44 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.joesemper.dronesettings.data.datasource.room.entity.SensorsPreset
 import com.joesemper.dronesettings.domain.use_case.DeleteSettingsSetUseCase
+import com.joesemper.dronesettings.domain.use_case.GetOrCreateSensorsPresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase
 import com.joesemper.dronesettings.ui.SETTINGS_SET_ID_ARG
+import com.joesemper.dronesettings.ui.settings.PresetUiAction
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
 class SensorsViewModel(
     savedStateHandle: SavedStateHandle,
-    val deleteSettingsSet: DeleteSettingsSetUseCase,
-    val updatePreset: UpdatePresetUseCase
-): ViewModel() {
+    private val getOrCreateSensorsPreset: GetOrCreateSensorsPresetUseCase,
+    private val deleteSettingsSet: DeleteSettingsSetUseCase,
+    private val updatePreset: UpdatePresetUseCase
+) : ViewModel() {
 
     var uiState by mutableStateOf(SensorsUiState())
         private set
 
+    private val actions = Channel<PresetUiAction>()
+    val uiActions = actions.receiveAsFlow()
+
     private val settingsSetId: Int = checkNotNull(savedStateHandle[SETTINGS_SET_ID_ARG])
+    private var currentPreset: SensorsPreset? = null
+
+    init {
+        loadData()
+    }
+
+    private fun loadData() {
+        viewModelScope.launch {
+            getOrCreateSensorsPreset(settingsSetId).collect { preset ->
+                updateUiStateData(preset)
+            }
+        }
+    }
 
     fun onSensorsUiEvent(event: SensorsUiEvent) {
         when (event) {
@@ -53,6 +77,62 @@ class SensorsViewModel(
 
             is SensorsUiEvent.DeviationCoefficientChange -> {
                 uiState = uiState.copy(deviationCoefficient = event.coefficient)
+            }
+
+            SensorsUiEvent.BackButtonClick -> {
+                savePresetData()
+                viewModelScope.launch {
+                    actions.send(PresetUiAction.NavigateBack)
+                }
+            }
+
+            SensorsUiEvent.NextButtonClick -> {
+                savePresetData()
+                viewModelScope.launch {
+                    actions.send(PresetUiAction.NavigateNext(settingsSetId))
+                }
+            }
+
+            SensorsUiEvent.CloseClick -> {
+                viewModelScope.launch {
+                    deleteSettingsSet(settingsSetId)
+                    actions.send(PresetUiAction.Close)
+                }
+            }
+        }
+    }
+
+    private fun updateUiStateData(newPreset: SensorsPreset) {
+        currentPreset = newPreset
+        currentPreset?.let { preset ->
+            uiState = uiState.copy(
+                targetDistance = preset.targetDistance,
+                minVoltage = preset.minVoltage,
+                isOverloadActivationEnabled = preset.overloadActivationEnabled,
+                isDeadTimeActivationEnabled = preset.deadTimeActivationEnabled,
+                averageAcceleration = preset.averageAcceleration,
+                averageDeviation = preset.averageDeviation,
+                deviationCoefficient = preset.deviationCoefficient,
+                deadTime = preset.deadTime
+            )
+        }
+    }
+
+    private fun savePresetData() {
+        viewModelScope.launch {
+            currentPreset?.let { preset ->
+                updatePreset(
+                    preset.copy(
+                        targetDistance = uiState.targetDistance,
+                        minVoltage = uiState.minVoltage,
+                        averageAcceleration = uiState.averageAcceleration,
+                        averageDeviation = uiState.averageDeviation,
+                        deviationCoefficient = uiState.deviationCoefficient,
+                        deadTime = uiState.deadTime,
+                        overloadActivationEnabled = uiState.isOverloadActivationEnabled,
+                        deadTimeActivationEnabled = uiState.isDeadTimeActivationEnabled
+                    )
+                )
             }
         }
     }

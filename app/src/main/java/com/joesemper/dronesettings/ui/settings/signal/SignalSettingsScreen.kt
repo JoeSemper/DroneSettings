@@ -14,9 +14,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -24,9 +25,9 @@ import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
+import com.joesemper.dronesettings.ui.settings.PresetUiAction
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
-import com.joesemper.dronesettings.ui.settings.TwoFieldInputText
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -34,11 +35,31 @@ fun SignalSettingsScreen(
     navController: NavController,
     viewModel: SignalViewModel = getViewModel()
 ) {
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = context) {
+        viewModel.uiActions.collect { action ->
+            when (action) {
+                PresetUiAction.Close -> {
+                    navController.navigate(HOME_ROUTE)
+                }
+
+                PresetUiAction.NavigateBack -> {
+                    navController.navigateUp()
+                }
+
+                is PresetUiAction.NavigateNext -> {
+//                    navController.navigate("$SENSORS_ROUTE/${action.argument}")
+                }
+            }
+        }
+    }
+
     SettingsDefaultScreenContainer(
         title = stringResource(id = R.string.signal),
-        onNavigateBack = { navController.navigateUp() },
-        onNavigateNext = { },
-        onTopBarNavigationClick = { navController.navigate(HOME_ROUTE) }
+        onNavigateBack = { viewModel.onSignalUiEvent(SignalUiEvent.BackButtonClick) },
+        onNavigateNext = { viewModel.onSignalUiEvent(SignalUiEvent.NextButtonClick) },
+        onTopBarNavigationClick = { viewModel.onSignalUiEvent(SignalUiEvent.CloseClick) }
     ) {
         SignalScreenContent(
             modifier = Modifier

@@ -22,10 +22,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,6 +38,7 @@ import com.joesemper.dronesettings.data.constants.SettingsConstants
 import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.MAPPING_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
+import com.joesemper.dronesettings.ui.settings.PresetUiAction
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import org.koin.androidx.compose.getViewModel
@@ -47,11 +50,31 @@ fun SensorsSettingsScreen(
     viewModel: SensorsViewModel = getViewModel()
 ) {
 
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = context) {
+        viewModel.uiActions.collect { action ->
+            when (action) {
+                PresetUiAction.Close -> {
+                    navController.navigate(HOME_ROUTE)
+                }
+
+                PresetUiAction.NavigateBack -> {
+                    navController.navigateUp()
+                }
+
+                is PresetUiAction.NavigateNext -> {
+                    navController.navigate("$MAPPING_ROUTE/${action.argument}")
+                }
+            }
+        }
+    }
+
     SettingsDefaultScreenContainer(
         title = stringResource(id = R.string.sensors),
-        onNavigateBack = { navController.navigateUp() },
-        onNavigateNext = { navController.navigate(MAPPING_ROUTE) },
-        onTopBarNavigationClick = { navController.navigate(HOME_ROUTE) }
+        onNavigateBack = { viewModel.onSensorsUiEvent(SensorsUiEvent.BackButtonClick) },
+        onNavigateNext = { viewModel.onSensorsUiEvent(SensorsUiEvent.NextButtonClick) },
+        onTopBarNavigationClick = { viewModel.onSensorsUiEvent(SensorsUiEvent.CloseClick) }
     ) {
         SensorsScreenContent(
             modifier = Modifier

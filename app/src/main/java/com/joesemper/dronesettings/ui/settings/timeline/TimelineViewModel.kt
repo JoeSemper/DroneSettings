@@ -12,20 +12,15 @@ import com.joesemper.dronesettings.domain.use_case.GetOrCreateTimelinePresetUseC
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase
 import com.joesemper.dronesettings.ui.SETTINGS_SET_ID_ARG
 import com.joesemper.dronesettings.ui.settings.PresetUiAction
-import com.joesemper.dronesettings.utils.Constants
-import com.joesemper.dronesettings.utils.getSecondsFromMinutesAndSeconds
-import com.joesemper.dronesettings.utils.roundToMinutes
-import com.joesemper.dronesettings.utils.roundToSeconds
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class TimelineViewModel(
     savedStateHandle: SavedStateHandle,
-    val getOrCreateTimelinePreset: GetOrCreateTimelinePresetUseCase,
-    val deleteSettingsSet: DeleteSettingsSetUseCase,
-    val updatePreset: UpdatePresetUseCase
-
+    private val getOrCreateTimelinePreset: GetOrCreateTimelinePresetUseCase,
+    private val deleteSettingsSet: DeleteSettingsSetUseCase,
+    private val updatePreset: UpdatePresetUseCase
 ) : ViewModel() {
 
     var uiState by mutableStateOf(TimelineUiState())
@@ -38,10 +33,10 @@ class TimelineViewModel(
     private var currentPreset: TimelinePreset? = null
 
     init {
-        subscribeOnPreset()
+        loadData()
     }
 
-    private fun subscribeOnPreset() {
+    private fun loadData() {
         viewModelScope.launch {
             getOrCreateTimelinePreset(settingsSetId).collect { preset ->
                 updateUiStateData(preset)
@@ -102,26 +97,21 @@ class TimelineViewModel(
                     actions.send(PresetUiAction.Close)
                 }
             }
-
         }
     }
 
     private fun updateUiStateData(newPreset: TimelinePreset) {
         currentPreset = newPreset
         currentPreset?.let { preset ->
-            if (preset.date != Constants.DATE_NOT_SET) {
-                uiState = uiState.copy(
-                    delayTimeMinutes = preset.delayTimeSec.roundToMinutes().toString(),
-                    delayTimeSeconds = preset.delayTimeSec.roundToSeconds().toString(),
-                    cockingTimeMinutes = preset.cockingTimeSec.roundToMinutes().toString(),
-                    cockingTimeSeconds = preset.cockingTimeSec.roundToSeconds().toString(),
-                    isCockingTimeEnabled = preset.cockingTimeEnabled,
-                    selfDestructionTimeMinutes = preset.selfDestructionTimeSec.roundToMinutes()
-                        .toString(),
-                    selfDestructionTimeSeconds = preset.selfDestructionTimeSec.roundToSeconds()
-                        .toString()
-                )
-            }
+            uiState = uiState.copy(
+                delayTimeMinutes = preset.delayTimeMin,
+                delayTimeSeconds = preset.delayTimeSec,
+                cockingTimeMinutes = preset.cockingTimeMin,
+                cockingTimeSeconds = preset.cockingTimeSec,
+                isCockingTimeEnabled = preset.cockingTimeEnabled,
+                selfDestructionTimeMinutes = preset.selfDestructionTimeMin,
+                selfDestructionTimeSeconds = preset.selfDestructionTimeSec
+            )
         }
     }
 
@@ -129,27 +119,17 @@ class TimelineViewModel(
         viewModelScope.launch {
             currentPreset?.let { preset ->
                 updatePreset(
-                    TimelinePreset(
-                        id = preset.id,
-                        setId = preset.setId,
-                        date = preset.date,
-                        delayTimeSec = getSecondsFromMinutesAndSeconds(
-                            uiState.delayTimeMinutes.toInt(),
-                            uiState.delayTimeSeconds.toInt()
-                        ),
-                        cockingTimeSec = getSecondsFromMinutesAndSeconds(
-                            uiState.cockingTimeMinutes.toInt(),
-                            uiState.cockingTimeMinutes.toInt()
-                        ),
+                    preset.copy(
+                        delayTimeSec = uiState.delayTimeSeconds,
+                        delayTimeMin = uiState.delayTimeMinutes,
+                        cockingTimeSec = uiState.cockingTimeSeconds,
+                        cockingTimeMin = uiState.cockingTimeMinutes,
                         cockingTimeEnabled = uiState.isCockingTimeEnabled,
-                        selfDestructionTimeSec = getSecondsFromMinutesAndSeconds(
-                            uiState.selfDestructionTimeMinutes.toInt(),
-                            uiState.selfDestructionTimeSeconds.toInt()
-                        )
+                        selfDestructionTimeSec = uiState.selfDestructionTimeSeconds,
+                        selfDestructionTimeMin = uiState.selfDestructionTimeMinutes,
                     )
                 )
             }
-
         }
     }
 

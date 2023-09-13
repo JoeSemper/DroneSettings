@@ -11,3 +11,19 @@ data class MappingUiState(
 enum class MappingSelectOption {
     COCKING, ACTIVATION, NONE
 }
+
+fun Int.asMappingSelectOption() =
+    when (this) {
+        1 -> MappingSelectOption.COCKING
+        2 -> MappingSelectOption.ACTIVATION
+        else -> MappingSelectOption.NONE
+    }
+
+fun MappingSelectOption.toInt() =
+    when (this) {
+        MappingSelectOption.COCKING -> 1
+        MappingSelectOption.ACTIVATION -> 2
+        else -> 0
+    }
+
+
