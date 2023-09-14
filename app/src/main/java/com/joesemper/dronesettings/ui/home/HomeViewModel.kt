@@ -17,7 +17,7 @@ class HomeViewModel(
     private val getAllSettingsPresets: GetAllSettingsSetsUseCase
 ) : ViewModel() {
 
-    var uiState = mutableStateOf<List<SettingsSetUiState>>(listOf())
+    var uiState = mutableStateOf<Map<String, List<SettingsSetUiState>>>(emptyMap())
         private set
 
     private val events = Channel<Int>()
@@ -51,6 +51,6 @@ class HomeViewModel(
                 date = unixTimeToDate(it.date),
                 time = unixTimeToTime(it.date)
             )
-        }
+        }.groupBy { it.date }
     }
 }

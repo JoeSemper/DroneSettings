@@ -1,5 +1,6 @@
 package com.joesemper.dronesettings.utils
 
+import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
 
 fun Int.roundToMinutes(): Int {
@@ -14,13 +15,13 @@ fun getSecondsFromMinutesAndSeconds(min: Int, sec: Int): Int {
     return min * 60 + sec
 }
 
-
 fun unixTimeToDate(time: Long): String {
-    val sdf = SimpleDateFormat.getDateInstance()
+    val sdf = SimpleDateFormat("dd.MM.yyyy")
     return sdf.format(time)
 }
 
+@SuppressLint("SimpleDateFormat")
 fun unixTimeToTime(time: Long): String {
-    val sdf = SimpleDateFormat.getTimeInstance()
+    val sdf = SimpleDateFormat("HH:mm")
     return sdf.format(time)
 }

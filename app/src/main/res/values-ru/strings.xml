@@ -61,4 +61,5 @@
     <string name="voltage">Напряжение</string>
     <string name="pulse_width">Ширина импульса</string>
     <string name="add_new_settings_preset">Add new settings preset</string>
+    <string name="no_saved_presets">No saved presets</string>
 </resources>

@@ -60,4 +60,5 @@
     <string name="voltage">Voltage</string>
     <string name="pulse_width">Pulse width</string>
     <string name="add_new_settings_preset">Add new settings preset</string>
+    <string name="no_saved_presets">No saved presets</string>
 </resources>
