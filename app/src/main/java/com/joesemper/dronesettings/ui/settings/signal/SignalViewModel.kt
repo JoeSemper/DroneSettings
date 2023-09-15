@@ -11,7 +11,7 @@ import com.joesemper.dronesettings.domain.use_case.DeleteSettingsSetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetOrCreateSignalPresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase
 import com.joesemper.dronesettings.ui.SETTINGS_SET_ID_ARG
-import com.joesemper.dronesettings.ui.settings.PresetUiAction
+import com.joesemper.dronesettings.ui.settings.SettingsUiAction
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ class SignalViewModel(
     var uiState by mutableStateOf(SignalUiState())
         private set
 
-    private val actions = Channel<PresetUiAction>()
+    private val actions = Channel<SettingsUiAction>()
     val uiActions = actions.receiveAsFlow()
 
     private val settingsSetId: Int = checkNotNull(savedStateHandle[SETTINGS_SET_ID_ARG])
@@ -80,21 +80,21 @@ class SignalViewModel(
             SignalUiEvent.BackButtonClick -> {
                 savePresetData()
                 viewModelScope.launch {
-                    actions.send(PresetUiAction.NavigateBack)
+                    actions.send(SettingsUiAction.NavigateBack)
                 }
             }
 
             SignalUiEvent.NextButtonClick -> {
                 savePresetData()
                 viewModelScope.launch {
-                    actions.send(PresetUiAction.NavigateNext(settingsSetId))
+                    actions.send(SettingsUiAction.NavigateNext(settingsSetId))
                 }
             }
 
             SignalUiEvent.CloseClick -> {
                 viewModelScope.launch {
                     deleteSettingsSet(settingsSetId)
-                    actions.send(PresetUiAction.Close)
+                    actions.send(SettingsUiAction.Close)
                 }
             }
         }

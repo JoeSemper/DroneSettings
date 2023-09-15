@@ -3,6 +3,7 @@ package com.joesemper.dronesettings.data.repository
 import com.joesemper.dronesettings.data.datasource.room.dao.SettingsDao
 import com.joesemper.dronesettings.data.datasource.room.entity.MappingPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.SensorsPreset
+import com.joesemper.dronesettings.data.datasource.room.entity.SettingsPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.SettingsSet
 import com.joesemper.dronesettings.data.datasource.room.entity.SignalPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.TimelinePreset
@@ -105,6 +106,10 @@ class SettingsRepositoryImpl(private val dao: SettingsDao) : SettingsRepository 
 
     override suspend fun isSignalPresetExists(settingsPresetId: Int): Boolean {
         return dao.isSignalRowWithPresetIdExists(settingsPresetId)
+    }
+
+    override fun getSettingsPreset(settingsSetId: Int): Flow<SettingsPreset> {
+        return dao.getSettingsPreset(settingsSetId)
     }
 
 }

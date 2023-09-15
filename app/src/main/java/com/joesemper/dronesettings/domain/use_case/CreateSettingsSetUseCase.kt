@@ -18,7 +18,7 @@ class CreateSettingsSetUseCase(
         val cal = Calendar.getInstance()
         val rowId = repository.createNewSettingsSet(
             SettingsSet(
-                name = "Preset #${(Random(0).nextFloat() * 10000).toInt()}",
+                name = "Preset #${(Random(cal.timeInMillis).nextFloat() * 10000).toInt()}",
                 description = "No description",
                 date = cal.timeInMillis
             )

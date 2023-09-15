@@ -2,6 +2,7 @@ package com.joesemper.dronesettings.domain.repository
 
 import com.joesemper.dronesettings.data.datasource.room.entity.MappingPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.SensorsPreset
+import com.joesemper.dronesettings.data.datasource.room.entity.SettingsPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.SettingsSet
 import com.joesemper.dronesettings.data.datasource.room.entity.SignalPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.TimelinePreset
@@ -33,4 +34,5 @@ interface SettingsRepository {
     fun getSignalPresetBySettingsSetId(settingsSetId: Int): Flow<SignalPreset>
     suspend fun updateSignalPreset(signalPreset: SignalPreset)
     suspend fun isSignalPresetExists(settingsPresetId: Int): Boolean
+    fun getSettingsPreset(settingsSetId: Int): Flow<SettingsPreset>
 }

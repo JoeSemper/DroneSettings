@@ -3,9 +3,11 @@ package com.joesemper.dronesettings.data.datasource.room.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.joesemper.dronesettings.data.datasource.room.entity.MappingPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.SensorsPreset
+import com.joesemper.dronesettings.data.datasource.room.entity.SettingsPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.SettingsSet
 import com.joesemper.dronesettings.data.datasource.room.entity.SignalPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.TimelinePreset
@@ -112,4 +114,7 @@ interface SettingsDao {
     @Query ("DELETE FROM SignalPreset WHERE setId = :presetId")
     suspend fun deleteSignalPreset(presetId: Int)
 
+    @Transaction
+    @Query("SELECT * FROM SettingsSet WHERE setId = :settingsSetId")
+    fun getSettingsPreset(settingsSetId: Int): Flow<SettingsPreset>
 }

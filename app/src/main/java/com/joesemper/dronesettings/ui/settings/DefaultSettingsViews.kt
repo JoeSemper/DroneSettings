@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
@@ -38,7 +37,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.joesemper.dronesettings.R
-import java.time.Duration
 
 @Composable
 fun TitleWithSubtitleView(
@@ -183,7 +181,8 @@ fun CheckboxWithText(
 @Composable
 fun SettingsDefaultScreenContainer(
     title: String,
-    onNavigateBack: () -> Unit,
+    onNavigateBack: () -> Unit = {},
+    backButtonEnabled: Boolean = true,
     onNavigateNext: () -> Unit,
     onTopBarNavigationClick: () -> Unit,
     content: @Composable() () -> Unit
@@ -226,7 +225,8 @@ fun SettingsDefaultScreenContainer(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
-                    onClick = onNavigateBack
+                    onClick = onNavigateBack,
+                    enabled = backButtonEnabled
                 ) {
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowLeft,
@@ -234,6 +234,7 @@ fun SettingsDefaultScreenContainer(
                     )
                     Text(text = stringResource(R.string.back))
                 }
+
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()

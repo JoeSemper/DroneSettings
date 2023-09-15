@@ -28,7 +28,7 @@ import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.SIGNAL_ROUTE
-import com.joesemper.dronesettings.ui.settings.PresetUiAction
+import com.joesemper.dronesettings.ui.settings.SettingsUiAction
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import org.koin.androidx.compose.getViewModel
@@ -44,15 +44,15 @@ fun SignalMappingSettingsScreen(
     LaunchedEffect(key1 = context) {
         viewModel.uiActions.collect { action ->
             when (action) {
-                PresetUiAction.Close -> {
+                SettingsUiAction.Close -> {
                     navController.navigate(HOME_ROUTE)
                 }
 
-                PresetUiAction.NavigateBack -> {
+                SettingsUiAction.NavigateBack -> {
                     navController.navigateUp()
                 }
 
-                is PresetUiAction.NavigateNext -> {
+                is SettingsUiAction.NavigateNext -> {
                     navController.navigate("$SIGNAL_ROUTE/${action.argument}")
                 }
             }

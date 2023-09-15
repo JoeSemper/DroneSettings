@@ -35,8 +35,8 @@ import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.SENSORS_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
-import com.joesemper.dronesettings.ui.settings.PresetUiAction
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
+import com.joesemper.dronesettings.ui.settings.SettingsUiAction
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import org.koin.androidx.compose.getViewModel
 
@@ -50,15 +50,13 @@ fun TimeLineSettingsScreen(
     LaunchedEffect(key1 = context) {
         viewModel.uiActions.collect { action ->
             when (action) {
-                PresetUiAction.Close -> {
+                SettingsUiAction.Close -> {
                     navController.navigate(HOME_ROUTE)
                 }
 
-                PresetUiAction.NavigateBack -> {
-                    navController.navigateUp()
-                }
+                SettingsUiAction.NavigateBack -> { }
 
-                is PresetUiAction.NavigateNext -> {
+                is SettingsUiAction.NavigateNext -> {
                     navController.navigate("$SENSORS_ROUTE/${action.argument}")
                 }
             }
@@ -67,7 +65,7 @@ fun TimeLineSettingsScreen(
 
     SettingsDefaultScreenContainer(
         title = stringResource(id = R.string.time_line),
-        onNavigateBack = { viewModel.onTimelineUiEvent(TimelineUiEvent.BackButtonClick) },
+        backButtonEnabled = false,
         onNavigateNext = { viewModel.onTimelineUiEvent(TimelineUiEvent.NextButtonClick) },
         onTopBarNavigationClick = { viewModel.onTimelineUiEvent(TimelineUiEvent.CloseClick) }
     ) {

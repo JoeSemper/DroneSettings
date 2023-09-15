@@ -9,7 +9,6 @@ sealed class TimelineUiEvent() {
     class SelfDestructionTimeMinutesChange(val minutes: String) : TimelineUiEvent()
     class SelfDestructionTimeSecondsChange(val seconds: String) : TimelineUiEvent()
     object NextButtonClick: TimelineUiEvent()
-    object BackButtonClick: TimelineUiEvent()
     object CloseClick: TimelineUiEvent()
 
 }

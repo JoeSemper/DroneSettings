@@ -1,6 +1,7 @@
 package com.joesemper.dronesettings.di
 
 import com.joesemper.dronesettings.ui.home.HomeViewModel
+import com.joesemper.dronesettings.ui.preset.PresetViewModel
 import com.joesemper.dronesettings.ui.settings.mapping.MappingViewModel
 import com.joesemper.dronesettings.ui.settings.sensors.SensorsViewModel
 import com.joesemper.dronesettings.ui.settings.signal.SignalViewModel
@@ -14,4 +15,5 @@ val viewModelModule = module {
     viewModel { SensorsViewModel(get(), get(), get(), get()) }
     viewModel { MappingViewModel(get(), get(), get(), get()) }
     viewModel { SignalViewModel(get(), get(), get(), get()) }
+    viewModel { PresetViewModel(get(), get()) }
 }
