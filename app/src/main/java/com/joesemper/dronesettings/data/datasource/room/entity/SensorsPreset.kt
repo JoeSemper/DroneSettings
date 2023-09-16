@@ -20,6 +20,7 @@ data class SensorsPreset(
     @ColumnInfo val date: Long = Constants.DATE_NOT_SET,
     @ColumnInfo val targetDistance: Float = 0f,
     @ColumnInfo val minVoltage: String = "",
+    @ColumnInfo val batteryActivationEnabled: Boolean = true,
     @ColumnInfo val averageAcceleration: String = "",
     @ColumnInfo val averageDeviation: String = "",
     @ColumnInfo val deviationCoefficient: String = "",

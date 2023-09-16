@@ -9,6 +9,7 @@ import com.joesemper.dronesettings.domain.use_case.GetOrCreateSignalPresetUseCas
 import com.joesemper.dronesettings.domain.use_case.GetOrCreateTimelinePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetSettingsPresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase
+import com.joesemper.dronesettings.domain.use_case.UpdateSettingsSetUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -21,4 +22,5 @@ val useCaseModule = module {
     factory { GetOrCreateMappingPresetUseCase(repository = get()) }
     factory { GetOrCreateSignalPresetUseCase(repository = get()) }
     factory { GetSettingsPresetUseCase(repository = get()) }
+    factory { UpdateSettingsSetUseCase(repository = get()) }
 }

@@ -81,7 +81,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                text = { Text(text = "New preset") },
+                text = { Text(text = stringResource(R.string.new_preset)) },
                 icon = { Icon(imageVector = Icons.Default.Add, contentDescription = null) },
                 onClick = { viewModel.onNewSettingsPresetClick() })
         }

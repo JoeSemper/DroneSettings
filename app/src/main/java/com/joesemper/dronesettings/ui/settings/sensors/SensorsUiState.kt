@@ -4,6 +4,7 @@ data class SensorsUiState(
     val isLoaded: Boolean = false,
     val targetDistance: Float = 0f,
     val minVoltage: String = "",
+    val isBatteryActivationEnabled: Boolean = true,
     val isOverloadActivationEnabled: Boolean = true,
     val isDeadTimeActivationEnabled: Boolean = true,
     val averageAcceleration: String = "",

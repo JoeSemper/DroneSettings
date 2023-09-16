@@ -14,6 +14,7 @@ interface SettingsRepository {
     suspend fun createNewSettingsSet(set: SettingsSet): Long
     suspend fun getSettingsSetByRowId(rowId: Long): SettingsSet
     suspend fun deleteSettingsSet(setId: Int)
+    suspend fun updateSettingsSet(set: SettingsSet)
     suspend fun createNewTimelinePreset(preset: TimelinePreset): Long
     fun getTimelinePresetByRowId(rowId: Long): Flow<TimelinePreset>
     fun getTimelinePresetBySettingsSetId(settingsSetId: Int): Flow<TimelinePreset>

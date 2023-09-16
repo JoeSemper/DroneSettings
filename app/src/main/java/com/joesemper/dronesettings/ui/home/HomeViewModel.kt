@@ -56,7 +56,8 @@ class HomeViewModel(
                     name = it.name,
                     description = it.description,
                     date = unixTimeToDate(it.date),
-                    time = unixTimeToTime(it.date)
+                    time = unixTimeToTime(it.date),
+                    saved = it.saved
                 )
             }.filter { it.saved }.groupBy { it.date }
         )

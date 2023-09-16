@@ -61,5 +61,21 @@
     <string name="voltage">Напряжение</string>
     <string name="pulse_width">Ширина импульса</string>
     <string name="add_new_settings_preset">Add new settings preset</string>
-    <string name="no_saved_presets">No saved presets</string>
+    <string name="no_saved_presets">Нет сохраненных пресетов</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="description">Описание</string>
+    <string name="enable_battery_activation">Активировать срабатывание по батарее</string>
+    <string name="minimum_voltage">Минимальное напряжение</string>
+    <string name="cocking_pulse_width">Ширина импульса взведения</string>
+    <string name="cocking_pulse_amount">Количество импульсов взведения</string>
+    <string name="infinite_cocking_pulse_amount">Бесконечное число импульсов взведения</string>
+    <string name="activation_pulse_width">Ширина импульса срабатывания</string>
+    <string name="activation_pulse_amount">Количество импульсов срабатывания</string>
+    <string name="infinite_activation_pulse_amount">Бесконечное число импульсов срабатывания</string>
+    <string name="high">высокий</string>
+    <string name="low">низкий</string>
+    <string name="write_to_controller">Записать на контроллер</string>
+    <string name="save">Сохранить</string>
+    <string name="new_preset">Новый пресет</string>
 </resources>

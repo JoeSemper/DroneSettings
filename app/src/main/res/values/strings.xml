@@ -61,4 +61,20 @@
     <string name="pulse_width">Pulse width</string>
     <string name="add_new_settings_preset">Add new settings preset</string>
     <string name="no_saved_presets">No saved presets</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="description">Description</string>
+    <string name="enable_battery_activation">Enable battery activation</string>
+    <string name="minimum_voltage">Minimum voltage</string>
+    <string name="cocking_pulse_width">Cocking pulse width</string>
+    <string name="cocking_pulse_amount">Cocking pulse amount</string>
+    <string name="infinite_cocking_pulse_amount">Infinite cocking pulse amount</string>
+    <string name="activation_pulse_width">Activation pulse width</string>
+    <string name="activation_pulse_amount">Activation pulse amount</string>
+    <string name="infinite_activation_pulse_amount">Infinite activation pulse amount</string>
+    <string name="high">high</string>
+    <string name="low">low</string>
+    <string name="write_to_controller">Write to controller</string>
+    <string name="save">Save</string>
+    <string name="new_preset">New preset</string>
 </resources>

@@ -154,7 +154,7 @@ fun TargetSensorView(
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = (state.targetDistance * 10).roundToInt().toString(),
+                text = state.targetDistance.toString(),
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.width(4.dp))
@@ -171,7 +171,13 @@ fun TargetSensorView(
             value = state.targetDistance,
             steps = sliderSteps,
             valueRange = sliderMinValue..sliderMaxValue,
-            onValueChange = { onUiEvent(SensorsUiEvent.TargetDistanceChange(it)) }
+            onValueChange = {
+                onUiEvent(
+                    SensorsUiEvent.TargetDistanceChange(
+                        (it * 100).roundToInt().toFloat() / 100
+                    )
+                )
+            }
         )
 
     }
@@ -192,6 +198,15 @@ fun BatteryView(
             subtitle = stringResource(R.string.minimum_activation_voltage)
         )
 
+        CheckboxWithText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            text = stringResource(R.string.enable_battery_activation),
+            checked = state.isBatteryActivationEnabled,
+            onCheckedChange = { onUiEvent(SensorsUiEvent.BatteryActivationChange(it)) }
+        )
+
         Text(
             modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
             text = stringResource(R.string.voltage)
@@ -201,6 +216,7 @@ fun BatteryView(
             modifier = Modifier.fillMaxWidth(),
             value = state.minVoltage,
             onValueChange = { onUiEvent(SensorsUiEvent.MinVoltageChange(it)) },
+            enabled = state.isBatteryActivationEnabled,
             singleLine = true,
             leadingIcon = {
                 Icon(

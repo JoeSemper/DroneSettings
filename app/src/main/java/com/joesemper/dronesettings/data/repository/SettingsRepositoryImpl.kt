@@ -20,6 +20,10 @@ class SettingsRepositoryImpl(private val dao: SettingsDao) : SettingsRepository 
         return dao.createNewSettingsSet(set)
     }
 
+    override suspend fun updateSettingsSet(set: SettingsSet) {
+        dao.updateSettingsSet(set)
+    }
+
     override suspend fun getSettingsSetByRowId(rowId: Long): SettingsSet {
         return dao.getSettingsPresetByRowId(rowId)
     }

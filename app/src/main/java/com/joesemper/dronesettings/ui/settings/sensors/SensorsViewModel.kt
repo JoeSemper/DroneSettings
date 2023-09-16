@@ -54,6 +54,10 @@ class SensorsViewModel(
                 uiState = uiState.copy(minVoltage = event.voltage)
             }
 
+            is SensorsUiEvent.BatteryActivationChange -> {
+                uiState = uiState.copy(isBatteryActivationEnabled = event.isEnabled)
+            }
+
             is SensorsUiEvent.OverloadActivationChange -> {
                 uiState = uiState.copy(isOverloadActivationEnabled = event.isEnabled)
             }
