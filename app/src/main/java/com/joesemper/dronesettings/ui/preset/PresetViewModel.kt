@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joesemper.dronesettings.data.datasource.room.entity.SettingsPreset
+import com.joesemper.dronesettings.domain.use_case.DeleteSettingsSetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetSettingsPresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdateSettingsSetUseCase
 import com.joesemper.dronesettings.ui.SETTINGS_SET_ID_ARG
@@ -13,7 +14,8 @@ import kotlinx.coroutines.launch
 class PresetViewModel(
     savedStateHandle: SavedStateHandle,
     private val getSettingsPreset: GetSettingsPresetUseCase,
-    private val updateSettingsSet: UpdateSettingsSetUseCase
+    private val updateSettingsSet: UpdateSettingsSetUseCase,
+    private val deleteSettingsSet: DeleteSettingsSetUseCase
 ) : ViewModel() {
 
     val uiState = mutableStateOf(PresetUiState())
@@ -26,8 +28,11 @@ class PresetViewModel(
 
     private fun loadData() {
         viewModelScope.launch {
-            getSettingsPreset(settingsSetId).collect {
-                updateUiData(it)
+            getSettingsPreset(settingsSetId).collect {preset ->
+                preset?.let {
+                    updateUiData(it)
+                }
+
             }
         }
     }
@@ -44,6 +49,12 @@ class PresetViewModel(
                     saved = true
                 )
             )
+        }
+    }
+
+    fun deletePreset() {
+        viewModelScope.launch {
+            deleteSettingsSet(settingsSetId)
         }
     }
 

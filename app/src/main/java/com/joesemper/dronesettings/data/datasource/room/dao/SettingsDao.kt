@@ -116,5 +116,5 @@ interface SettingsDao {
 
     @Transaction
     @Query("SELECT * FROM SettingsSet WHERE setId = :settingsSetId")
-    fun getSettingsPreset(settingsSetId: Int): Flow<SettingsPreset>
+    fun getSettingsPreset(settingsSetId: Int): Flow<SettingsPreset?>
 }

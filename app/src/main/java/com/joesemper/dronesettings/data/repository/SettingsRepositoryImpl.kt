@@ -112,7 +112,7 @@ class SettingsRepositoryImpl(private val dao: SettingsDao) : SettingsRepository 
         return dao.isSignalRowWithPresetIdExists(settingsPresetId)
     }
 
-    override fun getSettingsPreset(settingsSetId: Int): Flow<SettingsPreset> {
+    override fun getSettingsPreset(settingsSetId: Int): Flow<SettingsPreset?> {
         return dao.getSettingsPreset(settingsSetId)
     }
 

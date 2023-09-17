@@ -77,4 +77,11 @@
     <string name="write_to_controller">Write to controller</string>
     <string name="save">Save</string>
     <string name="new_preset">New preset</string>
+    <string name="close">Close</string>
+    <string name="preset_name">Preset name</string>
+    <string name="preset_description">Preset description</string>
+    <string name="save_preset">Save preset</string>
+    <string name="preset_deleted">Preset deleted</string>
+    <string name="preset_saved">Preset saved</string>
+    <string name="delete_preset">Delete preset?</string>
 </resources>

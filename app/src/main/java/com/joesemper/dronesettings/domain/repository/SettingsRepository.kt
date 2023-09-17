@@ -35,5 +35,5 @@ interface SettingsRepository {
     fun getSignalPresetBySettingsSetId(settingsSetId: Int): Flow<SignalPreset>
     suspend fun updateSignalPreset(signalPreset: SignalPreset)
     suspend fun isSignalPresetExists(settingsPresetId: Int): Boolean
-    fun getSettingsPreset(settingsSetId: Int): Flow<SettingsPreset>
+    fun getSettingsPreset(settingsSetId: Int): Flow<SettingsPreset?>
 }
