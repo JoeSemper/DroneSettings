@@ -1,9 +1,9 @@
 package com.joesemper.dronesettings.ui.home
 
-sealed class HomeUiState() {
-    object Loading: HomeUiState()
-    class Loaded(val settingsSetList: Map<String, List<SettingsSetUiState>>): HomeUiState()
-}
+data class HomeUiState(
+    val isLoading: Boolean = true,
+    val settingsSetList: Map<String, List<SettingsSetUiState>> = emptyMap()
+)
 
 data class SettingsSetUiState(
     val setId: Int = 0,

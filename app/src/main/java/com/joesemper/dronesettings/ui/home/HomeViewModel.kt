@@ -17,7 +17,7 @@ class HomeViewModel(
     private val getAllSettingsPresets: GetAllSettingsSetsUseCase
 ) : ViewModel() {
 
-    var uiState = mutableStateOf<HomeUiState>(HomeUiState.Loading)
+    var uiState = mutableStateOf(HomeUiState())
         private set
 
     private val actions = Channel<HomeUiAction>()
@@ -49,22 +49,27 @@ class HomeViewModel(
     }
 
     private fun updateUiData(sets: List<SettingsSet>) {
-        uiState.value = HomeUiState.Loaded(
-            sets.map {
-                SettingsSetUiState(
-                    setId = it.setId,
-                    name = it.name,
-                    description = it.description,
-                    date = unixTimeToDate(it.date),
-                    time = unixTimeToTime(it.date),
-                    saved = it.saved
-                )
-            }.filter { it.saved }.groupBy { it.date }
+        uiState.value = uiState.value.copy(
+            isLoading = false,
+            settingsSetList = splitSetsByDates(sets)
         )
+    }
+
+    private fun splitSetsByDates(sets: List<SettingsSet>): Map<String, List<SettingsSetUiState>> {
+        return sets.map {
+            SettingsSetUiState(
+                setId = it.setId,
+                name = it.name,
+                description = it.description,
+                date = unixTimeToDate(it.date),
+                time = unixTimeToTime(it.date),
+                saved = it.saved
+            )
+        }.filter { it.saved }.groupBy { it.date }
     }
 }
 
 sealed class HomeUiAction() {
-    class NewSettingsSet(val setId: Int): HomeUiAction()
-    class OpenPreset(val setId: Int): HomeUiAction()
+    class NewSettingsSet(val setId: Int) : HomeUiAction()
+    class OpenPreset(val setId: Int) : HomeUiAction()
 }

@@ -15,8 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -25,11 +23,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,12 +35,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.PRESET_ROUTE
 import com.joesemper.dronesettings.ui.TIMELINE_ROUTE
-import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -69,84 +63,77 @@ fun HomeScreen(
                     navController.navigate("$PRESET_ROUTE/${action.setId}")
                 }
             }
-
         }
     }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    Icon(imageVector = Icons.Default.Settings, contentDescription = null)
-                },
-                title = {
-                    Text(text = stringResource(id = R.string.app_name))
-                }
-            )
-        },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = { Text(text = stringResource(R.string.new_preset)) },
-                icon = { Icon(imageVector = Icons.Default.Add, contentDescription = null) },
-                onClick = { viewModel.onNewSettingsPresetClick() })
-        }
+        topBar = { HomeScreenTopBar() },
+        floatingActionButton = { HomeScreenFab(onClick = { viewModel.onNewSettingsPresetClick() }) }
     ) { padding ->
+        if (!state.isLoading) {
 
-        when (state) {
-            HomeUiState.Loading -> {}
+            if (state.settingsSetList.isEmpty()) {
 
-            is HomeUiState.Loaded -> {
-                val uiData = remember(state.settingsSetList) {
-                    state.settingsSetList
-                }
+                EmptyListView()
 
-                if (uiData.isEmpty()) {
-                    EmptyListView()
-                } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .padding(padding)
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp)
+            } else {
+
+                HomeScreenContentView(
+                    modifier = Modifier.padding(padding),
+                    sets = state.settingsSetList,
+                    onSetClick = { viewModel.onPresetClick(it) }
+                )
+
+            }
+        }
+
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HomeScreenContentView(
+    modifier: Modifier = Modifier,
+    sets: Map<String, List<SettingsSetUiState>>,
+    onSetClick: (Int) -> Unit
+) {
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp)
+    ) {
+        sets.forEach { (title, items) ->
+            stickyHeader {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Surface(
+                        modifier = Modifier.alpha(0.7f),
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                     ) {
-                        uiData.forEach { (title, items) ->
-                            stickyHeader {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Surface(
-                                        modifier = Modifier.alpha(0.7f),
-                                        shape = MaterialTheme.shapes.medium,
-                                        color = MaterialTheme.colorScheme.tertiaryContainer,
-                                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                                    ) {
-                                        Text(
-                                            modifier = Modifier.padding(8.dp),
-                                            text = title
-                                        )
-                                    }
-
-                                }
-                            }
-
-                            items(
-                                items.size,
-                                key = { items[it].setId }
-                            ) {
-                                PresetItem(
-                                    state = items[it],
-                                    onClick = { viewModel.onPresetClick(items[it].setId) }
-                                )
-                            }
-                        }
-
+                        Text(
+                            modifier = Modifier.padding(8.dp),
+                            text = title
+                        )
                     }
                 }
             }
+
+            items(
+                items.size,
+                key = { items[it].setId }
+            ) {
+                PresetItem(
+                    state = items[it],
+                    onClick = { onSetClick(items[it].setId) }
+                )
+            }
         }
+
     }
 }
 
@@ -221,7 +208,29 @@ fun EmptyListView(
                 color = Color.Gray
             )
         }
-
-
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreenTopBar() {
+    TopAppBar(
+        navigationIcon = {
+            Icon(imageVector = Icons.Default.Settings, contentDescription = null)
+        },
+        title = {
+            Text(text = stringResource(id = R.string.app_name))
+        }
+    )
+}
+
+@Composable
+fun HomeScreenFab(
+    onClick: () -> Unit
+) {
+    ExtendedFloatingActionButton(
+        text = { Text(text = stringResource(R.string.new_preset)) },
+        icon = { Icon(imageVector = Icons.Default.Add, contentDescription = null) },
+        onClick = onClick
+    )
 }
