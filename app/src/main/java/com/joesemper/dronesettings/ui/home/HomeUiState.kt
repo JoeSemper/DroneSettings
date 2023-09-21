@@ -2,11 +2,11 @@ package com.joesemper.dronesettings.ui.home
 
 data class HomeUiState(
     val isLoading: Boolean = true,
-    val settingsSetList: Map<String, List<SettingsSetUiState>> = emptyMap()
+    val presets: Map<String, List<PresetDataUiState>> = emptyMap()
 )
 
-data class SettingsSetUiState(
-    val setId: Int = 0,
+data class PresetDataUiState(
+    val dataId: Int = 0,
     val name: String = "",
     val description: String = "",
     val date: String = "",

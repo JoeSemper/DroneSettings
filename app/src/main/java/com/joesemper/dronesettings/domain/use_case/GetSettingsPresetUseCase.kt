@@ -9,7 +9,7 @@ class GetSettingsPresetUseCase(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val repository: SettingsRepository
 ) {
-    suspend operator fun invoke(settingsSetId: Int) = withContext(defaultDispatcher) {
-        repository.getSettingsPreset(settingsSetId)
+    suspend operator fun invoke(dataId: Int) = withContext(defaultDispatcher) {
+        repository.getSettingsPreset(dataId)
     }
 }

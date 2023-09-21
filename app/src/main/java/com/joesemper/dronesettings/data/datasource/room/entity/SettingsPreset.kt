@@ -4,28 +4,28 @@ import androidx.room.Embedded
 import androidx.room.Relation
 
 data class SettingsPreset(
-    @Embedded val settingsSet: SettingsSet = SettingsSet(),
+    @Embedded val presetData: PresetData = PresetData(),
     @Relation(
-        parentColumn = "setId",
-        entityColumn = "setId",
+        parentColumn = "dataId",
+        entityColumn = "dataId",
         entity = TimelinePreset::class
     )
     val  timelinePreset: TimelinePreset = TimelinePreset(),
     @Relation(
-        parentColumn = "setId",
-        entityColumn = "setId",
+        parentColumn = "dataId",
+        entityColumn = "dataId",
         entity = SensorsPreset::class
     )
     val  sensorsPreset: SensorsPreset = SensorsPreset(),
     @Relation(
-        parentColumn = "setId",
-        entityColumn = "setId",
+        parentColumn = "dataId",
+        entityColumn = "dataId",
         entity = MappingPreset::class
     )
     val  mappingPreset: MappingPreset = MappingPreset(),
     @Relation(
-        parentColumn = "setId",
-        entityColumn = "setId",
+        parentColumn = "dataId",
+        entityColumn = "dataId",
         entity = SignalPreset::class
     )
     val  signalPreset: SignalPreset = SignalPreset(),

@@ -11,13 +11,13 @@ class GetOrCreateSignalPresetUseCase (
     private val repository: SettingsRepository
 ) {
 
-    suspend operator fun invoke(settingsSetId: Int) = withContext(defaultDispatcher) {
-        if (repository.isSignalPresetExists(settingsSetId)) {
-            repository.getSignalPresetBySettingsSetId(settingsSetId)
+    suspend operator fun invoke(dataId: Int) = withContext(defaultDispatcher) {
+        if (repository.isSignalPresetExists(dataId)) {
+            repository.getSignalPresetByDataId(dataId)
         } else {
             val rowId = repository.createNewSignalPreset(
                 SignalPreset(
-                    setId = settingsSetId
+                    dataId = dataId
                 )
             )
 

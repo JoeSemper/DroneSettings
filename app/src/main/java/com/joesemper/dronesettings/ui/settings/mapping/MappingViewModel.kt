@@ -7,10 +7,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joesemper.dronesettings.data.datasource.room.entity.MappingPreset
-import com.joesemper.dronesettings.domain.use_case.DeleteSettingsSetUseCase
+import com.joesemper.dronesettings.domain.use_case.DeletePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetOrCreateMappingPresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase
-import com.joesemper.dronesettings.ui.SETTINGS_SET_ID_ARG
+import com.joesemper.dronesettings.ui.PRESET_DATA_ID_ARG
 import com.joesemper.dronesettings.ui.settings.SettingsUiAction
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 class MappingViewModel(
     savedStateHandle: SavedStateHandle,
     private val getOrCreateMappingPresetUseCase: GetOrCreateMappingPresetUseCase,
-    private val deleteSettingsSet: DeleteSettingsSetUseCase,
+    private val deletePreset: DeletePresetUseCase,
     private val updatePreset: UpdatePresetUseCase
 ) : ViewModel() {
 
@@ -29,7 +29,7 @@ class MappingViewModel(
     private val actions = Channel<SettingsUiAction>()
     val uiActions = actions.receiveAsFlow()
 
-    private val settingsSetId: Int = checkNotNull(savedStateHandle[SETTINGS_SET_ID_ARG])
+    private val dataId: Int = checkNotNull(savedStateHandle[PRESET_DATA_ID_ARG])
     private var currentPreset: MappingPreset? = null
 
     init {
@@ -38,7 +38,7 @@ class MappingViewModel(
 
     private fun loadData() {
         viewModelScope.launch {
-            getOrCreateMappingPresetUseCase(settingsSetId).collect { preset ->
+            getOrCreateMappingPresetUseCase(dataId).collect { preset ->
                 updateUiStateData(preset)
             }
         }
@@ -76,13 +76,13 @@ class MappingViewModel(
             MappingUiEvent.NextButtonClick -> {
                 savePresetData()
                 viewModelScope.launch {
-                    actions.send(SettingsUiAction.NavigateNext(settingsSetId))
+                    actions.send(SettingsUiAction.NavigateNext(dataId))
                 }
             }
 
             MappingUiEvent.CloseClick -> {
                 viewModelScope.launch {
-                    deleteSettingsSet(settingsSetId)
+                    deletePreset(dataId)
                     actions.send(SettingsUiAction.Close)
                 }
             }

@@ -7,10 +7,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joesemper.dronesettings.data.datasource.room.entity.TimelinePreset
-import com.joesemper.dronesettings.domain.use_case.DeleteSettingsSetUseCase
+import com.joesemper.dronesettings.domain.use_case.DeletePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetOrCreateTimelinePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase
-import com.joesemper.dronesettings.ui.SETTINGS_SET_ID_ARG
+import com.joesemper.dronesettings.ui.PRESET_DATA_ID_ARG
 import com.joesemper.dronesettings.ui.settings.SettingsUiAction
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 class TimelineViewModel(
     savedStateHandle: SavedStateHandle,
     private val getOrCreateTimelinePreset: GetOrCreateTimelinePresetUseCase,
-    private val deleteSettingsSet: DeleteSettingsSetUseCase,
+    private val deletePreset: DeletePresetUseCase,
     private val updatePreset: UpdatePresetUseCase
 ) : ViewModel() {
 
@@ -29,7 +29,7 @@ class TimelineViewModel(
     private val actions = Channel<SettingsUiAction>()
     val uiActions = actions.receiveAsFlow()
 
-    private val settingsSetId: Int = checkNotNull(savedStateHandle[SETTINGS_SET_ID_ARG])
+    private val dataId: Int = checkNotNull(savedStateHandle[PRESET_DATA_ID_ARG])
     private var currentPreset: TimelinePreset? = null
 
     init {
@@ -38,7 +38,7 @@ class TimelineViewModel(
 
     private fun loadData() {
         viewModelScope.launch {
-            getOrCreateTimelinePreset(settingsSetId).collect { preset ->
+            getOrCreateTimelinePreset(dataId).collect { preset ->
                 updateUiStateData(preset)
             }
         }
@@ -80,13 +80,13 @@ class TimelineViewModel(
             TimelineUiEvent.NextButtonClick -> {
                 savePresetData()
                 viewModelScope.launch {
-                    actions.send(SettingsUiAction.NavigateNext(settingsSetId))
+                    actions.send(SettingsUiAction.NavigateNext(dataId))
                 }
             }
 
             TimelineUiEvent.CloseClick -> {
                 viewModelScope.launch {
-                    deleteSettingsSet(settingsSetId)
+                    deletePreset(dataId)
                     actions.send(SettingsUiAction.Close)
                 }
             }

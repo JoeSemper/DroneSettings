@@ -56,11 +56,11 @@ fun HomeScreen(
         viewModel.uiActions.collect { action ->
             when (action) {
                 is HomeUiAction.NewSettingsSet -> {
-                    navController.navigate("$TIMELINE_ROUTE/${action.setId}")
+                    navController.navigate("$TIMELINE_ROUTE/${action.dataId}")
                 }
 
                 is HomeUiAction.OpenPreset -> {
-                    navController.navigate("$PRESET_ROUTE/${action.setId}")
+                    navController.navigate("$PRESET_ROUTE/${action.dataId}")
                 }
             }
         }
@@ -73,7 +73,7 @@ fun HomeScreen(
     ) { padding ->
         if (!state.isLoading) {
 
-            if (state.settingsSetList.isEmpty()) {
+            if (state.presets.isEmpty()) {
 
                 EmptyListView()
 
@@ -81,7 +81,7 @@ fun HomeScreen(
 
                 HomeScreenContentView(
                     modifier = Modifier.padding(padding),
-                    sets = state.settingsSetList,
+                    sets = state.presets,
                     onSetClick = { viewModel.onPresetClick(it) }
                 )
 
@@ -95,7 +95,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContentView(
     modifier: Modifier = Modifier,
-    sets: Map<String, List<SettingsSetUiState>>,
+    sets: Map<String, List<PresetDataUiState>>,
     onSetClick: (Int) -> Unit
 ) {
     LazyColumn(
@@ -125,11 +125,11 @@ fun HomeScreenContentView(
 
             items(
                 items.size,
-                key = { items[it].setId }
+                key = { items[it].dataId }
             ) {
                 PresetItem(
                     state = items[it],
-                    onClick = { onSetClick(items[it].setId) }
+                    onClick = { onSetClick(items[it].dataId) }
                 )
             }
         }
@@ -140,7 +140,7 @@ fun HomeScreenContentView(
 @Composable
 fun PresetItem(
     modifier: Modifier = Modifier,
-    state: SettingsSetUiState,
+    state: PresetDataUiState,
     onClick: () -> Unit
 ) {
     Column(

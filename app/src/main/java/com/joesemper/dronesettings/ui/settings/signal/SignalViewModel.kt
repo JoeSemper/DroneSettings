@@ -7,10 +7,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joesemper.dronesettings.data.datasource.room.entity.SignalPreset
-import com.joesemper.dronesettings.domain.use_case.DeleteSettingsSetUseCase
+import com.joesemper.dronesettings.domain.use_case.DeletePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetOrCreateSignalPresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase
-import com.joesemper.dronesettings.ui.SETTINGS_SET_ID_ARG
+import com.joesemper.dronesettings.ui.PRESET_DATA_ID_ARG
 import com.joesemper.dronesettings.ui.settings.SettingsUiAction
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 class SignalViewModel(
     savedStateHandle: SavedStateHandle,
     private val getOrCreateSignalPreset: GetOrCreateSignalPresetUseCase,
-    private val deleteSettingsSet: DeleteSettingsSetUseCase,
+    private val deletePreset: DeletePresetUseCase,
     private val updatePreset: UpdatePresetUseCase
 ) : ViewModel() {
     var uiState by mutableStateOf(SignalUiState())
@@ -28,7 +28,7 @@ class SignalViewModel(
     private val actions = Channel<SettingsUiAction>()
     val uiActions = actions.receiveAsFlow()
 
-    private val settingsSetId: Int = checkNotNull(savedStateHandle[SETTINGS_SET_ID_ARG])
+    private val dataId: Int = checkNotNull(savedStateHandle[PRESET_DATA_ID_ARG])
     private var currentPreset: SignalPreset? = null
 
     init {
@@ -37,7 +37,7 @@ class SignalViewModel(
 
     private fun loadData() {
         viewModelScope.launch {
-            getOrCreateSignalPreset(settingsSetId).collect { preset ->
+            getOrCreateSignalPreset(dataId).collect { preset ->
                 updateUiStateData(preset)
             }
         }
@@ -87,13 +87,13 @@ class SignalViewModel(
             SignalUiEvent.NextButtonClick -> {
                 savePresetData()
                 viewModelScope.launch {
-                    actions.send(SettingsUiAction.NavigateNext(settingsSetId))
+                    actions.send(SettingsUiAction.NavigateNext(dataId))
                 }
             }
 
             SignalUiEvent.CloseClick -> {
                 viewModelScope.launch {
-                    deleteSettingsSet(settingsSetId)
+                    deletePreset(dataId)
                     actions.send(SettingsUiAction.Close)
                 }
             }

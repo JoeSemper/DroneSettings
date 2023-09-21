@@ -5,22 +5,22 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joesemper.dronesettings.data.datasource.room.entity.SettingsPreset
-import com.joesemper.dronesettings.domain.use_case.DeleteSettingsSetUseCase
+import com.joesemper.dronesettings.domain.use_case.DeletePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetSettingsPresetUseCase
-import com.joesemper.dronesettings.domain.use_case.UpdateSettingsSetUseCase
-import com.joesemper.dronesettings.ui.SETTINGS_SET_ID_ARG
+import com.joesemper.dronesettings.domain.use_case.UpdatePresetDataUseCase
+import com.joesemper.dronesettings.ui.PRESET_DATA_ID_ARG
 import kotlinx.coroutines.launch
 
 class PresetViewModel(
     savedStateHandle: SavedStateHandle,
     private val getSettingsPreset: GetSettingsPresetUseCase,
-    private val updateSettingsSet: UpdateSettingsSetUseCase,
-    private val deleteSettingsSet: DeleteSettingsSetUseCase
+    private val updateSettingsSet: UpdatePresetDataUseCase,
+    private val deletePreset: DeletePresetUseCase
 ) : ViewModel() {
 
     val uiState = mutableStateOf(PresetUiState())
 
-    private val settingsSetId: Int = checkNotNull(savedStateHandle[SETTINGS_SET_ID_ARG])
+    private val dataId: Int = checkNotNull(savedStateHandle[PRESET_DATA_ID_ARG])
 
     init {
         loadData()
@@ -28,7 +28,7 @@ class PresetViewModel(
 
     private fun loadData() {
         viewModelScope.launch {
-            getSettingsPreset(settingsSetId).collect {preset ->
+            getSettingsPreset(dataId).collect { preset ->
                 preset?.let {
                     updateUiData(it)
                 }
@@ -43,7 +43,7 @@ class PresetViewModel(
     ) {
         viewModelScope.launch {
             updateSettingsSet(
-                uiState.value.settingsPreset.settingsSet.copy(
+                uiState.value.settingsPreset.presetData.copy(
                     name = newName,
                     description = newDescription,
                     saved = true
@@ -54,7 +54,7 @@ class PresetViewModel(
 
     fun deletePreset() {
         viewModelScope.launch {
-            deleteSettingsSet(settingsSetId)
+            deletePreset(dataId)
         }
     }
 

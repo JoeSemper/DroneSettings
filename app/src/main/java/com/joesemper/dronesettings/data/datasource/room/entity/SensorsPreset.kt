@@ -8,15 +8,15 @@ import com.joesemper.dronesettings.utils.Constants
 
 @Entity(
     foreignKeys = [ForeignKey(
-        entity = SettingsSet::class,
-        childColumns = ["setId"],
-        parentColumns = ["setId"],
+        entity = PresetData::class,
+        childColumns = ["dataId"],
+        parentColumns = ["dataId"],
         onDelete = ForeignKey.CASCADE
     )]
 )
 data class SensorsPreset(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo val setId: Int = -1,
+    @ColumnInfo val dataId: Int = -1,
     @ColumnInfo val date: Long = Constants.DATE_NOT_SET,
     @ColumnInfo val targetDistance: Float = 0f,
     @ColumnInfo val minVoltage: String = "",

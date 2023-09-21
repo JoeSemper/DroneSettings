@@ -3,9 +3,9 @@ package com.joesemper.dronesettings.ui.home
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.joesemper.dronesettings.data.datasource.room.entity.SettingsSet
-import com.joesemper.dronesettings.domain.use_case.CreateSettingsSetUseCase
-import com.joesemper.dronesettings.domain.use_case.GetAllSettingsSetsUseCase
+import com.joesemper.dronesettings.data.datasource.room.entity.PresetData
+import com.joesemper.dronesettings.domain.use_case.CreatePresetDataUseCase
+import com.joesemper.dronesettings.domain.use_case.GetAllPresetsUseCase
 import com.joesemper.dronesettings.utils.unixTimeToDate
 import com.joesemper.dronesettings.utils.unixTimeToTime
 import kotlinx.coroutines.channels.Channel
@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val createSettingsPreset: CreateSettingsSetUseCase,
-    private val getAllSettingsPresets: GetAllSettingsSetsUseCase
+    private val createSettingsPreset: CreatePresetDataUseCase,
+    private val getAllSettingsPresets: GetAllPresetsUseCase
 ) : ViewModel() {
 
     var uiState = mutableStateOf(HomeUiState())
@@ -29,8 +29,8 @@ class HomeViewModel(
 
     private fun loadData() {
         viewModelScope.launch {
-            getAllSettingsPresets().collect { sets ->
-                updateUiData(sets)
+            getAllSettingsPresets().collect { presets ->
+                updateUiData(presets)
             }
         }
     }
@@ -38,7 +38,7 @@ class HomeViewModel(
     fun onNewSettingsPresetClick() {
         viewModelScope.launch {
             val settingsSet = createSettingsPreset()
-            actions.send(HomeUiAction.NewSettingsSet(settingsSet.setId))
+            actions.send(HomeUiAction.NewSettingsSet(settingsSet.dataId))
         }
     }
 
@@ -48,17 +48,17 @@ class HomeViewModel(
         }
     }
 
-    private fun updateUiData(sets: List<SettingsSet>) {
+    private fun updateUiData(presets: List<PresetData>) {
         uiState.value = uiState.value.copy(
             isLoading = false,
-            settingsSetList = splitSetsByDates(sets)
+            presets = splitPresetsByDates(presets)
         )
     }
 
-    private fun splitSetsByDates(sets: List<SettingsSet>): Map<String, List<SettingsSetUiState>> {
+    private fun splitPresetsByDates(sets: List<PresetData>): Map<String, List<PresetDataUiState>> {
         return sets.map {
-            SettingsSetUiState(
-                setId = it.setId,
+            PresetDataUiState(
+                dataId = it.dataId,
                 name = it.name,
                 description = it.description,
                 date = unixTimeToDate(it.date),
@@ -70,6 +70,6 @@ class HomeViewModel(
 }
 
 sealed class HomeUiAction() {
-    class NewSettingsSet(val setId: Int) : HomeUiAction()
-    class OpenPreset(val setId: Int) : HomeUiAction()
+    class NewSettingsSet(val dataId: Int) : HomeUiAction()
+    class OpenPreset(val dataId: Int) : HomeUiAction()
 }

@@ -5,7 +5,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class GetAllSettingsSetsUseCase(
+class GetAllPresetsUseCase(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val repository: SettingsRepository
 ) {

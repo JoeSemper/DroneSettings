@@ -11,13 +11,13 @@ class GetOrCreateMappingPresetUseCase(
     private val repository: SettingsRepository
 ) {
 
-    suspend operator fun invoke(settingsSetId: Int) = withContext(defaultDispatcher) {
-        if (repository.isMappingPresetExists(settingsSetId)) {
-            repository.getMappingPresetBySettingsSetId(settingsSetId)
+    suspend operator fun invoke(dataId: Int) = withContext(defaultDispatcher) {
+        if (repository.isMappingPresetExists(dataId)) {
+            repository.getMappingPresetByDataId(dataId)
         } else {
             val rowId = repository.createNewMappingPreset(
                 MappingPreset(
-                    setId = settingsSetId
+                    dataId = dataId
                 )
             )
 

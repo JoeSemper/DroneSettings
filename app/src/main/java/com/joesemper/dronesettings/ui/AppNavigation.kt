@@ -25,7 +25,7 @@ const val MAPPING_ROUTE = "mapping"
 const val SIGNAL_ROUTE = "signal"
 const val PRESET_ROUTE = "preset"
 
-const val SETTINGS_SET_ID_ARG = "settingsSetId"
+const val PRESET_DATA_ID_ARG = "dataId"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,36 +48,36 @@ fun AppNavHost(
             }
 
             composable(
-                route = "$TIMELINE_ROUTE/{$SETTINGS_SET_ID_ARG}",
-                arguments = listOf(navArgument(SETTINGS_SET_ID_ARG) { type = NavType.IntType })
+                route = "$TIMELINE_ROUTE/{$PRESET_DATA_ID_ARG}",
+                arguments = listOf(navArgument(PRESET_DATA_ID_ARG) { type = NavType.IntType })
             ) {
                 TimeLineSettingsScreen(navController)
             }
 
             composable(
-                route = "$SENSORS_ROUTE/{$SETTINGS_SET_ID_ARG}",
-                arguments = listOf(navArgument(SETTINGS_SET_ID_ARG) { type = NavType.IntType })
+                route = "$SENSORS_ROUTE/{$PRESET_DATA_ID_ARG}",
+                arguments = listOf(navArgument(PRESET_DATA_ID_ARG) { type = NavType.IntType })
             ) {
                 SensorsSettingsScreen(navController)
             }
 
             composable(
-                route = "$MAPPING_ROUTE/{$SETTINGS_SET_ID_ARG}",
-                arguments = listOf(navArgument(SETTINGS_SET_ID_ARG) { type = NavType.IntType })
+                route = "$MAPPING_ROUTE/{$PRESET_DATA_ID_ARG}",
+                arguments = listOf(navArgument(PRESET_DATA_ID_ARG) { type = NavType.IntType })
             ) {
                 SignalMappingSettingsScreen(navController)
             }
 
             composable(
-                route = "$SIGNAL_ROUTE/{$SETTINGS_SET_ID_ARG}",
-                arguments = listOf(navArgument(SETTINGS_SET_ID_ARG) { type = NavType.IntType })
+                route = "$SIGNAL_ROUTE/{$PRESET_DATA_ID_ARG}",
+                arguments = listOf(navArgument(PRESET_DATA_ID_ARG) { type = NavType.IntType })
             ) {
                 SignalSettingsScreen(navController)
             }
 
             composable(
-                route = "$PRESET_ROUTE/{$SETTINGS_SET_ID_ARG}",
-                arguments = listOf(navArgument(SETTINGS_SET_ID_ARG) { type = NavType.IntType })
+                route = "$PRESET_ROUTE/{$PRESET_DATA_ID_ARG}",
+                arguments = listOf(navArgument(PRESET_DATA_ID_ARG) { type = NavType.IntType })
             ) {
                 PresetScreen(navController)
             }

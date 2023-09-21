@@ -11,13 +11,13 @@ class GetOrCreateSensorsPresetUseCase(
     private val repository: SettingsRepository
 ) {
 
-    suspend operator fun invoke(settingsSetId: Int) = withContext(defaultDispatcher) {
-        if (repository.isSensorsPresetExists(settingsSetId)) {
-            repository.getSensorsPresetBySettingsSetId(settingsSetId)
+    suspend operator fun invoke(dataId: Int) = withContext(defaultDispatcher) {
+        if (repository.isSensorsPresetExists(dataId)) {
+            repository.getSensorsPresetByDataId(dataId)
         } else {
             val rowId = repository.createNewSensorsPreset(
                 SensorsPreset(
-                    setId = settingsSetId
+                    dataId = dataId
                 )
             )
 

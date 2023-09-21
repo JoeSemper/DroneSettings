@@ -24,12 +24,10 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -81,8 +79,8 @@ fun PresetScreen(
                 )
                 Toast.makeText(context, savePresetToastMassage, Toast.LENGTH_SHORT).show()
             },
-            initialName = state.settingsPreset.settingsSet.name,
-            initialDescription = state.settingsPreset.settingsSet.description
+            initialName = state.settingsPreset.presetData.name,
+            initialDescription = state.settingsPreset.presetData.description
         )
     }
 
@@ -105,7 +103,7 @@ fun PresetScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = state.settingsPreset.settingsSet.name)
+                    Text(text = state.settingsPreset.presetData.name)
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(HOME_ROUTE) }) {
@@ -114,7 +112,7 @@ fun PresetScreen(
                 },
                 actions = {
                     if (!state.isLoading) {
-                        if (state.settingsPreset.settingsSet.saved) {
+                        if (state.settingsPreset.presetData.saved) {
                             IconButton(onClick = {
                                 openSaveDialog.value = true
                             }) {
@@ -187,7 +185,7 @@ fun PresetDataViewContent(
 
         PresetDescriptionView(
             modifier = Modifier.padding(bottom = 8.dp),
-            description = state.settingsSet.description
+            description = state.presetData.description
         )
 
         TimelinePresetDataView(state = state.timelinePreset)
