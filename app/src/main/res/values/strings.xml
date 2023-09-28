@@ -84,4 +84,5 @@
     <string name="preset_deleted">Preset deleted</string>
     <string name="preset_saved">Preset saved</string>
     <string name="delete_preset">Delete preset?</string>
+    <string name="fields_must_not_be_empty">Fields must not be empty</string>
 </resources>

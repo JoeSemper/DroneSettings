@@ -4,13 +4,18 @@ package com.joesemper.dronesettings.ui.settings.timeline
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -18,6 +23,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -87,6 +93,7 @@ fun TimeLineSettingsScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TimelineScreenContent(
     modifier: Modifier = Modifier,
@@ -96,6 +103,34 @@ fun TimelineScreenContent(
     Column(
         modifier = modifier
     ) {
+
+        Row(
+            modifier = Modifier.fillMaxWidth().height(64.dp).padding(vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            VerticalPager(
+                pageCount = 4
+            ) {
+                Text(
+                    text = it.toString(),
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
+            Spacer(
+                modifier = Modifier.width(8.dp)
+            )
+            VerticalPager(
+                pageCount = 61
+            ) {
+                Text(
+                    text = it.toString(),
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
+        }
+
+
         DelayTimeSettingsView(
             state = state,
             onUiEvent = onUiEvent
