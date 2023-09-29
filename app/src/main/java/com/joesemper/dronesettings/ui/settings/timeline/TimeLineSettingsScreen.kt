@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +16,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -30,11 +34,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
@@ -45,6 +51,21 @@ import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.SettingsUiAction
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import org.koin.androidx.compose.getViewModel
+
+@OptIn(ExperimentalFoundationApi::class)
+fun PagerState.offsetForPage(page: Int) = (currentPage - page) + currentPageOffsetFraction
+
+// OFFSET ONLY FROM THE LEFT
+@OptIn(ExperimentalFoundationApi::class)
+fun PagerState.startOffsetForPage(page: Int): Float {
+    return offsetForPage(page).coerceAtLeast(0f)
+}
+
+// OFFSET ONLY FROM THE RIGHT
+@OptIn(ExperimentalFoundationApi::class)
+fun PagerState.endOffsetForPage(page: Int): Float {
+    return offsetForPage(page).coerceAtMost(0f)
+}
 
 @Composable
 fun TimeLineSettingsScreen(
@@ -60,7 +81,7 @@ fun TimeLineSettingsScreen(
                     navController.navigate(HOME_ROUTE)
                 }
 
-                SettingsUiAction.NavigateBack -> { }
+                SettingsUiAction.NavigateBack -> {}
 
                 is SettingsUiAction.NavigateNext -> {
                     navController.navigate("$SENSORS_ROUTE/${action.argument}")
@@ -104,30 +125,63 @@ fun TimelineScreenContent(
         modifier = modifier
     ) {
 
+        val secondsState = rememberPagerState()
+        val minutesState = rememberPagerState()
+
+        val threePagesPerViewport = object : PageSize {
+            override fun Density.calculateMainAxisPageSize(
+                availableSpace: Int,
+                pageSpacing: Int
+            ): Int {
+                return (availableSpace - 2 * pageSpacing) / 3
+            }
+        }
+
         Row(
-            modifier = Modifier.fillMaxWidth().height(64.dp).padding(vertical = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(256.dp)
+                .padding(vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             VerticalPager(
-                pageCount = 4
+                state = minutesState,
+                pageCount = 60,
+                pageSize = threePagesPerViewport,
+                contentPadding = PaddingValues(vertical = 16.dp)
             ) {
                 Text(
+                    modifier = Modifier.graphicsLayer {
+                        val startOffset = minutesState.startOffsetForPage(it)
+                        translationY = size.width * (startOffset * .99f)
+
+                        alpha = (2f - startOffset) / 2f
+                        val scale = 1f - (startOffset * .6f)
+//                        scaleX = scale
+                        scaleY = scale
+                        rotationX = scale * 360
+//                        rotationY = scale * 360
+//                        rotationZ = scale * 360
+
+
+                    },
                     text = it.toString(),
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.headlineLarge
                 )
             }
             Spacer(
-                modifier = Modifier.width(8.dp)
+                modifier = Modifier.width(16.dp)
             )
-            VerticalPager(
-                pageCount = 61
-            ) {
-                Text(
-                    text = it.toString(),
-                    style = MaterialTheme.typography.titleLarge
-                )
-            }
+//            VerticalPager(
+//                state = secondsState,
+////                pageCount = 61,
+//            ) {
+//                Text(
+//                    text = it.toString(),
+//                    style = MaterialTheme.typography.headlineSmall
+//                )
+//            }
         }
 
 
