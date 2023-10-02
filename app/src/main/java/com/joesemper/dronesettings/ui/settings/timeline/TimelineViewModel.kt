@@ -11,7 +11,7 @@ import com.joesemper.dronesettings.domain.use_case.DeletePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetOrCreateTimelinePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase
 import com.joesemper.dronesettings.ui.PRESET_DATA_ID_ARG
-import com.joesemper.dronesettings.ui.settings.SettingsUiAction
+import com.joesemper.dronesettings.ui.settings.entity.SettingsUiAction
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -48,33 +48,59 @@ class TimelineViewModel(
     fun onTimelineUiEvent(event: TimelineUiEvent) {
         when (event) {
             is TimelineUiEvent.DelayTimeMinutesChange -> {
-                uiState = uiState.copy(delayTimeMinutes = event.minutes)
-
+                uiState = uiState.copy(
+                    delayTimeState = uiState.delayTimeState.copy(
+                        time = uiState.delayTimeState.time.copy(minutes = event.minutes)
+                    )
+                )
             }
 
             is TimelineUiEvent.DelayTimeSecondsChange -> {
-                uiState = uiState.copy(delayTimeSeconds = event.seconds)
-
+                uiState = uiState.copy(
+                    delayTimeState = uiState.delayTimeState.copy(
+                        time = uiState.delayTimeState.time.copy(seconds = event.seconds)
+                    )
+                )
             }
 
             is TimelineUiEvent.CockingTimeActivationChange -> {
-                uiState = uiState.copy(isCockingTimeEnabled = event.isActivated)
+                uiState = uiState.copy(
+                    cockingTimeState = uiState.cockingTimeState.copy(
+                        enabled = event.isEnabled
+                    )
+                )
             }
 
             is TimelineUiEvent.CockingTimeMinutesChange -> {
-                uiState = uiState.copy(cockingTimeMinutes = event.minutes)
+                uiState = uiState.copy(
+                    cockingTimeState = uiState.cockingTimeState.copy(
+                        time = uiState.cockingTimeState.time.copy(minutes = event.minutes)
+                    )
+                )
             }
 
             is TimelineUiEvent.CockingTimeSecondsChange -> {
-                uiState = uiState.copy(cockingTimeSeconds = event.seconds)
+                uiState = uiState.copy(
+                    cockingTimeState = uiState.cockingTimeState.copy(
+                        time = uiState.cockingTimeState.time.copy(seconds = event.seconds)
+                    )
+                )
             }
 
             is TimelineUiEvent.SelfDestructionTimeMinutesChange -> {
-                uiState = uiState.copy(selfDestructionTimeMinutes = event.minutes)
+                uiState = uiState.copy(
+                    selfDestructionTimeState = uiState.selfDestructionTimeState.copy(
+                        time = uiState.selfDestructionTimeState.time.copy(minutes = event.minutes)
+                    )
+                )
             }
 
             is TimelineUiEvent.SelfDestructionTimeSecondsChange -> {
-                uiState = uiState.copy(selfDestructionTimeSeconds = event.seconds)
+                uiState = uiState.copy(
+                    selfDestructionTimeState = uiState.selfDestructionTimeState.copy(
+                        time = uiState.selfDestructionTimeState.time.copy(seconds = event.seconds)
+                    )
+                )
             }
 
             TimelineUiEvent.NextButtonClick -> {
@@ -90,6 +116,7 @@ class TimelineViewModel(
                     actions.send(SettingsUiAction.Close)
                 }
             }
+
         }
     }
 
@@ -98,13 +125,25 @@ class TimelineViewModel(
         currentPreset?.let { preset ->
             uiState = uiState.copy(
                 isLoaded = true,
-                delayTimeMinutes = preset.delayTimeMin,
-                delayTimeSeconds = preset.delayTimeSec,
-                cockingTimeMinutes = preset.cockingTimeMin,
-                cockingTimeSeconds = preset.cockingTimeSec,
-                isCockingTimeEnabled = preset.cockingTimeEnabled,
-                selfDestructionTimeMinutes = preset.selfDestructionTimeMin,
-                selfDestructionTimeSeconds = preset.selfDestructionTimeSec
+                delayTimeState = uiState.delayTimeState.copy(
+                    time = uiState.delayTimeState.time.copy(
+                        minutes = preset.delayTimeMin,
+                        seconds = preset.delayTimeSec
+                    )
+                ),
+                cockingTimeState = uiState.cockingTimeState.copy(
+                    time = uiState.cockingTimeState.time.copy(
+                        minutes = preset.delayTimeMin,
+                        seconds = preset.delayTimeSec
+                    ),
+                    enabled = preset.cockingTimeEnabled
+                ),
+                selfDestructionTimeState = uiState.selfDestructionTimeState.copy(
+                    time = uiState.selfDestructionTimeState.time.copy(
+                        minutes = preset.delayTimeMin,
+                        seconds = preset.delayTimeSec
+                    )
+                ),
             )
         }
     }
@@ -114,13 +153,13 @@ class TimelineViewModel(
             currentPreset?.let { preset ->
                 updatePreset(
                     preset.copy(
-                        delayTimeSec = uiState.delayTimeSeconds,
-                        delayTimeMin = uiState.delayTimeMinutes,
-                        cockingTimeSec = uiState.cockingTimeSeconds,
-                        cockingTimeMin = uiState.cockingTimeMinutes,
-                        cockingTimeEnabled = uiState.isCockingTimeEnabled,
-                        selfDestructionTimeSec = uiState.selfDestructionTimeSeconds,
-                        selfDestructionTimeMin = uiState.selfDestructionTimeMinutes,
+                        delayTimeMin = uiState.delayTimeState.time.minutes,
+                        delayTimeSec = uiState.delayTimeState.time.seconds,
+                        cockingTimeMin = uiState.cockingTimeState.time.minutes,
+                        cockingTimeSec = uiState.cockingTimeState.time.seconds,
+                        cockingTimeEnabled = uiState.cockingTimeState.enabled,
+                        selfDestructionTimeMin = uiState.selfDestructionTimeState.time.minutes,
+                        selfDestructionTimeSec = uiState.selfDestructionTimeState.time.seconds,
                     )
                 )
             }

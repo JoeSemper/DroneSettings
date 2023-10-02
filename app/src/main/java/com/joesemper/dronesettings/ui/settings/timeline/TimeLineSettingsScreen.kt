@@ -4,22 +4,13 @@ package com.joesemper.dronesettings.ui.settings.timeline
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.PageSize
-import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.VerticalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -27,20 +18,17 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
@@ -48,24 +36,9 @@ import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.SENSORS_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
-import com.joesemper.dronesettings.ui.settings.SettingsUiAction
+import com.joesemper.dronesettings.ui.settings.entity.SettingsUiAction
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import org.koin.androidx.compose.getViewModel
-
-@OptIn(ExperimentalFoundationApi::class)
-fun PagerState.offsetForPage(page: Int) = (currentPage - page) + currentPageOffsetFraction
-
-// OFFSET ONLY FROM THE LEFT
-@OptIn(ExperimentalFoundationApi::class)
-fun PagerState.startOffsetForPage(page: Int): Float {
-    return offsetForPage(page).coerceAtLeast(0f)
-}
-
-// OFFSET ONLY FROM THE RIGHT
-@OptIn(ExperimentalFoundationApi::class)
-fun PagerState.endOffsetForPage(page: Int): Float {
-    return offsetForPage(page).coerceAtMost(0f)
-}
 
 @Composable
 fun TimeLineSettingsScreen(
@@ -114,7 +87,6 @@ fun TimeLineSettingsScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TimelineScreenContent(
     modifier: Modifier = Modifier,
@@ -125,82 +97,22 @@ fun TimelineScreenContent(
         modifier = modifier
     ) {
 
-        val secondsState = rememberPagerState()
-        val minutesState = rememberPagerState()
-
-        val threePagesPerViewport = object : PageSize {
-            override fun Density.calculateMainAxisPageSize(
-                availableSpace: Int,
-                pageSpacing: Int
-            ): Int {
-                return (availableSpace - 2 * pageSpacing) / 3
-            }
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(256.dp)
-                .padding(vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            VerticalPager(
-                state = minutesState,
-                pageCount = 60,
-                pageSize = threePagesPerViewport,
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                Text(
-                    modifier = Modifier.graphicsLayer {
-                        val startOffset = minutesState.startOffsetForPage(it)
-                        translationY = size.width * (startOffset * .99f)
-
-                        alpha = (2f - startOffset) / 2f
-                        val scale = 1f - (startOffset * .6f)
-//                        scaleX = scale
-                        scaleY = scale
-                        rotationX = scale * 360
-//                        rotationY = scale * 360
-//                        rotationZ = scale * 360
-
-
-                    },
-                    text = it.toString(),
-                    style = MaterialTheme.typography.headlineLarge
-                )
-            }
-            Spacer(
-                modifier = Modifier.width(16.dp)
-            )
-//            VerticalPager(
-//                state = secondsState,
-////                pageCount = 61,
-//            ) {
-//                Text(
-//                    text = it.toString(),
-//                    style = MaterialTheme.typography.headlineSmall
-//                )
-//            }
-        }
-
-
         DelayTimeSettingsView(
-            state = state,
+            state = state.delayTimeState,
             onUiEvent = onUiEvent
         )
 
         Divider(modifier = Modifier.fillMaxWidth())
 
         CockingTimeSettingsView(
-            state = state,
+            state = state.cockingTimeState,
             onUiEvent = onUiEvent
         )
 
         Divider(modifier = Modifier.fillMaxWidth())
 
         MaximumTimeSettingsView(
-            state = state,
+            state = state.selfDestructionTimeState,
             onUiEvent = onUiEvent
         )
     }
@@ -209,7 +121,7 @@ fun TimelineScreenContent(
 @Composable
 fun DelayTimeSettingsView(
     modifier: Modifier = Modifier,
-    state: TimelineUiState,
+    state: DelayTimeUiState,
     onUiEvent: (TimelineUiEvent) -> Unit
 ) {
     Column(
@@ -225,8 +137,10 @@ fun DelayTimeSettingsView(
             modifier = Modifier.padding(vertical = 16.dp),
             title = stringResource(R.string.time),
             supportingText = stringResource(R.string.from_0_to_3_minutes),
-            minutes = state.delayTimeMinutes,
-            seconds = state.delayTimeSeconds,
+            minutes = state.time.minutes,
+            seconds = state.time.seconds,
+            isMinutesError = state.error.isMinutesError,
+            isSecondsError = state.error.isSecondsError,
             onInputMinutes = { onUiEvent(TimelineUiEvent.DelayTimeMinutesChange(it)) },
             onInputSeconds = { onUiEvent(TimelineUiEvent.DelayTimeSecondsChange(it)) },
         )
@@ -237,7 +151,7 @@ fun DelayTimeSettingsView(
 @Composable
 fun CockingTimeSettingsView(
     modifier: Modifier = Modifier,
-    state: TimelineUiState,
+    state: CockingTimeUiState,
     onUiEvent: (TimelineUiEvent) -> Unit
 ) {
     Column(
@@ -254,7 +168,7 @@ fun CockingTimeSettingsView(
                 .fillMaxWidth()
                 .padding(vertical = 16.dp),
             text = stringResource(R.string.activate_cocking_time),
-            checked = state.isCockingTimeEnabled,
+            checked = state.enabled,
             onCheckedChange = { onUiEvent(TimelineUiEvent.CockingTimeActivationChange(it)) }
         )
 
@@ -262,9 +176,11 @@ fun CockingTimeSettingsView(
             modifier = Modifier.padding(bottom = 16.dp),
             title = stringResource(R.string.time),
             supportingText = stringResource(R.string.from_0_to_3_minutes),
-            minutes = state.cockingTimeMinutes,
-            seconds = state.cockingTimeSeconds,
-            enabled = state.isCockingTimeEnabled,
+            minutes = state.time.minutes,
+            seconds = state.time.seconds,
+            isMinutesError = state.error.isMinutesError,
+            isSecondsError = state.error.isSecondsError,
+            enabled = state.enabled,
             onInputMinutes = { onUiEvent(TimelineUiEvent.CockingTimeMinutesChange(it)) },
             onInputSeconds = { onUiEvent(TimelineUiEvent.CockingTimeSecondsChange(it)) },
         )
@@ -275,7 +191,7 @@ fun CockingTimeSettingsView(
 @Composable
 fun MaximumTimeSettingsView(
     modifier: Modifier = Modifier,
-    state: TimelineUiState,
+    state: SelfDestructionTimeUiState,
     onUiEvent: (TimelineUiEvent) -> Unit
 ) {
     Column(
@@ -293,8 +209,10 @@ fun MaximumTimeSettingsView(
             modifier = Modifier.padding(vertical = 16.dp),
             title = stringResource(R.string.time),
             supportingText = stringResource(R.string.from_0_to_10_minutes),
-            minutes = state.selfDestructionTimeMinutes,
-            seconds = state.selfDestructionTimeSeconds,
+            minutes = state.time.minutes,
+            seconds = state.time.seconds,
+            isMinutesError = state.error.isMinutesError,
+            isSecondsError = state.error.isSecondsError,
             onInputMinutes = { onUiEvent(TimelineUiEvent.SelfDestructionTimeMinutesChange(it)) },
             onInputSeconds = { onUiEvent(TimelineUiEvent.SelfDestructionTimeSecondsChange(it)) },
         )
@@ -311,6 +229,8 @@ fun TimeInputLayout(
     minutes: String,
     seconds: String,
     enabled: Boolean = true,
+    isMinutesError: Boolean = false,
+    isSecondsError: Boolean = false,
     onInputMinutes: (String) -> Unit,
     onInputSeconds: (String) -> Unit
 ) {
@@ -337,6 +257,7 @@ fun TimeInputLayout(
                 onValueChange = { onInputMinutes(it) },
                 singleLine = true,
                 enabled = enabled,
+                isError = isMinutesError,
                 leadingIcon = {
                     Icon(
                         modifier = Modifier.size(32.dp),
@@ -362,6 +283,7 @@ fun TimeInputLayout(
                 onValueChange = { onInputSeconds(it) },
                 singleLine = true,
                 enabled = enabled,
+                isError = isSecondsError,
                 trailingIcon = {
                     Text(text = stringResource(id = R.string.sec))
                 },

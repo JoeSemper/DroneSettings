@@ -11,7 +11,7 @@ import com.joesemper.dronesettings.domain.use_case.DeletePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetOrCreateMappingPresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase
 import com.joesemper.dronesettings.ui.PRESET_DATA_ID_ARG
-import com.joesemper.dronesettings.ui.settings.SettingsUiAction
+import com.joesemper.dronesettings.ui.settings.entity.SettingsUiAction
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
