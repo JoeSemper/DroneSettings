@@ -13,10 +13,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.joesemper.dronesettings.ui.home.HomeScreen
 import com.joesemper.dronesettings.ui.preset.PresetScreen
-import com.joesemper.dronesettings.ui.settings.mapping.SignalMappingSettingsScreen
-import com.joesemper.dronesettings.ui.settings.sensors.SensorsSettingsScreen
-import com.joesemper.dronesettings.ui.settings.signal.SignalSettingsScreen
-import com.joesemper.dronesettings.ui.settings.timeline.TimeLineSettingsScreen
+import com.joesemper.dronesettings.ui.settings.screens.mapping.SignalMappingSettingsScreen
+import com.joesemper.dronesettings.ui.settings.screens.sensors.SensorsSettingsScreen
+import com.joesemper.dronesettings.ui.settings.screens.signal.SignalSettingsScreen
+import com.joesemper.dronesettings.ui.settings.screens.timeline.TimeLineSettingsScreen
 
 const val HOME_ROUTE = "home"
 const val TIMELINE_ROUTE = "timeline"

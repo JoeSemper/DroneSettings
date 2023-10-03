@@ -1,4 +1,4 @@
-package com.joesemper.dronesettings.ui.settings.mapping
+package com.joesemper.dronesettings.ui.settings.screens.mapping
 
 data class MappingUiState(
     val isLoaded: Boolean = false,

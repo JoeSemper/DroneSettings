@@ -1,4 +1,4 @@
-package com.joesemper.dronesettings.ui.settings.entity.errors
+package com.joesemper.dronesettings.ui.settings.state.errors
 
 import androidx.compose.runtime.Composable
 

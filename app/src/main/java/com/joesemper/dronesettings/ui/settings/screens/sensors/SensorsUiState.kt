@@ -1,4 +1,4 @@
-package com.joesemper.dronesettings.ui.settings.sensors
+package com.joesemper.dronesettings.ui.settings.screens.sensors
 
 data class SensorsUiState(
     val isLoaded: Boolean = false,

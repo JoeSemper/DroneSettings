@@ -1,4 +1,4 @@
-package com.joesemper.dronesettings.ui.settings.mapping
+package com.joesemper.dronesettings.ui.settings.screens.mapping
 
 sealed class MappingUiEvent {
     class RelayOneStateChange(val selected: MappingSelectOption): MappingUiEvent()

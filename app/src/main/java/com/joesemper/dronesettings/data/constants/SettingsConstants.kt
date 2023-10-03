@@ -6,22 +6,22 @@ class SettingsConstants {
         // Timeline constants
 
         // Минимальная задержка до активации всех систем, секунд
-        const val MIN_TIME_DELAY = 0
+        const val MIN_TIME_DELAY = 0f
 
         // Максимальная задержка до активации всех систем, секунд
-        const val MAX_TIME_DELAY = 180
+        const val MAX_TIME_DELAY = 180f
 
         // Минимальное время взведения, секунд
-        const val MIN_COCKING_TIME = 0
+        const val MIN_COCKING_TIME = 0f
 
         // Максимальное время взведения, секунд
-        const val MAX_COCKING_TIME = 180
+        const val MAX_COCKING_TIME = 180f
 
         // Минимальное время самоуничтожения, секунд
-        const val MIN_SELF_DESTRUCTION_TIME = 0
+        const val MIN_SELF_DESTRUCTION_TIME = 0f
 
         // Максимальное время самоуничтожения, секунд
-        const val MAX_SELF_DESTRUCTION_TIME = 600
+        const val MAX_SELF_DESTRUCTION_TIME = 600f
 
         // Sensors constants
 

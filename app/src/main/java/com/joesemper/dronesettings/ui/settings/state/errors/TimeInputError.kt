@@ -1,4 +1,4 @@
-package com.joesemper.dronesettings.ui.settings.entity.errors
+package com.joesemper.dronesettings.ui.settings.state.errors
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -28,6 +28,19 @@ sealed class TimeInputError (
         @Composable
         override fun getErrorMassage(): String {
             return stringResource(R.string.fields_must_not_be_empty)
+        }
+    }
+
+    class OutOfRange(
+        isMinutesError: Boolean = true,
+        isSecondsError: Boolean = true
+    ) : TimeInputError(
+        isMinutesError = isMinutesError,
+        isSecondsError = isSecondsError
+    ) {
+        @Composable
+        override fun getErrorMassage(): String {
+            return stringResource(R.string.value_is_out_of_range)
         }
     }
 

@@ -86,4 +86,6 @@
     <string name="preset_saved">Пресет сохранен</string>
     <string name="delete_preset">Удалить пресет?</string>
     <string name="fields_must_not_be_empty">Fields must not be empty</string>
+    <string name="from_to_minutes">From %1$s to %2$s minutes</string>
+    <string name="value_is_out_of_range">Value is out of range</string>
 </resources>

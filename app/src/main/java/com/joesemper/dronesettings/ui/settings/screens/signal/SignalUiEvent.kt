@@ -1,4 +1,4 @@
-package com.joesemper.dronesettings.ui.settings.signal
+package com.joesemper.dronesettings.ui.settings.screens.signal
 
 sealed class SignalUiEvent {
     class CockingPulseWidthHiChange(val width: String): SignalUiEvent()

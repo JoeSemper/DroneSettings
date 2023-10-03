@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.joesemper.dronesettings.ui.settings.timeline
+package com.joesemper.dronesettings.ui.settings.screens.timeline
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -18,12 +18,14 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,8 +38,9 @@ import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.SENSORS_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
-import com.joesemper.dronesettings.ui.settings.entity.SettingsUiAction
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
+import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
+import com.joesemper.dronesettings.ui.settings.state.TimeFieldState
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -135,10 +138,15 @@ fun DelayTimeSettingsView(
 
         TimeInputLayout(
             modifier = Modifier.padding(vertical = 16.dp),
+            state = state.t,
             title = stringResource(R.string.time),
-            supportingText = stringResource(R.string.from_0_to_3_minutes),
-            minutes = state.time.minutes,
-            seconds = state.time.seconds,
+            supportingText = stringResource(
+                R.string.from_to_minutes,
+                state.timeLimits.minValue,
+                state.timeLimits.maxValue
+            ),
+            minutes = state.t.minutes,
+            seconds = state.t.seconds,
             isMinutesError = state.error.isMinutesError,
             isSecondsError = state.error.isSecondsError,
             onInputMinutes = { onUiEvent(TimelineUiEvent.DelayTimeMinutesChange(it)) },
@@ -175,7 +183,11 @@ fun CockingTimeSettingsView(
         TimeInputLayout(
             modifier = Modifier.padding(bottom = 16.dp),
             title = stringResource(R.string.time),
-            supportingText = stringResource(R.string.from_0_to_3_minutes),
+            supportingText = stringResource(
+                R.string.from_to_minutes,
+                state.timeLimits.minValue,
+                state.timeLimits.maxValue
+            ),
             minutes = state.time.minutes,
             seconds = state.time.seconds,
             isMinutesError = state.error.isMinutesError,
@@ -208,7 +220,11 @@ fun MaximumTimeSettingsView(
         TimeInputLayout(
             modifier = Modifier.padding(vertical = 16.dp),
             title = stringResource(R.string.time),
-            supportingText = stringResource(R.string.from_0_to_10_minutes),
+            supportingText = stringResource(
+                R.string.from_to_minutes,
+                state.timeLimits.minValue,
+                state.timeLimits.maxValue
+            ),
             minutes = state.time.minutes,
             seconds = state.time.seconds,
             isMinutesError = state.error.isMinutesError,
@@ -224,6 +240,7 @@ fun MaximumTimeSettingsView(
 @Composable
 fun TimeInputLayout(
     modifier: Modifier = Modifier,
+    state: TimeFieldState = TimeFieldState(),
     title: String? = null,
     supportingText: String? = null,
     minutes: String,
@@ -238,8 +255,7 @@ fun TimeInputLayout(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(4.dp)
-    )
-    {
+    ) {
         title?.let {
             Text(text = title)
         }
@@ -251,13 +267,19 @@ fun TimeInputLayout(
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.6f),
-                value = minutes,
+                    .weight(0.6f)
+                    .onFocusChanged { focusState ->
+                        state.onFocusChange(focusState.isFocused)
+                        if (!focusState.isFocused) {
+                            state.enableShowErrors()
+                        }
+                    },
+                value = state.minutes,
                 textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End),
-                onValueChange = { onInputMinutes(it) },
+                onValueChange = { state.minutes = it },
                 singleLine = true,
                 enabled = enabled,
-                isError = isMinutesError,
+                isError = state.showErrors(),
                 leadingIcon = {
                     Icon(
                         modifier = Modifier.size(32.dp),
@@ -277,19 +299,30 @@ fun TimeInputLayout(
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.4f),
-                value = seconds,
+                    .weight(0.4f)
+                    .onFocusChanged { focusState ->
+                        state.onFocusChange(focusState.isFocused)
+                        if (!focusState.isFocused) {
+                            state.enableShowErrors()
+                        }
+                    },
+                value = state.seconds,
                 textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End),
-                onValueChange = { onInputSeconds(it) },
+                onValueChange = { state.seconds = it },
                 singleLine = true,
                 enabled = enabled,
-                isError = isSecondsError,
+                isError = state.showErrors(),
                 trailingIcon = {
                     Text(text = stringResource(id = R.string.sec))
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
             )
         }
+
+        Text(
+            text = state.getErrorMassage(),
+            color = MaterialTheme.colorScheme.error
+        )
 
     }
 }

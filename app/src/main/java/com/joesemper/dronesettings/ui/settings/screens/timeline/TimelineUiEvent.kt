@@ -1,4 +1,4 @@
-package com.joesemper.dronesettings.ui.settings.timeline
+package com.joesemper.dronesettings.ui.settings.screens.timeline
 
 sealed class TimelineUiEvent() {
     class DelayTimeMinutesChange(val minutes: String) : TimelineUiEvent()

@@ -1,4 +1,4 @@
-package com.joesemper.dronesettings.ui.settings.signal
+package com.joesemper.dronesettings.ui.settings.screens.signal
 
 data class SignalUiState (
     val isLoaded: Boolean = false,

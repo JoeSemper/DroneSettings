@@ -1,4 +1,4 @@
-package com.joesemper.dronesettings.ui.settings.mapping
+package com.joesemper.dronesettings.ui.settings.screens.mapping
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
@@ -28,7 +28,7 @@ import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.SIGNAL_ROUTE
-import com.joesemper.dronesettings.ui.settings.entity.SettingsUiAction
+import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import org.koin.androidx.compose.getViewModel
