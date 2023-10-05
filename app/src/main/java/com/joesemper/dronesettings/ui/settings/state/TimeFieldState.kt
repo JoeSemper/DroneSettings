@@ -4,28 +4,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
-import com.joesemper.dronesettings.R
 
-class TimeFieldState {
+open class TimeFieldState(
+    private val validator: (min: String, sec: String) -> ValidationResult = { _, _ -> ValidationResult() },
+) {
     var minutes: String by mutableStateOf("")
     var seconds: String by mutableStateOf("")
 
-    private var isFocusedDirty: Boolean by mutableStateOf(false)
-    private var isFocused: Boolean by mutableStateOf(false)
+    private var isFocusedDirtyMinutes: Boolean by mutableStateOf(false)
+    private var isFocusedDirtySeconds: Boolean by mutableStateOf(false)
+    private var isFocusedMinutes: Boolean by mutableStateOf(false)
+    private var isFocusedSeconds: Boolean by mutableStateOf(false)
 
     private var displayErrors: Boolean by mutableStateOf(false)
 
-    val isValid: Boolean
-        get() = minutes.isNotBlank() && seconds.isNotBlank()
+    open val isValid: Boolean
+        get() = validator(minutes, seconds).isValid
 
-    fun onFocusChange(focused: Boolean) {
-        isFocused = focused
-        if (focused) isFocusedDirty = true
+    fun onMinutesFocusChange(focused: Boolean) {
+        isFocusedMinutes = focused
+        if (focused) isFocusedDirtyMinutes = true
+    }
+
+    fun onSecondsFocusChange(focused: Boolean) {
+        isFocusedSeconds = focused
+        if (focused) isFocusedDirtySeconds = true
     }
 
     fun enableShowErrors() {
-        if (isFocusedDirty) {
+        if (isFocusedDirtyMinutes && isFocusedDirtySeconds) {
             displayErrors = true
         }
     }
@@ -33,11 +40,11 @@ class TimeFieldState {
     fun showErrors(): Boolean = !isValid && displayErrors
 
     @Composable
-    fun getErrorMassage(): String {
+    open fun getErrorMassage(): String? {
         return if (showErrors()) {
-            stringResource(id = R.string.fields_must_not_be_empty)
+            validator(minutes, seconds).errorMassage()
         } else {
-            ""
+            null
         }
     }
 

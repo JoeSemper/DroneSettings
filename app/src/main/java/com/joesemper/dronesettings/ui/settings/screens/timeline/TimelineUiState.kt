@@ -1,6 +1,7 @@
 package com.joesemper.dronesettings.ui.settings.screens.timeline
 
 import com.joesemper.dronesettings.data.constants.SettingsConstants
+import com.joesemper.dronesettings.ui.settings.screens.timeline.state.DelayTimeFieldState
 import com.joesemper.dronesettings.ui.settings.state.Limits
 import com.joesemper.dronesettings.ui.settings.state.TimeFieldState
 import com.joesemper.dronesettings.ui.settings.state.TimeState
@@ -19,7 +20,7 @@ data class TimelineUiState(
 }
 
 data class DelayTimeUiState(
-    val t: TimeFieldState = TimeFieldState(),
+    val t: TimeFieldState = DelayTimeFieldState(),
     val time: TimeState = TimeState(),
     val timeLimits: Limits = Limits(
         minValue = SettingsConstants.MIN_TIME_DELAY,

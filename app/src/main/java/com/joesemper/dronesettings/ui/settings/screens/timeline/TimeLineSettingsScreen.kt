@@ -269,10 +269,11 @@ fun TimeInputLayout(
                     .fillMaxWidth()
                     .weight(0.6f)
                     .onFocusChanged { focusState ->
-                        state.onFocusChange(focusState.isFocused)
+                        state.onMinutesFocusChange(focusState.isFocused)
                         if (!focusState.isFocused) {
                             state.enableShowErrors()
                         }
+
                     },
                 value = state.minutes,
                 textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End),
@@ -301,7 +302,7 @@ fun TimeInputLayout(
                     .fillMaxWidth()
                     .weight(0.4f)
                     .onFocusChanged { focusState ->
-                        state.onFocusChange(focusState.isFocused)
+                        state.onSecondsFocusChange(focusState.isFocused)
                         if (!focusState.isFocused) {
                             state.enableShowErrors()
                         }
@@ -319,10 +320,13 @@ fun TimeInputLayout(
             )
         }
 
-        Text(
-            text = state.getErrorMassage(),
-            color = MaterialTheme.colorScheme.error
-        )
+        state.getErrorMassage()?.let { massage ->
+            Text(
+                text = massage,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
 
     }
 }
