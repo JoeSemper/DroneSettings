@@ -10,23 +10,35 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.joesemper.dronesettings.R
 
 @Composable
@@ -281,4 +294,171 @@ fun SettingsDefaultTopBar(
             }
         }
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimeSelectDialog(
+    onDismiss: () -> Unit,
+    title: String,
+    initialMinutes: String = "",
+    initialSeconds: String = ""
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        ) {
+            Column(
+                modifier = Modifier.padding(vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TitleWithSubtitleView(title = title)
+
+                var minutes by remember { mutableStateOf(initialMinutes) }
+                var seconds by remember { mutableStateOf(initialSeconds) }
+
+                var isMinutesFocused by remember { mutableStateOf(true) }
+
+                fun updateValue(newValue: String) {
+                    if (isMinutesFocused) {
+                        if (minutes.toList().size > 1) {
+                            minutes = newValue
+                        } else {
+                            minutes += newValue
+                        }
+                    } else {
+                        if (seconds.toList().size > 1) {
+                            seconds = newValue
+                        } else {
+                            seconds += newValue
+                        }
+                    }
+                }
+
+                fun clear() {
+                    if (isMinutesFocused) {
+                        minutes = ""
+                    } else {
+                        seconds = ""
+                    }
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    InputChip(
+                        selected = isMinutesFocused,
+                        onClick = { isMinutesFocused = true },
+                        colors = InputChipDefaults.inputChipColors(selectedContainerColor = MaterialTheme.colorScheme.surfaceVariant),
+                        label = {
+                            if (minutes.isBlank()) {
+                                Text(
+                                    text = "00",
+                                    color = Color.Gray,
+                                    style = MaterialTheme.typography.headlineLarge
+                                )
+                            } else {
+                                Text(
+                                    text = minutes,
+                                    style = MaterialTheme.typography.headlineLarge
+                                )
+                            }
+                        }
+                    )
+
+                    Text(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        text = ":",
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+
+                    InputChip(
+                        selected = !isMinutesFocused,
+                        onClick = { isMinutesFocused = false },
+                        colors = InputChipDefaults.inputChipColors(selectedContainerColor = MaterialTheme.colorScheme.surfaceVariant),
+                        label = {
+                            if (seconds.isBlank()) {
+                                Text(
+                                    text = "00",
+                                    color = Color.Gray,
+                                    style = MaterialTheme.typography.headlineLarge
+                                )
+                            } else {
+                                Text(
+                                    text = seconds,
+                                    style = MaterialTheme.typography.headlineLarge
+                                )
+                            }
+
+                        }
+                    )
+                }
+
+                NumericKeyboard(
+                    onDigitClick = { updateValue(it) },
+                    onClear = { clear() },
+                    onDone = { }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun NumericKeyboard(
+    modifier: Modifier = Modifier,
+    onDigitClick: (String) -> Unit,
+    onClear: () -> Unit,
+    onDone: () -> Unit
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        (0..2).forEach { i ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                (1..3).forEach { j ->
+                    val buttonValue: String = remember { (j + 3 * i).toString() }
+                    SuggestionChip(
+                        shape = CircleShape,
+                        onClick = { onDigitClick(buttonValue) },
+                        label = {
+                            Text(
+                                text = buttonValue,
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                        })
+                }
+            }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            IconButton(onClick = onClear) {
+                Icon(imageVector = Icons.Default.Clear, contentDescription = null)
+            }
+            SuggestionChip(
+                shape = CircleShape,
+                onClick = { onDigitClick("0") },
+                label = {
+                    Text(
+                        text = "0",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                })
+            IconButton(onClick = onDone) {
+                Icon(imageVector = Icons.Default.Done, contentDescription = null)
+            }
+        }
+    }
 }

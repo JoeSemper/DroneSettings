@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,6 +24,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -38,6 +43,7 @@ import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.SENSORS_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
+import com.joesemper.dronesettings.ui.settings.TimeSelectDialog
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
 import com.joesemper.dronesettings.ui.settings.state.TimeFieldState
@@ -99,6 +105,20 @@ fun TimelineScreenContent(
     Column(
         modifier = modifier
     ) {
+
+        var isVisible by remember { mutableStateOf(false) }
+
+        Button(onClick = { isVisible = true }) {
+
+        }
+
+        if (isVisible) {
+            TimeSelectDialog(
+                title = "Time",
+                onDismiss = { isVisible = false }
+            )
+        }
+
 
         DelayTimeSettingsView(
             state = state.delayTimeState,
