@@ -47,6 +47,7 @@ import com.joesemper.dronesettings.ui.settings.TimeSelectDialog
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
 import com.joesemper.dronesettings.ui.settings.state.TimeFieldState
+import com.joesemper.dronesettings.ui.settings.state.rememberTimeSelectDialogState
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -115,10 +116,12 @@ fun TimelineScreenContent(
         if (isVisible) {
             TimeSelectDialog(
                 title = "Time",
-                onDismiss = { isVisible = false }
+                onDismiss = { isVisible = false },
+                state = rememberTimeSelectDialogState(
+                    limitInSeconds = 180
+                )
             )
         }
-
 
         DelayTimeSettingsView(
             state = state.delayTimeState,
