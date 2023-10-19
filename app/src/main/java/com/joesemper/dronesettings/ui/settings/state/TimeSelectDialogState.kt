@@ -10,18 +10,17 @@ import androidx.compose.ui.res.stringResource
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.data.constants.SettingsConstants
 import com.joesemper.dronesettings.utils.Constants.Companion.MAX_SECONDS
-import com.joesemper.dronesettings.utils.Constants.Companion.SECONDS_IN_MINUTE
 
 @Composable
 fun rememberTimeSelectDialogState(
     initialMinutes: String = "",
     initialSeconds: String = "",
-    limitInSeconds: Int
+    validator: (min: String, sec: String) -> ValidationResult = { _, _ -> ValidationResult() }
 ) = rememberSaveable(saver = TimeSelectDialogStateSaver) {
     TimeSelectDialogState(
         initialMinutes = initialMinutes,
         initialSeconds = initialSeconds,
-        limitInSeconds = limitInSeconds
+        validator = validator
     )
 }
 
@@ -29,14 +28,19 @@ val TimeSelectDialogStateSaver = run {
     val min = "Minutes"
     val sec = "Seconds"
     val focusMin = "Focus"
-    val limit = "Limit"
+    val minWasFocused = "MinFocused"
+    val secWasFocused = "SecWasFocused"
+    val showErrors = "ShowErrors"
+
     mapSaver(
         save = {
             mapOf(
                 min to it.minutes,
                 sec to it.seconds,
                 focusMin to it.isMinutesFocused,
-                limit to it.limitInSeconds
+                minWasFocused to it.minutesWasFocused,
+                secWasFocused to it.secondsWasFocused,
+                showErrors to it.showErrors
             )
         },
         restore = {
@@ -44,7 +48,9 @@ val TimeSelectDialogStateSaver = run {
                 initialMinutes = it[min] as String,
                 initialSeconds = it[sec] as String,
                 initialFocusMinutes = it[focusMin] as Boolean,
-                limitInSeconds = it[limit] as Int
+                initialMinutesWasFocused = it[minWasFocused] as Boolean,
+                initialSecondsWasFocused = it[secWasFocused] as Boolean,
+                initialShowErrors = it[showErrors] as Boolean
             )
         }
     )
@@ -54,10 +60,20 @@ class TimeSelectDialogState(
     initialMinutes: String = "",
     initialSeconds: String = "",
     initialFocusMinutes: Boolean = true,
-    val limitInSeconds: Int = SettingsConstants.MAX_TIME_DELAY.toInt()
+    initialMinutesWasFocused: Boolean = false,
+    initialSecondsWasFocused: Boolean = false,
+    initialShowErrors: Boolean = false,
+    private val validator: (min: String, sec: String) -> ValidationResult = { _, _ -> ValidationResult() },
 ) {
     var minutes by mutableStateOf(initialMinutes)
     var seconds by mutableStateOf(initialSeconds)
+
+    var minutesWasFocused by mutableStateOf(initialFocusMinutes || initialMinutesWasFocused)
+        private set
+    var secondsWasFocused by mutableStateOf(!initialFocusMinutes || initialSecondsWasFocused)
+        private set
+    var showErrors by mutableStateOf(initialShowErrors)
+        private set
 
     private var currentFocus: TimeFocus by mutableStateOf(
         if (initialFocusMinutes) TimeFocus.Minutes else TimeFocus.Seconds
@@ -69,23 +85,37 @@ class TimeSelectDialogState(
     val isSecondsFocused: Boolean
         get() = currentFocus is TimeFocus.Seconds
 
+    val isValid: Boolean
+        get() = validator(minutes, seconds).isValid
+
     val isError: Boolean
-        get() = checkError()
+        get() = !isValid && showErrors
 
     fun focusMinutes() {
+        checkShowErrors()
         currentFocus = TimeFocus.Minutes
+        minutesWasFocused = true
     }
 
     fun focusSeconds() {
+        checkShowErrors()
         currentFocus = TimeFocus.Seconds
+        secondsWasFocused = true
     }
 
     fun focusNext() {
+        checkShowErrors()
         currentFocus = if (currentFocus is TimeFocus.Minutes) {
+            secondsWasFocused = true
             TimeFocus.Seconds
         } else {
+            minutesWasFocused = true
             TimeFocus.Minutes
         }
+    }
+
+    fun enableShowErrors() {
+        showErrors = true
     }
 
     fun updateValue(newValue: String) {
@@ -102,7 +132,7 @@ class TimeSelectDialogState(
                 if (seconds.toList().size > 1) {
                     seconds = newValue
                 } else {
-                    if (seconds.isNotBlank() && (seconds.toInt() > MAX_SECONDS)) {
+                    if (seconds.isNotEmpty() && ((seconds + newValue).toInt() > MAX_SECONDS)) {
                         seconds = MAX_SECONDS.toString()
                     } else {
                         seconds += newValue
@@ -126,12 +156,33 @@ class TimeSelectDialogState(
     }
 
     @Composable
-    fun getErrorMassage(): String = stringResource(id = R.string.value_is_out_of_range)
+    fun getErrorMassage(): String = validator(minutes, seconds).errorMassage()
 
-    private fun checkError(): Boolean {
-        val min = if (minutes.isBlank()) 0 else minutes.toInt()
-        val sec = if (seconds.isBlank()) 0 else seconds.toInt()
-        return (min * SECONDS_IN_MINUTE + sec > limitInSeconds)
+    private fun checkShowErrors() {
+        if (minutesWasFocused && secondsWasFocused) showErrors = true
+    }
+
+}
+
+fun delayTimeValidator(min: String, sec: String): ValidationResult {
+    return when {
+        min.isBlank() || sec.isBlank() -> {
+            ValidationResult(
+                isValid = false,
+                errorMassage = { stringResource(id = R.string.fields_must_not_be_empty) }
+            )
+        }
+
+        else -> {
+            if ((min.toInt() * 60 + sec.toInt()) > SettingsConstants.MAX_TIME_DELAY) {
+                ValidationResult(
+                    isValid = false,
+                    errorMassage = { stringResource(id = R.string.value_is_out_of_range) }
+                )
+            } else {
+                ValidationResult(isValid = true)
+            }
+        }
     }
 }
 

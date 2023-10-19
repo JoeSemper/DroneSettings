@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -43,10 +42,12 @@ import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.SENSORS_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
+import com.joesemper.dronesettings.ui.settings.TimeLayout
 import com.joesemper.dronesettings.ui.settings.TimeSelectDialog
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
 import com.joesemper.dronesettings.ui.settings.state.TimeFieldState
+import com.joesemper.dronesettings.ui.settings.state.delayTimeValidator
 import com.joesemper.dronesettings.ui.settings.state.rememberTimeSelectDialogState
 import org.koin.androidx.compose.getViewModel
 
@@ -107,22 +108,6 @@ fun TimelineScreenContent(
         modifier = modifier
     ) {
 
-        var isVisible by remember { mutableStateOf(false) }
-
-        Button(onClick = { isVisible = true }) {
-
-        }
-
-        if (isVisible) {
-            TimeSelectDialog(
-                title = "Time",
-                onDismiss = { isVisible = false },
-                state = rememberTimeSelectDialogState(
-                    limitInSeconds = 180
-                )
-            )
-        }
-
         DelayTimeSettingsView(
             state = state.delayTimeState,
             onUiEvent = onUiEvent
@@ -150,6 +135,25 @@ fun DelayTimeSettingsView(
     state: DelayTimeUiState,
     onUiEvent: (TimelineUiEvent) -> Unit
 ) {
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        TimeSelectDialog(
+            title = stringResource(R.string.delay_time),
+            onDismiss = { showDialog = false },
+            onApply = {min, sec ->
+                onUiEvent(TimelineUiEvent.DelayTimeMinutesChange(min))
+                onUiEvent(TimelineUiEvent.DelayTimeSecondsChange(sec))
+            },
+            state = rememberTimeSelectDialogState(
+                initialMinutes = state.time.minutes,
+                initialSeconds = state.time.seconds,
+                validator = ::delayTimeValidator,
+            )
+        )
+    }
+
     Column(
         modifier = modifier.padding(vertical = 16.dp)
     ) {
@@ -159,22 +163,31 @@ fun DelayTimeSettingsView(
             subtitle = stringResource(R.string.delay_until_all_systems_activation),
         )
 
-        TimeInputLayout(
-            modifier = Modifier.padding(vertical = 16.dp),
-            state = state.t,
-            title = stringResource(R.string.time),
-            supportingText = stringResource(
-                R.string.from_to_minutes,
-                state.timeLimits.minValue,
-                state.timeLimits.maxValue
-            ),
-            minutes = state.t.minutes,
-            seconds = state.t.seconds,
-            isMinutesError = state.error.isMinutesError,
-            isSecondsError = state.error.isSecondsError,
-            onInputMinutes = { onUiEvent(TimelineUiEvent.DelayTimeMinutesChange(it)) },
-            onInputSeconds = { onUiEvent(TimelineUiEvent.DelayTimeSecondsChange(it)) },
+        TimeLayout(
+            modifier = Modifier.padding(bottom = 16.dp),
+            minutes = state.time.minutes,
+            seconds = state.time.seconds,
+            isError = state.error.isMinutesError,
+            onMinutesClick = { showDialog = true },
+            onSecondsClick = { showDialog = true }
         )
+
+//        TimeInputLayout(
+//            modifier = Modifier.padding(vertical = 16.dp),
+//            state = state.t,
+//            title = stringResource(R.string.time),
+//            supportingText = stringResource(
+//                R.string.from_to_minutes,
+//                state.timeLimits.minValue,
+//                state.timeLimits.maxValue
+//            ),
+//            minutes = state.t.minutes,
+//            seconds = state.t.seconds,
+//            isMinutesError = state.error.isMinutesError,
+//            isSecondsError = state.error.isSecondsError,
+//            onInputMinutes = { onUiEvent(TimelineUiEvent.DelayTimeMinutesChange(it)) },
+//            onInputSeconds = { onUiEvent(TimelineUiEvent.DelayTimeSecondsChange(it)) },
+//        )
 
     }
 }
@@ -185,6 +198,25 @@ fun CockingTimeSettingsView(
     state: CockingTimeUiState,
     onUiEvent: (TimelineUiEvent) -> Unit
 ) {
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        TimeSelectDialog(
+            title = stringResource(R.string.cocking_time),
+            onDismiss = { showDialog = false },
+            onApply = {min, sec ->
+                onUiEvent(TimelineUiEvent.CockingTimeMinutesChange(min))
+                onUiEvent(TimelineUiEvent.CockingTimeSecondsChange(sec))
+            },
+            state = rememberTimeSelectDialogState(
+                initialMinutes = state.time.minutes,
+                initialSeconds = state.time.seconds,
+                validator = ::delayTimeValidator,
+            )
+        )
+    }
+
     Column(
         modifier = modifier.padding(vertical = 16.dp)
     ) {
@@ -203,22 +235,31 @@ fun CockingTimeSettingsView(
             onCheckedChange = { onUiEvent(TimelineUiEvent.CockingTimeActivationChange(it)) }
         )
 
-        TimeInputLayout(
+        TimeLayout(
             modifier = Modifier.padding(bottom = 16.dp),
-            title = stringResource(R.string.time),
-            supportingText = stringResource(
-                R.string.from_to_minutes,
-                state.timeLimits.minValue,
-                state.timeLimits.maxValue
-            ),
             minutes = state.time.minutes,
             seconds = state.time.seconds,
-            isMinutesError = state.error.isMinutesError,
-            isSecondsError = state.error.isSecondsError,
-            enabled = state.enabled,
-            onInputMinutes = { onUiEvent(TimelineUiEvent.CockingTimeMinutesChange(it)) },
-            onInputSeconds = { onUiEvent(TimelineUiEvent.CockingTimeSecondsChange(it)) },
+            isError = state.error.isMinutesError,
+            onMinutesClick = { showDialog = true },
+            onSecondsClick = { showDialog = true }
         )
+
+//        TimeInputLayout(
+//            modifier = Modifier.padding(bottom = 16.dp),
+//            title = stringResource(R.string.time),
+//            supportingText = stringResource(
+//                R.string.from_to_minutes,
+//                state.timeLimits.minValue,
+//                state.timeLimits.maxValue
+//            ),
+//            minutes = state.time.minutes,
+//            seconds = state.time.seconds,
+//            isMinutesError = state.error.isMinutesError,
+//            isSecondsError = state.error.isSecondsError,
+//            enabled = state.enabled,
+//            onInputMinutes = { onUiEvent(TimelineUiEvent.CockingTimeMinutesChange(it)) },
+//            onInputSeconds = { onUiEvent(TimelineUiEvent.CockingTimeSecondsChange(it)) },
+//        )
 
     }
 }
@@ -229,6 +270,25 @@ fun MaximumTimeSettingsView(
     state: SelfDestructionTimeUiState,
     onUiEvent: (TimelineUiEvent) -> Unit
 ) {
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        TimeSelectDialog(
+            title = stringResource(R.string.maximum_time),
+            onDismiss = { showDialog = false },
+            onApply = {min, sec ->
+                onUiEvent(TimelineUiEvent.SelfDestructionTimeMinutesChange(min))
+                onUiEvent(TimelineUiEvent.SelfDestructionTimeSecondsChange(sec))
+            },
+            state = rememberTimeSelectDialogState(
+                initialMinutes = state.time.minutes,
+                initialSeconds = state.time.seconds,
+                validator = ::delayTimeValidator,
+            )
+        )
+    }
+
     Column(
         modifier = modifier
             .padding(vertical = 16.dp)
@@ -240,21 +300,30 @@ fun MaximumTimeSettingsView(
             subtitle = stringResource(R.string.self_destruction_time),
         )
 
-        TimeInputLayout(
-            modifier = Modifier.padding(vertical = 16.dp),
-            title = stringResource(R.string.time),
-            supportingText = stringResource(
-                R.string.from_to_minutes,
-                state.timeLimits.minValue,
-                state.timeLimits.maxValue
-            ),
+        TimeLayout(
+            modifier = Modifier.padding(bottom = 16.dp),
             minutes = state.time.minutes,
             seconds = state.time.seconds,
-            isMinutesError = state.error.isMinutesError,
-            isSecondsError = state.error.isSecondsError,
-            onInputMinutes = { onUiEvent(TimelineUiEvent.SelfDestructionTimeMinutesChange(it)) },
-            onInputSeconds = { onUiEvent(TimelineUiEvent.SelfDestructionTimeSecondsChange(it)) },
+            isError = state.error.isMinutesError,
+            onMinutesClick = { showDialog = true },
+            onSecondsClick = { showDialog = true }
         )
+
+//        TimeInputLayout(
+//            modifier = Modifier.padding(vertical = 16.dp),
+//            title = stringResource(R.string.time),
+//            supportingText = stringResource(
+//                R.string.from_to_minutes,
+//                state.timeLimits.minValue,
+//                state.timeLimits.maxValue
+//            ),
+//            minutes = state.time.minutes,
+//            seconds = state.time.seconds,
+//            isMinutesError = state.error.isMinutesError,
+//            isSecondsError = state.error.isSecondsError,
+//            onInputMinutes = { onUiEvent(TimelineUiEvent.SelfDestructionTimeMinutesChange(it)) },
+//            onInputSeconds = { onUiEvent(TimelineUiEvent.SelfDestructionTimeSecondsChange(it)) },
+//        )
 
     }
 }

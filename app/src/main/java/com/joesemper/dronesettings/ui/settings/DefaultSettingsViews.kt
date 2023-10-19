@@ -47,16 +47,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.settings.state.TimeSelectDialogState
-import com.joesemper.dronesettings.utils.Constants.Companion.SECONDS_IN_MINUTE
 
 @Composable
 fun TitleWithSubtitleView(
@@ -307,15 +309,19 @@ fun SettingsDefaultTopBar(
 fun TimeSelectDialog(
     onDismiss: () -> Unit,
     title: String,
-    state: TimeSelectDialogState
+    subtitle: String? = null,
+    state: TimeSelectDialogState,
+    onApply: (minutes: String, seconds: String) -> Unit
 ) {
+    val context = LocalContext.current
+    val toastMassage = stringResource(R.string.incorrect_value)
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
@@ -325,11 +331,7 @@ fun TimeSelectDialog(
                 ) {
                     TitleWithSubtitleView(
                         title = title,
-                        subtitle = stringResource(
-                            id = R.string.from_to_minutes,
-                            0,
-                            state.limitInSeconds / SECONDS_IN_MINUTE
-                        )
+                        subtitle = subtitle
                     )
 
                     IconButton(onClick = onDismiss) {
@@ -337,7 +339,9 @@ fun TimeSelectDialog(
                     }
                 }
 
-                TimeInputLayout(
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TimeLayout(
                     minutes = state.minutes,
                     seconds = state.seconds,
                     minutesFocused = state.isMinutesFocused,
@@ -348,11 +352,15 @@ fun TimeSelectDialog(
                     onSecondsClick = { state.focusSeconds() }
                 )
 
+                Spacer(modifier = Modifier.height(16.dp))
+
                 NumericKeyboard(
                     onDigitClick = { state.updateValue(it) },
                     onClear = { state.clearValue() },
                     onNext = { state.focusNext() }
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -363,7 +371,15 @@ fun TimeSelectDialog(
                         Text(text = stringResource(id = R.string.close))
                     }
 
-                    Button(onClick = { /*TODO*/ }) {
+                    Button(onClick = {
+                        state.enableShowErrors()
+                        if (state.isValid) {
+                            onApply(state.minutes, state.seconds)
+                            onDismiss()
+                        } else {
+                            Toast.makeText(context, toastMassage, Toast.LENGTH_SHORT).show()
+                        }
+                    }) {
                         Text(text = stringResource(R.string.done))
                     }
                 }
@@ -374,7 +390,7 @@ fun TimeSelectDialog(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimeInputLayout(
+fun TimeLayout(
     modifier: Modifier = Modifier,
     minutes: String = "",
     seconds: String = "",
@@ -399,44 +415,40 @@ fun TimeInputLayout(
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.Center
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                FilterChip(
-                    selected = minutesFocused,
-                    onClick = onMinutesClick,
-                    colors = InputChipDefaults.inputChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
-                    ),
-                    border = InputChipDefaults.inputChipBorder(
-                        borderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimaryContainer,
-                        selectedBorderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimaryContainer,
-                        borderWidth = 0.5.dp,
-                        selectedBorderWidth = 1.5.dp
-                    ),
-                    label = {
-                        if (minutes.isBlank()) {
+
+            FilterChip(
+                selected = minutesFocused,
+                onClick = onMinutesClick,
+                colors = InputChipDefaults.inputChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
+                trailingIcon = {
+                    Text(text = stringResource(id = R.string.min))
+                },
+                border = InputChipDefaults.inputChipBorder(
+                    borderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimaryContainer,
+                    selectedBorderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimaryContainer,
+                    borderWidth = 0.5.dp,
+                    selectedBorderWidth = 1.5.dp
+                ),
+                label = {
+                    MeasureUnconstrainedViewWidth(
+                        viewToMeasure = {
                             Text(
                                 text = "00",
-                                color = Color.Gray,
-                                style = MaterialTheme.typography.displayMedium
-                            )
-                        } else {
-                            Text(
-                                text = minutes,
                                 style = MaterialTheme.typography.displayMedium
                             )
                         }
+                    ) {
+                        Text(
+                            modifier = Modifier.width(it),
+                            textAlign = TextAlign.Center,
+                            text = minutes,
+                            style = MaterialTheme.typography.displayMedium
+                        )
                     }
-                )
-
-                Text(
-                    text = stringResource(id = R.string.min),
-                    color = Color.Gray
-                )
-            }
-
+                }
+            )
 
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -444,46 +456,57 @@ fun TimeInputLayout(
                 style = MaterialTheme.typography.displayMedium
             )
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                FilterChip(
-                    selected = secondsFocused,
-                    onClick = onSecondsClick,
-                    colors = InputChipDefaults.inputChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
-                    ),
-                    border = InputChipDefaults.inputChipBorder(
-                        borderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimaryContainer,
-                        selectedBorderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimaryContainer,
-                        borderWidth = 0.5.dp,
-                        selectedBorderWidth = 1.5.dp
-                    ),
-                    label = {
-                        if (seconds.isBlank()) {
+            FilterChip(
+                selected = secondsFocused,
+                onClick = onSecondsClick,
+                colors = InputChipDefaults.inputChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
+                trailingIcon = {
+                    Text(text = stringResource(id = R.string.sec))
+                },
+                border = InputChipDefaults.inputChipBorder(
+                    borderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimaryContainer,
+                    selectedBorderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimaryContainer,
+                    borderWidth = 0.5.dp,
+                    selectedBorderWidth = 1.5.dp
+                ),
+                label = {
+                    MeasureUnconstrainedViewWidth(
+                        viewToMeasure = {
                             Text(
-                                textAlign = TextAlign.Center,
                                 text = "00",
-                                color = Color.Gray,
-                                style = MaterialTheme.typography.displayMedium
-                            )
-                        } else {
-                            Text(
-                                textAlign = TextAlign.Center,
-                                text = seconds,
                                 style = MaterialTheme.typography.displayMedium
                             )
                         }
+                    ) {
+                        Text(
+                            modifier = Modifier.width(it),
+                            textAlign = TextAlign.Center,
+                            text = seconds,
+                            style = MaterialTheme.typography.displayMedium
+                        )
                     }
-                )
+                }
+            )
+        }
+    }
+}
 
-                Text(
-                    text = stringResource(id = R.string.sec),
-                    color = Color.Gray
-                )
-            }
+@Composable
+fun MeasureUnconstrainedViewWidth(
+    viewToMeasure: @Composable () -> Unit,
+    content: @Composable (measuredWidth: Dp) -> Unit,
+) {
+    SubcomposeLayout { constraints ->
+        val measuredWidth = subcompose("viewToMeasure", viewToMeasure)[0]
+            .measure(Constraints()).width.toDp()
 
+        val contentPlaceable = subcompose("content") {
+            content(measuredWidth)
+        }[0].measure(constraints)
+        layout(contentPlaceable.width, contentPlaceable.height) {
+            contentPlaceable.place(0, 0)
         }
     }
 }
