@@ -324,22 +324,14 @@ fun TimeSelectDialog(
                 modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
+
+                TitleWithSubtitleView(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    TitleWithSubtitleView(
-                        title = title,
-                        subtitle = subtitle
-                    )
+                    title = title,
+                    subtitle = subtitle
+                )
 
-                    IconButton(onClick = onDismiss) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = null)
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 TimeLayout(
                     minutes = state.minutes,
@@ -360,7 +352,7 @@ fun TimeSelectDialog(
                     onNext = { state.focusNext() }
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -396,6 +388,7 @@ fun TimeLayout(
     seconds: String = "",
     isError: Boolean = false,
     errorMassage: String = "",
+    enabled: Boolean = true,
     minutesFocused: Boolean = false,
     secondsFocused: Boolean = false,
     onMinutesClick: () -> Unit,
@@ -405,11 +398,6 @@ fun TimeLayout(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        ErrorText(
-            isError = isError,
-            errorMassage = errorMassage
-        )
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.Top,
@@ -419,6 +407,7 @@ fun TimeLayout(
             FilterChip(
                 selected = minutesFocused,
                 onClick = onMinutesClick,
+                enabled = enabled,
                 colors = InputChipDefaults.inputChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
@@ -459,6 +448,7 @@ fun TimeLayout(
             FilterChip(
                 selected = secondsFocused,
                 onClick = onSecondsClick,
+                enabled = enabled,
                 colors = InputChipDefaults.inputChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
@@ -490,6 +480,12 @@ fun TimeLayout(
                 }
             )
         }
+
+        ErrorText(
+            isError = isError,
+            errorMassage = errorMassage
+        )
+
     }
 }
 
@@ -576,7 +572,7 @@ fun ErrorText(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(32.dp),
+            .height(24.dp),
     ) {
         AnimatedVisibility(
             visible = isError,
@@ -598,7 +594,8 @@ fun ErrorText(
 
                 Text(
                     text = errorMassage,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.titleSmall
                 )
             }
 
