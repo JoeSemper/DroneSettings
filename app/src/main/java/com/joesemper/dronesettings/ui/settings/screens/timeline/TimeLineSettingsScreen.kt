@@ -87,7 +87,6 @@ fun TimeLineSettingsScreen(
                 onUiEvent = { viewModel.onTimelineUiEvent(it) }
             )
         }
-
     }
 }
 

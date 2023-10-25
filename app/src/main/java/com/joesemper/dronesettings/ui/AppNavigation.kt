@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.joesemper.dronesettings.ui.drone.DroneWriteScreen
 import com.joesemper.dronesettings.ui.home.HomeScreen
 import com.joesemper.dronesettings.ui.preset.PresetScreen
 import com.joesemper.dronesettings.ui.settings.screens.mapping.SignalMappingSettingsScreen
@@ -24,6 +25,7 @@ const val SENSORS_ROUTE = "sensors"
 const val MAPPING_ROUTE = "mapping"
 const val SIGNAL_ROUTE = "signal"
 const val PRESET_ROUTE = "preset"
+const val DRONE_ROUTE = "drone"
 
 const val PRESET_DATA_ID_ARG = "dataId"
 
@@ -80,6 +82,12 @@ fun AppNavHost(
                 arguments = listOf(navArgument(PRESET_DATA_ID_ARG) { type = NavType.IntType })
             ) {
                 PresetScreen(navController)
+            }
+
+            composable(
+                route = DRONE_ROUTE
+            ) {
+                DroneWriteScreen(navController)
             }
         }
     }

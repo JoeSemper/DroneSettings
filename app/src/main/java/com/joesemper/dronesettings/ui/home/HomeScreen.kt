@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.ui.DRONE_ROUTE
 import com.joesemper.dronesettings.ui.PRESET_ROUTE
 import com.joesemper.dronesettings.ui.TIMELINE_ROUTE
 import org.koin.androidx.compose.getViewModel
@@ -79,11 +81,18 @@ fun HomeScreen(
 
             } else {
 
-                HomeScreenContentView(
-                    modifier = Modifier.padding(padding),
-                    sets = state.presets,
-                    onSetClick = { viewModel.onPresetClick(it) }
-                )
+                Column {
+                    HomeScreenContentView(
+                        modifier = Modifier.padding(padding),
+                        presets = state.presets,
+                        onSetClick = { viewModel.onPresetClick(it) },
+                        onClick = { navController.navigate(DRONE_ROUTE) }
+                    )
+
+                    Button(onClick = { navController.navigate(DRONE_ROUTE) }) {
+                        Text(text = "Drone Test")
+                    }
+                }
 
             }
         }
@@ -95,15 +104,23 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContentView(
     modifier: Modifier = Modifier,
-    sets: Map<String, List<PresetDataUiState>>,
-    onSetClick: (Int) -> Unit
+    presets: Map<String, List<PresetDataUiState>>,
+    onSetClick: (Int) -> Unit,
+    onClick: () -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        sets.forEach { (title, items) ->
+        presets.forEach { (title, items) ->
+
+            item {
+                Button(onClick = { onClick() }) {
+                    Text(text = "Drone Test")
+                }
+            }
+
             stickyHeader {
                 Row(
                     modifier = Modifier.fillMaxWidth(),

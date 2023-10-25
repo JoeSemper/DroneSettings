@@ -57,6 +57,8 @@ dependencies {
     // Kotlin
     implementation("androidx.core:core-ktx:1.9.0")
 
+    implementation ("com.github.mik3y:usb-serial-for-android:3.7.0")
+
     // Compose
     implementation("androidx.compose.compiler:compiler:1.5.1")
     implementation("androidx.navigation:navigation-compose:2.6.0")
