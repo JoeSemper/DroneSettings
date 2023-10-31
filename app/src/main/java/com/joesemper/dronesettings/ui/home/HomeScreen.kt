@@ -88,10 +88,6 @@ fun HomeScreen(
                         onSetClick = { viewModel.onPresetClick(it) },
                         onClick = { navController.navigate(DRONE_ROUTE) }
                     )
-
-                    Button(onClick = { navController.navigate(DRONE_ROUTE) }) {
-                        Text(text = "Drone Test")
-                    }
                 }
 
             }
@@ -113,13 +109,13 @@ fun HomeScreenContentView(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        presets.forEach { (title, items) ->
-
-            item {
-                Button(onClick = { onClick() }) {
-                    Text(text = "Drone Test")
-                }
+        item {
+            Button(onClick = { onClick() }) {
+                Text(text = "Drone Test")
             }
+        }
+
+        presets.forEach { (title, items) ->
 
             stickyHeader {
                 Row(
