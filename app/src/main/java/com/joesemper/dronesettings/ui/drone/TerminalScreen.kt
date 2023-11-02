@@ -62,11 +62,11 @@ internal fun Context.findActivity(): ComponentActivity {
     throw IllegalStateException("Permissions should be called in the context of an Activity")
 }
 
-private const val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
+private const val ACTION_USB_PERMISSION = "com.joesemper.dronesettings.USB_PERMISSION"
 
 
 @Composable
-fun DroneWriteScreen(
+fun TerminalScreen(
     navController: NavController,
 ) {
     Scaffold(
@@ -90,7 +90,10 @@ fun DroneWriteContentScreen(
 
     val port = remember { mutableStateOf<UsbSerialPort?>(null) }
     val driver = remember { mutableStateOf<UsbSerialDriver?>(null) }
+    val hasPermission = remember { mutableStateOf(false) }
     val connected = remember { mutableStateOf(false) }
+
+    val log = remember { mutableStateListOf<String>() }
 
     val usbReceiver = remember {
         object : BroadcastReceiver() {
@@ -102,10 +105,10 @@ fun DroneWriteContentScreen(
 
                         if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                             device?.apply {
-                                connected.value = true
+                                hasPermission.value = true
                             }
                         } else {
-                            Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
+                            log.add("Permission denied")
                         }
                     }
                 }
@@ -113,35 +116,38 @@ fun DroneWriteContentScreen(
         }
     }
 
-    val log = remember { mutableStateListOf<String>() }
-
     LaunchedEffect(key1 = driver.value) {
         driver.value?.let {
             if (usbManager.hasPermission(it.device)) {
-                connected.value = true
+                hasPermission.value = true
             } else {
                 requestPermission(activity, it.device, usbManager, usbReceiver)
             }
         }
     }
 
-    LaunchedEffect(key1 = connected.value) {
-        if (connected.value) {
+    DisposableEffect(key1 = hasPermission.value) {
+        if (hasPermission.value) {
+            driver.value?.let {
+                port.value = setUpPort(usbManager, it)
+            }
             port.value?.let {
+                log.add("Port configured")
                 try {
                     read(
                         port = it,
                         onNewData = { msg -> log.add("Device: $msg") }
                     )
+                    connected.value = true
+                    log.add("Ready to work")
                 } catch (e: Throwable) {
                     Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
-    }
-
-    DisposableEffect(true) {
-        onDispose { port.value?.close() }
+        onDispose {
+            port.value?.close()
+        }
     }
     Column(
         modifier = modifier
@@ -176,10 +182,6 @@ fun DroneWriteContentScreen(
                     onDriverFound = {
                         driver.value = it
                         log.add("Driver found")
-                    },
-                    onPortSetUp = {
-                        port.value = it
-                        log.add("Port configured")
                     },
                     onError = { log.add(it) }
                 )
@@ -267,18 +269,15 @@ fun requestPermission(
 fun connectDevice(
     usbManager: UsbManager,
     onDriverFound: (UsbSerialDriver) -> Unit,
-    onPortSetUp: (UsbSerialPort) -> Unit,
     onError: (String) -> Unit
 ) {
     try {
         val drivers = checkDrivers(usbManager)
 
         if (drivers.isNotEmpty()) {
-            val driver = drivers.first()
-            onDriverFound(driver)
-            onPortSetUp(setUpPort(usbManager, driver))
+            onDriverFound(drivers.first())
         } else {
-            onError("No drivers")
+            onError("No drivers of device not connected")
         }
     } catch (e: Throwable) {
         onError(e.message ?: "Error")

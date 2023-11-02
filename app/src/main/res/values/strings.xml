@@ -90,4 +90,6 @@
     <string name="wrong_format">Wrong format</string>
     <string name="done">Done</string>
     <string name="incorrect_value">Incorrect value</string>
+    <string name="presets">Presets</string>
+    <string name="terminal">Terminal</string>
 </resources>
