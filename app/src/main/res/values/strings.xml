@@ -92,4 +92,6 @@
     <string name="incorrect_value">Incorrect value</string>
     <string name="presets">Presets</string>
     <string name="terminal">Terminal</string>
+    <string name="search_in_presets">Search in presets</string>
+    <string name="no_results">No results</string>
 </resources>

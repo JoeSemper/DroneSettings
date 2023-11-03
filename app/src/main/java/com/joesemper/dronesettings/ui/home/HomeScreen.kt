@@ -1,5 +1,8 @@
 package com.joesemper.dronesettings.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,31 +10,42 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -41,15 +55,16 @@ import com.joesemper.dronesettings.ui.PRESET_ROUTE
 import com.joesemper.dronesettings.ui.TIMELINE_ROUTE
 import org.koin.androidx.compose.getViewModel
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = getViewModel()
 ) {
     val context = LocalContext.current
-    val state = remember(viewModel.uiState.value) {
-        viewModel.uiState.value
-    }
+    val state = viewModel.uiState
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(key1 = context) {
         viewModel.uiActions.collect { action ->
@@ -67,26 +82,40 @@ fun HomeScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { HomeScreenTopBar() },
         floatingActionButton = { HomeScreenFab(onClick = { viewModel.onNewSettingsPresetClick() }) }
     ) { padding ->
         if (!state.isLoading) {
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+            ) {
+                HomeSearchView(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    state = state.searchQuery.value,
+                    enabled = state.enableSearch,
+                    onClear = { viewModel.updateSearchQuery("") },
+                    onQueryChange = { viewModel.updateSearchQuery(it) },
+                    onSearch = { keyboardController?.hide() }
+                )
 
-            if (state.presets.isEmpty()) {
+                if (state.presets.isEmpty()) {
 
-                EmptyListView()
+                    EmptyListView()
 
-            } else {
+                } else {
 
-                Column {
                     HomeScreenContentView(
-                        modifier = Modifier.padding(padding),
-                        presets = state.presets,
+                        presets = state.filteredPresets,
                         onSetClick = { viewModel.onPresetClick(it) }
                     )
 
                 }
             }
+
+
         }
     }
 }
@@ -95,46 +124,31 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContentView(
     modifier: Modifier = Modifier,
-    presets: Map<String, List<PresetDataUiState>>,
+    presets: List<PresetDataUiState>,
     onSetClick: (Int) -> Unit
 ) {
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp)
-    ) {
-        presets.forEach { (title, items) ->
-
-            stickyHeader {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
+    if (presets.isEmpty()) {
+        EmptySearchView(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+        )
+    } else {
+        LazyColumn(
+            modifier = modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+        ) {
+            presets.forEach { item ->
+                item(
+                    key = item.dataId
                 ) {
-                    Surface(
-                        modifier = Modifier.alpha(0.7f),
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(8.dp),
-                            text = title
-                        )
-                    }
+                    PresetItem(
+                        state = item,
+                        onClick = { onSetClick(item.dataId) }
+                    )
                 }
             }
-
-            items(
-                items.size,
-                key = { items[it].dataId }
-            ) {
-                PresetItem(
-                    state = items[it],
-                    onClick = { onSetClick(items[it].dataId) }
-                )
-            }
         }
-
     }
 }
 
@@ -146,15 +160,23 @@ fun PresetItem(
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+            .clickable { onClick() }
+            .padding(top = 8.dp)
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Row(
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            Icon(
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(32.dp),
+                painter = painterResource(id = R.drawable.baseline_list_alt_24),
+                contentDescription = null
+            )
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -163,25 +185,60 @@ fun PresetItem(
             ) {
                 Text(
                     text = state.name,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Text(
                     text = state.description,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.Gray,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     maxLines = 1,
-                    overflow = TextOverflow.Clip,
+                    overflow = TextOverflow.Ellipsis,
                     softWrap = true
                 )
             }
-            Text(
-                text = state.time,
-                style = MaterialTheme.typography.titleSmall
-            )
-        }
+            Column(
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = state.date,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+                Text(
+                    text = state.time,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
 
+        }
         Divider(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .padding(start = 40.dp)
+                .fillMaxWidth()
+        )
+    }
+
+}
+
+@Composable
+fun EmptySearchView(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Icon(imageVector = Icons.Default.Search, contentDescription = null)
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = stringResource(R.string.no_results),
+            style = MaterialTheme.typography.bodyLarge
         )
     }
 }
@@ -215,6 +272,7 @@ fun EmptyListView(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenTopBar() {
+
     TopAppBar(
         navigationIcon = {
             Icon(imageVector = Icons.Default.Settings, contentDescription = null)
@@ -223,6 +281,62 @@ fun HomeScreenTopBar() {
             Text(text = stringResource(id = R.string.app_name))
         }
     )
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeSearchView(
+    modifier: Modifier,
+    state: String,
+    onQueryChange: (String) -> Unit,
+    onSearch: (String) -> Unit,
+    onClear: () -> Unit,
+    enabled: Boolean = false
+) {
+    Box(
+        modifier = modifier
+    ) {
+
+        val focusRequester = remember { FocusRequester() }
+        val focusManager = LocalFocusManager.current
+
+        SearchBar(
+            modifier = Modifier.focusRequester(focusRequester),
+            query = state,
+            onQueryChange = onQueryChange,
+            onSearch = {
+                focusManager.clearFocus()
+                onSearch(it)
+            },
+            enabled = enabled,
+            active = false,
+            onActiveChange = {},
+            placeholder = {
+                Text(text = stringResource(R.string.search_in_presets))
+            },
+            leadingIcon = {
+                Icon(imageVector = Icons.Default.Search, contentDescription = null)
+            },
+            trailingIcon = {
+                AnimatedVisibility(
+                    visible = enabled && state.isNotEmpty(),
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    IconButton(onClick = {
+                        focusManager.clearFocus()
+                        onClear()
+                    }
+                    ) {
+                        Icon(imageVector = Icons.Default.Clear, contentDescription = null)
+                    }
+                }
+            },
+        ) {
+
+        }
+    }
 }
 
 @Composable

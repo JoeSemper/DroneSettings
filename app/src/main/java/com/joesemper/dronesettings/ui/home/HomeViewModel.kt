@@ -1,6 +1,8 @@
 package com.joesemper.dronesettings.ui.home
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joesemper.dronesettings.data.datasource.room.entity.PresetData
@@ -17,9 +19,11 @@ class HomeViewModel(
     private val getAllSettingsPresets: GetAllPresetsUseCase
 ) : ViewModel() {
 
-    var uiState = mutableStateOf(HomeUiState())
+    var uiState by mutableStateOf(HomeUiState())
         private set
 
+    private var presets by mutableStateOf<List<PresetData>>(emptyList())
+    
     private val actions = Channel<HomeUiAction>()
     val uiActions = actions.receiveAsFlow()
 
@@ -48,14 +52,18 @@ class HomeViewModel(
         }
     }
 
+    fun updateSearchQuery(newQuery: String) {
+        uiState.searchQuery.value = newQuery
+    }
+
     private fun updateUiData(presets: List<PresetData>) {
-        uiState.value = uiState.value.copy(
+        uiState = uiState.copy(
             isLoading = false,
-            presets = splitPresetsByDates(presets)
+            presets = convertToState(presets)
         )
     }
 
-    private fun splitPresetsByDates(sets: List<PresetData>): Map<String, List<PresetDataUiState>> {
+    private fun convertToState(sets: List<PresetData>): List<PresetDataUiState> {
         return sets.map {
             PresetDataUiState(
                 dataId = it.dataId,
@@ -65,7 +73,7 @@ class HomeViewModel(
                 time = unixTimeToTime(it.date),
                 saved = it.saved
             )
-        }.filter { it.saved }.groupBy { it.date }
+        }.filter { it.saved }
     }
 }
 

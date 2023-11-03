@@ -319,26 +319,5 @@ fun read(port: UsbSerialPort, onNewData: (String) -> Unit) {
 fun checkDrivers(
     usbManager: UsbManager
 ): List<UsbSerialDriver> {
-//    val ACTION_USB_PERMISSION = "com.joesemper.dronesettings.USB_PERMISSION"
-
-    //    var driver: UsbSerialDriver? = null
-//
-//    if (availableDrivers.isNotEmpty()) {
-//        driver = availableDrivers.first()
-//    }
-//
-//    if (driver != null && !usbManager.hasPermission(driver.device)) {
-//        val flags = PendingIntent.FLAG_MUTABLE
-//
-//        val usbPermissionIntent = PendingIntent.getBroadcast(
-//            context,
-//            0,
-//            Intent(ACTION_USB_PERMISSION),
-//            flags
-//        )
-//
-//        usbManager.requestPermission(driver.device, usbPermissionIntent)
-//    }
-
     return UsbSerialProber.getDefaultProber().findAllDrivers(usbManager)
 }
