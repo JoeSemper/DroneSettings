@@ -25,11 +25,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
-import com.joesemper.dronesettings.ui.HOME_ROUTE
-import com.joesemper.dronesettings.ui.PRESET_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
-import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import org.koin.androidx.compose.getViewModel
 
@@ -42,19 +39,19 @@ fun SignalSettingsScreen(
 
     LaunchedEffect(key1 = context) {
         viewModel.uiActions.collect { action ->
-            when (action) {
-                SettingsUiAction.Close -> {
-                    navController.navigate(HOME_ROUTE)
-                }
-
-                SettingsUiAction.NavigateBack -> {
-                    navController.navigateUp()
-                }
-
-                is SettingsUiAction.NavigateNext -> {
-                    navController.navigate("$PRESET_ROUTE/${action.argument}")
-                }
-            }
+//            when (action) {
+//                SettingsUiAction.Close -> {
+//                    navController.navigate(HOME_ROUTE)
+//                }
+//
+//                SettingsUiAction.NavigateBack -> {
+//                    navController.navigateUp()
+//                }
+//
+//                is SettingsUiAction.NavigateNext -> {
+//                    navController.navigate("$PRESET_ROUTE/${action.argument}")
+//                }
+//            }
         }
     }
 

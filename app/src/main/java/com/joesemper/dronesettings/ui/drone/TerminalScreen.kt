@@ -39,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
@@ -67,7 +66,7 @@ private const val ACTION_USB_PERMISSION = "com.joesemper.dronesettings.USB_PERMI
 
 @Composable
 fun TerminalScreen(
-    navController: NavController,
+//    navController: NavController,
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize()

@@ -31,14 +31,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
-import com.joesemper.dronesettings.ui.HOME_ROUTE
-import com.joesemper.dronesettings.ui.SENSORS_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TimeLayout
 import com.joesemper.dronesettings.ui.settings.TimeSelectDialog
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
-import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
 import com.joesemper.dronesettings.ui.settings.state.delayTimeValidator
 import com.joesemper.dronesettings.ui.settings.state.rememberTimeSelectDialogState
 import com.joesemper.dronesettings.utils.Constants.Companion.SECONDS_IN_MINUTE
@@ -53,17 +50,17 @@ fun TimeLineSettingsScreen(
 
     LaunchedEffect(key1 = context) {
         viewModel.uiActions.collect { action ->
-            when (action) {
-                SettingsUiAction.Close -> {
-                    navController.navigate(HOME_ROUTE)
-                }
-
-                SettingsUiAction.NavigateBack -> {}
-
-                is SettingsUiAction.NavigateNext -> {
-                    navController.navigate("$SENSORS_ROUTE/${action.argument}")
-                }
-            }
+//            when (action) {
+//                SettingsUiAction.Close -> {
+//                    navController.navigate(HOME_ROUTE)
+//                }
+//
+//                SettingsUiAction.NavigateBack -> {}
+//
+//                is SettingsUiAction.NavigateNext -> {
+//                    navController.navigate("$SENSORS_ROUTE/${action.argument}")
+//                }
+//            }
         }
     }
 

@@ -39,14 +39,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.data.datasource.room.entity.MappingPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.SensorsPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.SettingsPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.SignalPreset
 import com.joesemper.dronesettings.data.datasource.room.entity.TimelinePreset
-import com.joesemper.dronesettings.ui.HOME_ROUTE
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import com.joesemper.dronesettings.utils.toText
 import org.koin.androidx.compose.getViewModel
@@ -54,7 +52,8 @@ import org.koin.androidx.compose.getViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PresetScreen(
-    navController: NavController,
+//    navController: NavController,
+    upPress: () -> Unit,
     viewModel: PresetViewModel = getViewModel()
 ) {
 
@@ -93,7 +92,8 @@ fun PresetScreen(
                 openDeleteDialog.value = false
                 viewModel.deletePreset()
                 Toast.makeText(context, deleteToastMassage, Toast.LENGTH_SHORT).show()
-                navController.navigate(HOME_ROUTE)
+//                navController.navigate(HOME_ROUTE)
+                upPress()
             }
         )
     }
@@ -106,7 +106,10 @@ fun PresetScreen(
                     Text(text = state.settingsPreset.presetData.name)
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate(HOME_ROUTE) }) {
+                    IconButton(onClick = {
+//                        navController.navigate(HOME_ROUTE)
+                        upPress()
+                    }) {
                         Icon(imageVector = Icons.Default.Close, contentDescription = null)
                     }
                 },

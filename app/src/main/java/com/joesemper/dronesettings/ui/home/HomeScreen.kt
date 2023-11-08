@@ -34,7 +34,6 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -49,16 +48,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
-import com.joesemper.dronesettings.ui.PRESET_ROUTE
-import com.joesemper.dronesettings.ui.TIMELINE_ROUTE
 import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun HomeScreen(
-    navController: NavController,
+    onItemClick: (Int) -> Unit,
     viewModel: HomeViewModel = getViewModel()
 ) {
     val context = LocalContext.current
@@ -66,19 +62,19 @@ fun HomeScreen(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    LaunchedEffect(key1 = context) {
-        viewModel.uiActions.collect { action ->
-            when (action) {
-                is HomeUiAction.NewSettingsSet -> {
-                    navController.navigate("$TIMELINE_ROUTE/${action.dataId}")
-                }
-
-                is HomeUiAction.OpenPreset -> {
-                    navController.navigate("$PRESET_ROUTE/${action.dataId}")
-                }
-            }
-        }
-    }
+//    LaunchedEffect(key1 = context) {
+//        viewModel.uiActions.collect { action ->
+//            when (action) {
+//                is HomeUiAction.NewSettingsSet -> {
+//                    navController.navigate("$TIMELINE_ROUTE/${action.dataId}")
+//                }
+//
+//                is HomeUiAction.OpenPreset -> {
+//                    navController.navigate("$PRESET_ROUTE/${action.dataId}")
+//                }
+//            }
+//        }
+//    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -109,7 +105,7 @@ fun HomeScreen(
 
                     HomeScreenContentView(
                         presets = state.filteredPresets,
-                        onSetClick = { viewModel.onPresetClick(it) }
+                        onSetClick = { onItemClick(it) }
                     )
 
                 }

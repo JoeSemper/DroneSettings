@@ -37,11 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.data.constants.SettingsConstants
-import com.joesemper.dronesettings.ui.HOME_ROUTE
-import com.joesemper.dronesettings.ui.MAPPING_ROUTE
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
-import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import org.koin.androidx.compose.getViewModel
 import kotlin.math.roundToInt
@@ -56,19 +53,19 @@ fun SensorsSettingsScreen(
 
     LaunchedEffect(key1 = context) {
         viewModel.uiActions.collect { action ->
-            when (action) {
-                SettingsUiAction.Close -> {
-                    navController.navigate(HOME_ROUTE)
-                }
-
-                SettingsUiAction.NavigateBack -> {
-                    navController.navigateUp()
-                }
-
-                is SettingsUiAction.NavigateNext -> {
-                    navController.navigate("$MAPPING_ROUTE/${action.argument}")
-                }
-            }
+//            when (action) {
+//                SettingsUiAction.Close -> {
+//                    navController.navigate(HOME_ROUTE)
+//                }
+//
+//                SettingsUiAction.NavigateBack -> {
+//                    navController.navigateUp()
+//                }
+//
+//                is SettingsUiAction.NavigateNext -> {
+//                    navController.navigate("$MAPPING_ROUTE/${action.argument}")
+//                }
+//            }
         }
     }
 
