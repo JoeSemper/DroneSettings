@@ -29,13 +29,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TimeLayout
 import com.joesemper.dronesettings.ui.settings.TimeSelectDialog
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
+import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
 import com.joesemper.dronesettings.ui.settings.state.delayTimeValidator
 import com.joesemper.dronesettings.ui.settings.state.rememberTimeSelectDialogState
 import com.joesemper.dronesettings.utils.Constants.Companion.SECONDS_IN_MINUTE
@@ -43,24 +43,25 @@ import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun TimeLineSettingsScreen(
-    navController: NavController,
+    navigateNext: (Int) -> Unit,
+    onClose: () -> Unit,
     viewModel: TimelineViewModel = getViewModel()
 ) {
     val context = LocalContext.current
 
     LaunchedEffect(key1 = context) {
         viewModel.uiActions.collect { action ->
-//            when (action) {
-//                SettingsUiAction.Close -> {
-//                    navController.navigate(HOME_ROUTE)
-//                }
-//
-//                SettingsUiAction.NavigateBack -> {}
-//
-//                is SettingsUiAction.NavigateNext -> {
-//                    navController.navigate("$SENSORS_ROUTE/${action.argument}")
-//                }
-//            }
+            when (action) {
+                SettingsUiAction.Close -> {
+                    onClose()
+                }
+
+                SettingsUiAction.NavigateBack -> {}
+
+                is SettingsUiAction.NavigateNext -> {
+                    navigateNext(action.argument)
+                }
+            }
         }
     }
 

@@ -34,18 +34,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.data.constants.SettingsConstants
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
+import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
 import org.koin.androidx.compose.getViewModel
 import kotlin.math.roundToInt
 
 @Composable
 fun SensorsSettingsScreen(
-    navController: NavController,
+    navigateNext: (Int) -> Unit,
+    navigateUp: () -> Unit,
+    onClose: () -> Unit,
     viewModel: SensorsViewModel = getViewModel()
 ) {
 
@@ -53,19 +55,15 @@ fun SensorsSettingsScreen(
 
     LaunchedEffect(key1 = context) {
         viewModel.uiActions.collect { action ->
-//            when (action) {
-//                SettingsUiAction.Close -> {
-//                    navController.navigate(HOME_ROUTE)
-//                }
-//
-//                SettingsUiAction.NavigateBack -> {
-//                    navController.navigateUp()
-//                }
-//
-//                is SettingsUiAction.NavigateNext -> {
-//                    navController.navigate("$MAPPING_ROUTE/${action.argument}")
-//                }
-//            }
+            when (action) {
+                SettingsUiAction.Close -> { onClose() }
+
+                SettingsUiAction.NavigateBack -> { navigateUp() }
+
+                is SettingsUiAction.NavigateNext -> {
+                    navigateNext(action.argument)
+                }
+            }
         }
     }
 

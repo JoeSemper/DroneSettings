@@ -8,7 +8,7 @@ import com.joesemper.dronesettings.data.datasource.room.entity.SettingsPreset
 import com.joesemper.dronesettings.domain.use_case.DeletePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetSettingsPresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetDataUseCase
-import com.joesemper.dronesettings.ui.PRESET_DATA_ID_ARG
+import com.joesemper.dronesettings.navigation.PRESET_DATA_ID_ARG
 import kotlinx.coroutines.launch
 
 class PresetViewModel(

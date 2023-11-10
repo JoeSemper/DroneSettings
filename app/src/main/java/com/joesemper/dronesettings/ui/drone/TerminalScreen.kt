@@ -65,9 +65,7 @@ private const val ACTION_USB_PERMISSION = "com.joesemper.dronesettings.USB_PERMI
 
 
 @Composable
-fun TerminalScreen(
-//    navController: NavController,
-) {
+fun TerminalScreen() {
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->

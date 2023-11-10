@@ -10,7 +10,7 @@ import com.joesemper.dronesettings.data.datasource.room.entity.SensorsPreset
 import com.joesemper.dronesettings.domain.use_case.DeletePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetOrCreateSensorsPresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase
-import com.joesemper.dronesettings.ui.PRESET_DATA_ID_ARG
+import com.joesemper.dronesettings.navigation.PRESET_DATA_ID_ARG
 import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow

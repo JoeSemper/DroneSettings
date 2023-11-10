@@ -34,6 +34,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -54,7 +55,8 @@ import org.koin.androidx.compose.getViewModel
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun HomeScreen(
-    onItemClick: (Int) -> Unit,
+    navigateToPreset: (Int) -> Unit,
+    navigateToNewPreset: (Int) -> Unit,
     viewModel: HomeViewModel = getViewModel()
 ) {
     val context = LocalContext.current
@@ -62,19 +64,19 @@ fun HomeScreen(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-//    LaunchedEffect(key1 = context) {
-//        viewModel.uiActions.collect { action ->
-//            when (action) {
-//                is HomeUiAction.NewSettingsSet -> {
-//                    navController.navigate("$TIMELINE_ROUTE/${action.dataId}")
-//                }
-//
-//                is HomeUiAction.OpenPreset -> {
+    LaunchedEffect(key1 = context) {
+        viewModel.uiActions.collect { action ->
+            when (action) {
+                is HomeUiAction.NewSettingsSet -> {
+                    navigateToNewPreset(action.dataId)
+                }
+
+                is HomeUiAction.OpenPreset -> {
 //                    navController.navigate("$PRESET_ROUTE/${action.dataId}")
-//                }
-//            }
-//        }
-//    }
+                }
+            }
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -105,7 +107,7 @@ fun HomeScreen(
 
                     HomeScreenContentView(
                         presets = state.filteredPresets,
-                        onSetClick = { onItemClick(it) }
+                        onPresetItemClick = { navigateToPreset(it) }
                     )
 
                 }
@@ -121,7 +123,7 @@ fun HomeScreen(
 fun HomeScreenContentView(
     modifier: Modifier = Modifier,
     presets: List<PresetDataUiState>,
-    onSetClick: (Int) -> Unit
+    onPresetItemClick: (Int) -> Unit
 ) {
     if (presets.isEmpty()) {
         EmptySearchView(
@@ -140,7 +142,7 @@ fun HomeScreenContentView(
                 ) {
                     PresetItem(
                         state = item,
-                        onClick = { onSetClick(item.dataId) }
+                        onClick = { onPresetItemClick(item.dataId) }
                     )
                 }
             }
