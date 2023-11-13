@@ -17,15 +17,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.navigation.home.HOME_GRAPH
+import com.joesemper.dronesettings.navigation.home.HomeDestinations
+import com.joesemper.dronesettings.navigation.home.HomeState
+import com.joesemper.dronesettings.navigation.terminal.ChatDestinations
+import com.joesemper.dronesettings.navigation.terminal.TERMINAL_GRAPH
 
-const val PRESET_DATA_ID_ARG = "dataId"
 
 @Composable
 fun AppNavHost(
     startDestination: String = HOME_GRAPH,
 ) {
     val appState = rememberAppState()
-    val homeState = rememberHomeState(navController = appState.navController)
 
     Scaffold(
         bottomBar = {
@@ -49,7 +52,8 @@ fun AppNavHost(
             modifier = Modifier.padding(innerPadding)
         ) {
             buildNavGraph(
-                homeState = homeState
+                upPress = appState::upPress,
+                homeState = appState as HomeState
             )
         }
     }

@@ -10,7 +10,7 @@ import com.joesemper.dronesettings.data.datasource.room.entity.SignalPreset
 import com.joesemper.dronesettings.domain.use_case.DeletePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetOrCreateSignalPresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase
-import com.joesemper.dronesettings.navigation.PRESET_DATA_ID_ARG
+import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_PRESET_ID_KEY
 import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -28,7 +28,7 @@ class SignalViewModel(
     private val actions = Channel<SettingsUiAction>()
     val uiActions = actions.receiveAsFlow()
 
-    private val dataId: Int = checkNotNull(savedStateHandle[PRESET_DATA_ID_ARG])
+    private val dataId: Int = checkNotNull(savedStateHandle[HOME_PRESET_ID_KEY])
     private var currentPreset: SignalPreset? = null
 
     init {

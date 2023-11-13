@@ -1,8 +1,8 @@
-package com.joesemper.dronesettings.navigation
+package com.joesemper.dronesettings.navigation.terminal
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.joesemper.dronesettings.navigation.ChatDestinations.TERMINAL_ROUTE
+import com.joesemper.dronesettings.navigation.terminal.ChatDestinations.TERMINAL_ROUTE
 import com.joesemper.dronesettings.ui.drone.TerminalScreen
 
 const val TERMINAL_GRAPH = "terminal"

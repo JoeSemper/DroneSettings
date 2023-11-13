@@ -64,6 +64,8 @@ fun HomeScreen(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    HomeBackHandler()
+
     LaunchedEffect(key1 = context) {
         viewModel.uiActions.collect { action ->
             when (action) {

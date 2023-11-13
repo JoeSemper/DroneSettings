@@ -8,7 +8,7 @@ import com.joesemper.dronesettings.data.datasource.room.entity.SettingsPreset
 import com.joesemper.dronesettings.domain.use_case.DeletePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetSettingsPresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetDataUseCase
-import com.joesemper.dronesettings.navigation.PRESET_DATA_ID_ARG
+import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_PRESET_ID_KEY
 import kotlinx.coroutines.launch
 
 class PresetViewModel(
@@ -20,7 +20,7 @@ class PresetViewModel(
 
     val uiState = mutableStateOf(PresetUiState())
 
-    private val dataId: Int = checkNotNull(savedStateHandle[PRESET_DATA_ID_ARG])
+    private val dataId: Int = checkNotNull(savedStateHandle[HOME_PRESET_ID_KEY])
 
     init {
         loadData()

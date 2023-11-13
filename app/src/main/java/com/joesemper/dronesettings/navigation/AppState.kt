@@ -10,6 +10,8 @@ import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.joesemper.dronesettings.navigation.home.HomeDestinations
+import com.joesemper.dronesettings.navigation.home.HomeState
 
 @Composable
 fun rememberAppState(
@@ -17,9 +19,9 @@ fun rememberAppState(
 ) = remember(navController) { AppState(navController) }
 
 @Stable
-open class AppState(
+class AppState(
     val navController: NavHostController,
-) {
+): HomeState {
 
     private val bottomBarRoutes = bottomBarItems.map { it.route }
 
@@ -45,51 +47,55 @@ open class AppState(
             }
         }
     }
-}
 
-@Composable
-fun rememberHomeState(
-    navController: NavHostController,
-) = remember(navController) { HomeState(navController) }
-
-class HomeState(navController: NavHostController): AppState(navController) {
-
-    fun navigateHome() {
-        navController.navigate(NavigationItem.Presets.route)
-    }
-
-    fun navigateToPreset(itemId: Int, from: NavBackStackEntry) {
+    override fun navigateHome(from: NavBackStackEntry) {
         if (from.lifecycleIsResumed()) {
-            navController.navigate("${HomeDestinations.HOME_PRESET_ROUTE}/$itemId")
+            navController.navigate(NavigationItem.Presets.route) {
+                launchSingleTop = true
+//                restoreState = true
+                popUpTo(findStartDestination(navController.graph).id) {
+//                    saveState = true
+                }
+            }
         }
     }
 
-    fun navigateToTimelineSettings(itemId: Int, from: NavBackStackEntry) {
+    override fun navigateToPreset(itemId: Int, from: NavBackStackEntry) {
+        if (from.lifecycleIsResumed()) {
+            navController.navigate("${HomeDestinations.HOME_PRESET_ROUTE}/$itemId") {
+                launchSingleTop = true
+                restoreState = true
+                popUpTo(findStartDestination(navController.graph).id) {
+                    saveState = true
+                }
+            }
+        }
+    }
+
+    override fun navigateToTimelineSettings(itemId: Int, from: NavBackStackEntry) {
         if (from.lifecycleIsResumed()) {
             navController.navigate("${HomeDestinations.HOME_NEW_PRESET_TIMELINE_ROUTE}/$itemId")
         }
     }
 
-    fun navigateToSensorsSettings(itemId: Int, from: NavBackStackEntry) {
+    override fun navigateToSensorsSettings(itemId: Int, from: NavBackStackEntry) {
         if (from.lifecycleIsResumed()) {
             navController.navigate("${HomeDestinations.HOME_NEW_PRESET_SENSORS_ROUTE}/$itemId")
         }
     }
 
-    fun navigateToMappingSettings(itemId: Int, from: NavBackStackEntry) {
+    override fun navigateToMappingSettings(itemId: Int, from: NavBackStackEntry) {
         if (from.lifecycleIsResumed()) {
             navController.navigate("${HomeDestinations.HOME_NEW_PRESET_MAPPING_ROUTE}/$itemId")
         }
     }
 
-    fun navigateToSignalSettings(itemId: Int, from: NavBackStackEntry) {
+    override fun navigateToSignalSettings(itemId: Int, from: NavBackStackEntry) {
         if (from.lifecycleIsResumed()) {
             navController.navigate("${HomeDestinations.HOME_NEW_PRESET_SIGNAL_ROUTE}/$itemId")
         }
     }
-
 }
-
 
 private fun NavBackStackEntry.lifecycleIsResumed() =
     this.lifecycle.currentState == Lifecycle.State.RESUMED

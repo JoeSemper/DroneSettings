@@ -1,15 +1,16 @@
-package com.joesemper.dronesettings.navigation
+package com.joesemper.dronesettings.navigation.home
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.joesemper.dronesettings.navigation.HomeDestinations.HOME_NEW_PRESET_MAPPING_ROUTE
-import com.joesemper.dronesettings.navigation.HomeDestinations.HOME_NEW_PRESET_SENSORS_ROUTE
-import com.joesemper.dronesettings.navigation.HomeDestinations.HOME_NEW_PRESET_SIGNAL_ROUTE
-import com.joesemper.dronesettings.navigation.HomeDestinations.HOME_NEW_PRESET_TIMELINE_ROUTE
-import com.joesemper.dronesettings.navigation.HomeDestinations.HOME_PRESET_ROUTE
-import com.joesemper.dronesettings.navigation.HomeDestinations.HOME_ROUTE
+import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_NEW_PRESET_MAPPING_ROUTE
+import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_NEW_PRESET_SENSORS_ROUTE
+import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_NEW_PRESET_SIGNAL_ROUTE
+import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_NEW_PRESET_TIMELINE_ROUTE
+import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_PRESET_ID_KEY
+import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_PRESET_ROUTE
+import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_ROUTE
 import com.joesemper.dronesettings.ui.home.HomeScreen
 import com.joesemper.dronesettings.ui.preset.PresetScreen
 import com.joesemper.dronesettings.ui.settings.screens.mapping.SignalMappingSettingsScreen
@@ -31,6 +32,7 @@ object HomeDestinations {
 
 fun NavGraphBuilder.addHomeGraph(
     homeState: HomeState,
+    upPress: () -> Unit
 ) {
     composable("$HOME_GRAPH/$HOME_ROUTE") { from ->
         HomeScreen(
@@ -40,73 +42,67 @@ fun NavGraphBuilder.addHomeGraph(
     }
 
     composable(
-        route = "$HOME_PRESET_ROUTE/{$PRESET_DATA_ID_ARG}",
-        arguments = listOf(navArgument(PRESET_DATA_ID_ARG) { type = NavType.IntType })
+        route = "$HOME_PRESET_ROUTE/{$HOME_PRESET_ID_KEY}",
+        arguments = listOf(navArgument(HOME_PRESET_ID_KEY) { type = NavType.IntType })
     ) {
-        PresetScreen(upPress = { homeState.upPress() })
+        PresetScreen(upPress = upPress)
     }
 
     composable(
-        route = "$HOME_NEW_PRESET_TIMELINE_ROUTE/{$PRESET_DATA_ID_ARG}",
-        arguments = listOf(navArgument(PRESET_DATA_ID_ARG) { type = NavType.IntType })
+        route = "$HOME_NEW_PRESET_TIMELINE_ROUTE/{$HOME_PRESET_ID_KEY}",
+        arguments = listOf(navArgument(HOME_PRESET_ID_KEY) { type = NavType.IntType })
     ) { from ->
         TimeLineSettingsScreen(
             navigateNext = { id ->
                 homeState.navigateToSensorsSettings(id, from)
             },
             onClose = {
-                homeState.navigateHome()
+                homeState.navigateHome(from)
             }
         )
     }
 
     composable(
-        route = "$HOME_NEW_PRESET_SENSORS_ROUTE/{$PRESET_DATA_ID_ARG}",
-        arguments = listOf(navArgument(PRESET_DATA_ID_ARG) { type = NavType.IntType })
+        route = "$HOME_NEW_PRESET_SENSORS_ROUTE/{$HOME_PRESET_ID_KEY}",
+        arguments = listOf(navArgument(HOME_PRESET_ID_KEY) { type = NavType.IntType })
     ) { from ->
         SensorsSettingsScreen(
             navigateNext = { id ->
                 homeState.navigateToMappingSettings(id, from)
             },
-            navigateUp = {
-                homeState.upPress()
-            },
+            navigateUp = upPress,
             onClose = {
-                homeState.navigateHome()
+                homeState.navigateHome(from)
             }
         )
     }
 
     composable(
-        route = "$HOME_NEW_PRESET_MAPPING_ROUTE/{$PRESET_DATA_ID_ARG}",
-        arguments = listOf(navArgument(PRESET_DATA_ID_ARG) { type = NavType.IntType })
+        route = "$HOME_NEW_PRESET_MAPPING_ROUTE/{$HOME_PRESET_ID_KEY}",
+        arguments = listOf(navArgument(HOME_PRESET_ID_KEY) { type = NavType.IntType })
     ) { from ->
         SignalMappingSettingsScreen(
             navigateNext = { id ->
                 homeState.navigateToSignalSettings(id, from)
             },
-            navigateUp = {
-                homeState.upPress()
-            },
+            navigateUp = upPress,
             onClose = {
-                homeState.navigateHome()
+                homeState.navigateHome(from)
             }
         )
     }
 
     composable(
-        route = "$HOME_NEW_PRESET_SIGNAL_ROUTE/{$PRESET_DATA_ID_ARG}",
-        arguments = listOf(navArgument(PRESET_DATA_ID_ARG) { type = NavType.IntType })
+        route = "$HOME_NEW_PRESET_SIGNAL_ROUTE/{$HOME_PRESET_ID_KEY}",
+        arguments = listOf(navArgument(HOME_PRESET_ID_KEY) { type = NavType.IntType })
     ) { from ->
         SignalSettingsScreen(
             navigateNext = { id ->
                 homeState.navigateToPreset(id, from)
             },
-            navigateUp = {
-                homeState.upPress()
-            },
+            navigateUp = upPress,
             onClose = {
-                homeState.navigateHome()
+                homeState.navigateHome(from)
             }
         )
     }
