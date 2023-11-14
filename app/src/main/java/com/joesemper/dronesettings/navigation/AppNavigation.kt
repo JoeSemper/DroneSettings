@@ -3,8 +3,10 @@ package com.joesemper.dronesettings.navigation
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
@@ -12,9 +14,14 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.navigation.home.HOME_GRAPH
@@ -22,7 +29,6 @@ import com.joesemper.dronesettings.navigation.home.HomeDestinations
 import com.joesemper.dronesettings.navigation.home.HomeState
 import com.joesemper.dronesettings.navigation.terminal.ChatDestinations
 import com.joesemper.dronesettings.navigation.terminal.TERMINAL_GRAPH
-
 
 @Composable
 fun AppNavHost(
@@ -46,10 +52,12 @@ fun AppNavHost(
         }
     ) { innerPadding ->
 
+        val padding = calculateAnimatedPadding(innerPadding, appState.shouldShowBottomBar)
+
         NavHost(
             navController = appState.navController,
             startDestination = startDestination,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(padding.value)
         ) {
             buildNavGraph(
                 upPress = appState::upPress,
@@ -80,7 +88,6 @@ sealed class NavigationItem(
 
 val bottomBarItems = listOf(NavigationItem.Presets, NavigationItem.Console)
 
-
 @Composable
 fun BottomBar(
     tabs: List<NavigationItem>,
@@ -104,4 +111,30 @@ fun BottomBar(
             )
         }
     }
+}
+
+@Composable
+fun calculateAnimatedPadding(
+    innerPadding: PaddingValues,
+    shouldShowBottomBar: Boolean
+): State<PaddingValues> {
+
+    val topPadding by animateDpAsState(
+        targetValue = innerPadding.calculateTopPadding(),
+        label = ""
+    )
+
+    val botPadding by animateDpAsState(
+        targetValue = if (shouldShowBottomBar) {
+            innerPadding.calculateBottomPadding()
+        } else {
+            0.dp
+        },
+        label = ""
+    )
+
+    return remember(topPadding, botPadding) {
+        mutableStateOf(PaddingValues(bottom = botPadding, top = topPadding))
+    }
+
 }
