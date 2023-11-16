@@ -1,13 +1,14 @@
-package com.joesemper.dronesettings.ui.drone
+package com.joesemper.dronesettings.ui.terminal
 
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
+import android.hardware.usb.UsbManager.ACTION_USB_DEVICE_ATTACHED
+import android.hardware.usb.UsbManager.ACTION_USB_DEVICE_DETACHED
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
@@ -44,43 +45,37 @@ import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
 import com.hoho.android.usbserial.util.SerialInputOutputManager.Listener
-
-
-internal fun Context.findActivity(): ComponentActivity {
-
-    var context = this
-
-    while (context is ContextWrapper) {
-
-        if (context is ComponentActivity) return context
-
-        context = context.baseContext
-
-    }
-
-    throw IllegalStateException("Permissions should be called in the context of an Activity")
-}
+import com.joesemper.dronesettings.usb.UsbConnectionManager
+import com.joesemper.dronesettings.usb.findActivity
+import com.joesemper.dronesettings.usb.rememberUsbConnectionManager
 
 private const val ACTION_USB_PERMISSION = "com.joesemper.dronesettings.USB_PERMISSION"
-
 
 @Composable
 fun TerminalScreen() {
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
-        DroneWriteContentScreen(
+        TerminalContentScreen(
             modifier = Modifier.padding(paddingValues)
         )
     }
 }
 
 @Composable
-fun DroneWriteContentScreen(
+fun TerminalContentScreen(
     modifier: Modifier = Modifier
 ) {
+
+
     val context = LocalContext.current
     val activity = remember { context.findActivity() }
+
+    val manager: UsbConnectionManager =
+        rememberUsbConnectionManager(
+            context = context,
+            onNewMassage = {}
+        )
 
     val usbManager: UsbManager =
         remember { activity.getSystemService(Context.USB_SERVICE) as UsbManager }
@@ -91,6 +86,9 @@ fun DroneWriteContentScreen(
     val connected = remember { mutableStateOf(false) }
 
     val log = remember { mutableStateListOf<String>() }
+
+    usbManager.deviceList
+
 
     val usbReceiver = remember {
         object : BroadcastReceiver() {
@@ -111,6 +109,45 @@ fun DroneWriteContentScreen(
                 }
             }
         }
+    }
+
+    val usbReceiverAttached = remember {
+        object : BroadcastReceiver() {
+
+            override fun onReceive(context: Context, intent: Intent) {
+                if (intent.action == ACTION_USB_DEVICE_ATTACHED) {
+                    synchronized(this) {
+
+                        log.add("Device attached")
+                    }
+
+                }
+            }
+        }
+    }
+
+    val usbReceiverDetached = remember {
+        object : BroadcastReceiver() {
+
+            override fun onReceive(context: Context, intent: Intent) {
+                if (intent.action == ACTION_USB_DEVICE_DETACHED) {
+                    synchronized(this) {
+                        log.add("Device detached")
+                    }
+
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = activity) {
+        val filter = IntentFilter(ACTION_USB_DEVICE_ATTACHED)
+        activity.registerReceiver(usbReceiverAttached, filter)
+    }
+
+    LaunchedEffect(key1 = activity) {
+        val filter = IntentFilter(ACTION_USB_DEVICE_DETACHED)
+        activity.registerReceiver(usbReceiverDetached, filter)
     }
 
     LaunchedEffect(key1 = driver.value) {
@@ -274,7 +311,7 @@ fun connectDevice(
         if (drivers.isNotEmpty()) {
             onDriverFound(drivers.first())
         } else {
-            onError("No drivers of device not connected")
+            onError("No drivers or device not connected")
         }
     } catch (e: Throwable) {
         onError(e.message ?: "Error")

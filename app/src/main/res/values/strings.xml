@@ -95,4 +95,13 @@
     <string name="search_in_presets">Search in presets</string>
     <string name="no_results">No results</string>
     <string name="press_back_again_to_close">Press back again to close</string>
+    <string name="no_drivers_or_device_not_connected">No drivers or device not connected</string>
+    <string name="permission_granted">Permission granted</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="device_connected">Device connected</string>
+    <string name="device_disconnected">Device disconnected</string>
+    <string name="driver_found">Driver found</string>
+    <string name="port_configured">Port configured</string>
+    <string name="port_setup_failure">Port setup failure</string>
+    <string name="port_listener_error">Port listener error</string>
 </resources>
