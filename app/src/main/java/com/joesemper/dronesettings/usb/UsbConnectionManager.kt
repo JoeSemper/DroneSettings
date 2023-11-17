@@ -17,20 +17,24 @@ import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
 import com.joesemper.dronesettings.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.launch
 
 private const val ACTION_USB_PERMISSION = "com.joesemper.dronesettings.USB_PERMISSION"
 
 @Composable
 fun rememberUsbConnectionManager(
     context: Context,
-    onNewMassage: (UsbConnectionMassage) -> Unit
+    coroutineScope: CoroutineScope
 ) = remember(context) {
-    UsbConnectionManager(context, onNewMassage)
+    UsbConnectionManager(context, coroutineScope)
 }
 
-sealed class UsbConnectionMassage(msg: String) {
+sealed class UsbConnectionMassage(val text: String) {
     class System(msg: String) : UsbConnectionMassage(msg)
     class Device(msg: String) : UsbConnectionMassage(msg)
     class Error(msg: String) : UsbConnectionMassage(msg)
@@ -38,8 +42,10 @@ sealed class UsbConnectionMassage(msg: String) {
 
 class UsbConnectionManager(
     private val context: Context,
-    private val onNewMassage: (UsbConnectionMassage) -> Unit
+    private val coroutineScope: CoroutineScope
 ) {
+
+    private val masages = Channel<UsbConnectionMassage>()
 
     private val _connection = MutableStateFlow(false)
     val connection = _connection.asStateFlow()
@@ -51,30 +57,42 @@ class UsbConnectionManager(
         activity.getSystemService(Context.USB_SERVICE) as UsbManager
 
     fun connect() {
-        try {
-            checkDrivers(usbManager).firstOrNull()?.let { driver ->
+        if (!_connection.value){
+            try {
+                checkDrivers(usbManager).firstOrNull()?.let { driver ->
 
-                sendSystemMassage(R.string.driver_found)
+                    sendSystemMassage(R.string.driver_found)
 
-                if (hasPermission(driver)) {
-                    setUpConnection(driver)
-                } else {
-                    requestPermission(driver)
+                    if (hasPermission(driver)) {
+                        setUpConnection(driver)
+                    } else {
+                        requestPermission(driver)
+                    }
+
+                } ?: {
+                    onConnectionFailure()
                 }
 
+            } catch (e: Throwable) {
+                sendErrorMassage(R.string.connection_error)
             }
-        } catch (e: Throwable) {
-            onConnectionFailure()
         }
     }
 
     fun disconnect() {
+        closePort()
         onDisconnect()
     }
 
     fun send(massage: String) {
-        sendToDevice(massage)
+        if (connection.value) {
+            sendToDevice(massage)
+        } else {
+            sendErrorMassage(R.string.device_not_connected)
+        }
     }
+
+    fun subscribeOnMassages() = masages.consumeAsFlow()
 
     private fun sendToDevice(msg: String) {
         serialPort?.write(msg.toByteArray(), 500)
@@ -111,11 +129,13 @@ class UsbConnectionManager(
         }
     }
 
-    private fun getPermissionReceiver(driver: UsbSerialDriver) = PermissionBroadcastReceiver(
+    private val permissionReceiver = PermissionBroadcastReceiver(
         onPermissionResult = { hasPermission ->
             if (hasPermission) {
                 sendSystemMassage(R.string.permission_granted)
-                setUpConnection(driver)
+                checkDrivers(usbManager).firstOrNull()?.let { driver ->
+                    setUpConnection(driver)
+                }
             } else {
                 sendErrorMassage(R.string.permission_denied)
             }
@@ -144,10 +164,10 @@ class UsbConnectionManager(
 
     private fun setDisconnectListener() {
         val filter = IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED)
-        activity.registerReceiver(getDisconnectListener(), filter)
+        activity.registerReceiver(disconnectListener, filter)
     }
 
-    private fun getDisconnectListener() = object : BroadcastReceiver() {
+    private val disconnectListener = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == UsbManager.ACTION_USB_DEVICE_DETACHED) {
                 onDisconnect()
@@ -157,8 +177,15 @@ class UsbConnectionManager(
 
     private fun onDisconnect() {
         _connection.value = false
-        serialPort?.close()
         sendSystemMassage(R.string.device_disconnected)
+    }
+
+    private fun closePort() {
+        try {
+            serialPort?.close()
+        } catch (e: Throwable) {
+            sendErrorMassage(R.string.error_closing_port)
+        }
     }
 
     private fun checkDrivers(
@@ -178,20 +205,26 @@ class UsbConnectionManager(
             flags
         )
         val filter = IntentFilter(ACTION_USB_PERMISSION)
-        activity.registerReceiver(getPermissionReceiver(driver), filter)
+        activity.registerReceiver(permissionReceiver, filter)
         usbManager.requestPermission(driver.device, usbPermissionIntent)
     }
 
     private fun sendErrorMassage(@StringRes msgResId: Int) {
-        onNewMassage(UsbConnectionMassage.Error(context.getString(msgResId)))
+        coroutineScope.launch {
+            masages.send(UsbConnectionMassage.Error(context.getString(msgResId)))
+        }
     }
 
     private fun sendSystemMassage(@StringRes msgResId: Int) {
-        onNewMassage(UsbConnectionMassage.System(context.getString(msgResId)))
+        coroutineScope.launch {
+            masages.send(UsbConnectionMassage.System(context.getString(msgResId)))
+        }
     }
 
     private fun sendDeviceMassage(msg: String) {
-        onNewMassage(UsbConnectionMassage.Device(msg))
+        coroutineScope.launch {
+            masages.send(UsbConnectionMassage.Device(msg))
+        }
     }
 }
 

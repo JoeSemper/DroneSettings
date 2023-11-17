@@ -104,4 +104,11 @@
     <string name="port_configured">Port configured</string>
     <string name="port_setup_failure">Port setup failure</string>
     <string name="port_listener_error">Port listener error</string>
+    <string name="device_not_connected">Device not connected</string>
+    <string name="user_prefix">User:</string>
+    <string name="system_prefix">System:</string>
+    <string name="device_prefix">Device:</string>
+    <string name="error_prefix">Error:</string>
+    <string name="error_closing_port">Error closing port</string>
+    <string name="connection_error">Connection error</string>
 </resources>
