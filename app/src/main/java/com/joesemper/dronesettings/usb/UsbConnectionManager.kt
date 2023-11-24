@@ -10,29 +10,21 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import androidx.activity.ComponentActivity
 import androidx.annotation.StringRes
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
 import com.joesemper.dronesettings.R
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 private const val ACTION_USB_PERMISSION = "com.joesemper.dronesettings.USB_PERMISSION"
-
-@Composable
-fun rememberUsbConnectionManager(
-    context: Context,
-    coroutineScope: CoroutineScope
-) = remember(context) {
-    UsbConnectionManager(context, coroutineScope)
-}
 
 sealed class UsbConnectionMassage(val text: String) {
     class System(msg: String) : UsbConnectionMassage(msg)
@@ -42,7 +34,7 @@ sealed class UsbConnectionMassage(val text: String) {
 
 class UsbConnectionManager(
     private val context: Context,
-    private val coroutineScope: CoroutineScope
+    defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
 
     private val masages = Channel<UsbConnectionMassage>()
@@ -52,15 +44,30 @@ class UsbConnectionManager(
 
     private var serialPort: UsbSerialPort? = null
 
-    private val activity = context.findActivity()
+    private val activity = context
     private val usbManager: UsbManager =
         activity.getSystemService(Context.USB_SERVICE) as UsbManager
 
+    private val scope = CoroutineScope(defaultDispatcher)
+
+    val listener = object : SerialInputOutputManager.Listener {
+        override fun onNewData(data: ByteArray?) {
+            data?.let {
+                sendDeviceMassage(String(data))
+            }
+        }
+
+        override fun onRunError(e: Exception?) {
+            e?.let {
+                sendErrorMassage(R.string.port_listener_error)
+            }
+        }
+    }
+
     fun connect() {
-        if (!_connection.value){
+        if (!_connection.value) {
             try {
                 checkDrivers(usbManager).firstOrNull()?.let { driver ->
-
                     sendSystemMassage(R.string.driver_found)
 
                     if (hasPermission(driver)) {
@@ -68,6 +75,7 @@ class UsbConnectionManager(
                     } else {
                         requestPermission(driver)
                     }
+
 
                 } ?: {
                     onConnectionFailure()
@@ -85,14 +93,16 @@ class UsbConnectionManager(
     }
 
     fun send(massage: String) {
-        if (connection.value) {
+        if (_connection.value) {
             sendToDevice(massage)
         } else {
-            sendErrorMassage(R.string.device_not_connected)
+            sendErrorMassage(
+                R.string.device_not_connected
+            )
         }
     }
 
-    fun subscribeOnMassages() = masages.consumeAsFlow()
+    fun subscribeOnMassages() = masages.receiveAsFlow()
 
     private fun sendToDevice(msg: String) {
         serialPort?.write(msg.toByteArray(), 500)
@@ -108,24 +118,10 @@ class UsbConnectionManager(
     }
 
     private fun setPortListener() {
-        if (connection.value) {
-            serialPort?.let { port ->
-                val listener = object : SerialInputOutputManager.Listener {
-                    override fun onNewData(data: ByteArray?) {
-                        data?.let {
-                            sendDeviceMassage(String(data))
-                        }
-                    }
-
-                    override fun onRunError(e: Exception?) {
-                        e?.let {
-                            sendErrorMassage(R.string.port_listener_error)
-                        }
-                    }
-                }
-                val ioManager = SerialInputOutputManager(port, listener)
-                ioManager.start()
-            }
+        serialPort?.let { port ->
+            val ioManager = SerialInputOutputManager(port, listener)
+            ioManager.start()
+            sendSystemMassage(R.string.listener_attached)
         }
     }
 
@@ -209,20 +205,42 @@ class UsbConnectionManager(
         usbManager.requestPermission(driver.device, usbPermissionIntent)
     }
 
-    private fun sendErrorMassage(@StringRes msgResId: Int) {
-        coroutineScope.launch {
+    private fun sendErrorMassage(
+        @StringRes msgResId: Int
+    ) {
+        scope.launch {
             masages.send(UsbConnectionMassage.Error(context.getString(msgResId)))
         }
     }
 
-    private fun sendSystemMassage(@StringRes msgResId: Int) {
-        coroutineScope.launch {
+    private fun sendErrorMassage(
+        msg: String
+    ) {
+        scope.launch {
+            masages.send(UsbConnectionMassage.Error(msg))
+        }
+    }
+
+    private fun sendSystemMassage(
+        @StringRes msgResId: Int
+    ) {
+        scope.launch {
             masages.send(UsbConnectionMassage.System(context.getString(msgResId)))
         }
     }
 
-    private fun sendDeviceMassage(msg: String) {
-        coroutineScope.launch {
+    private fun sendSystemMassage(
+        msg: String
+    ) {
+        scope.launch {
+            masages.send(UsbConnectionMassage.System(msg))
+        }
+    }
+
+    private fun sendDeviceMassage(
+        msg: String
+    ) {
+        scope.launch {
             masages.send(UsbConnectionMassage.Device(msg))
         }
     }

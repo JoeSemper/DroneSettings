@@ -32,7 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.joesemper.dronesettings.usb.UsbConnectionManager
 import com.joesemper.dronesettings.usb.UsbConnectionMassage
-import com.joesemper.dronesettings.usb.rememberUsbConnectionManager
+import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -47,10 +47,7 @@ fun TerminalScreen(
         val context = LocalContext.current
         val scope = rememberCoroutineScope()
 
-        val connectionManager: UsbConnectionManager = rememberUsbConnectionManager(
-            context = context,
-            coroutineScope = scope
-        )
+        val connectionManager: UsbConnectionManager = get<UsbConnectionManager>()
 
         LaunchedEffect(key1 = context) {
             connectionManager.subscribeOnMassages().collect { massege ->
