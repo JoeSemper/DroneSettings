@@ -4,46 +4,58 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.joesemper.dronesettings.usb.UsbConnectionManager
+import com.joesemper.dronesettings.usb.UsbConnectionMassage
+import kotlinx.coroutines.launch
 
-class TerminalViewModel() : ViewModel() {
+class TerminalViewModel(
+    private val connectionManager: UsbConnectionManager
+) : ViewModel() {
 
     var uiState by mutableStateOf(TerminalUiState())
         private set
 
-    fun onNewSystemMassage(massage: String) {
-        uiState.log.add(
-            TerminalMassage(
-                massage = massage,
-                category = TerminalMassageCategory.SYSTEM
-            )
-        )
+    init {
+        subscribeOnConnectionLog()
+        subscribeOnConnectionStatus()
     }
 
-    fun onNewDeviceMassage(massage: String) {
-        uiState.log.add(
-            TerminalMassage(
-                massage = massage,
-                category = TerminalMassageCategory.DEVICE
-            )
-        )
+    fun sendUserMassage(massage: String) {
+        connectionManager.send(massage)
     }
 
-    fun onNewUserMassage(massage: String) {
-        uiState.log.add(
-            TerminalMassage(
-                massage = massage,
-                category = TerminalMassageCategory.USER
-            )
-        )
+    fun connect() {
+        connectionManager.connect()
     }
 
-    fun onNewErrorMassage(massage: String) {
-        uiState.log.add(
-            TerminalMassage(
-                massage = massage,
-                category = TerminalMassageCategory.ERROR
-            )
-        )
+    fun disconnect() {
+        connectionManager.disconnect()
     }
 
+    private fun subscribeOnConnectionLog() {
+        viewModelScope.launch {
+            connectionManager.log.collect { massages ->
+                uiState = uiState.copy(log = massages.map { it.toTerminalMassage() })
+            }
+        }
+    }
+
+    private fun subscribeOnConnectionStatus() {
+        viewModelScope.launch {
+            connectionManager.connection.collect { isConnected ->
+                uiState = uiState.copy(isConnected = isConnected)
+            }
+        }
+    }
+
+    private fun UsbConnectionMassage.toTerminalMassage() = TerminalMassage(
+        massage = this.text,
+        category = when (this) {
+            is UsbConnectionMassage.Device -> TerminalMassageCategory.DEVICE
+            is UsbConnectionMassage.Error -> TerminalMassageCategory.ERROR
+            is UsbConnectionMassage.System -> TerminalMassageCategory.SYSTEM
+            is UsbConnectionMassage.User -> TerminalMassageCategory.USER
+        }
+    )
 }

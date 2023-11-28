@@ -17,22 +17,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.joesemper.dronesettings.usb.UsbConnectionManager
-import com.joesemper.dronesettings.usb.UsbConnectionMassage
-import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -43,34 +35,13 @@ fun TerminalScreen(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
 
-
-        val context = LocalContext.current
-        val scope = rememberCoroutineScope()
-
-        val connectionManager: UsbConnectionManager = get<UsbConnectionManager>()
-
-        LaunchedEffect(key1 = context) {
-            connectionManager.subscribeOnMassages().collect { massege ->
-                when (massege) {
-                    is UsbConnectionMassage.Device -> viewModel.onNewDeviceMassage(massege.text)
-                    is UsbConnectionMassage.Error -> viewModel.onNewErrorMassage(massege.text)
-                    is UsbConnectionMassage.System -> viewModel.onNewSystemMassage(massege.text)
-                }
-            }
-        }
-
         TerminalContentScreen(
             modifier = Modifier.padding(paddingValues),
             uiState = viewModel.uiState,
-            connectionManager = connectionManager,
-            onNewUserMassage = { viewModel.onNewUserMassage(it) }
+            onNewUserMassage = { viewModel.sendUserMassage(it) },
+            connect = { viewModel.connect() }
         )
 
-        DisposableEffect(key1 = context) {
-            onDispose {
-                connectionManager.disconnect()
-            }
-        }
     }
 }
 
@@ -78,11 +49,11 @@ fun TerminalScreen(
 fun TerminalContentScreen(
     modifier: Modifier = Modifier,
     uiState: TerminalUiState,
-    connectionManager: UsbConnectionManager,
-    onNewUserMassage: (String) -> Unit
+    onNewUserMassage: (String) -> Unit,
+    connect: () -> Unit
 ) {
-    val isConnected = connectionManager.connection.collectAsState()
     val log = uiState.log
+    val isConnected = uiState.isConnected
 
     Column(
         modifier = modifier
@@ -105,13 +76,13 @@ fun TerminalContentScreen(
                 Surface(
                     modifier = Modifier.size(24.dp),
                     shape = CircleShape,
-                    color = if (isConnected.value) Color.Green else Color.Gray,
+                    color = if (isConnected) Color.Green else Color.Gray,
                     content = {}
                 )
             }
 
             Button(onClick = {
-                connectionManager.connect()
+                connect()
             }) {
                 Text(text = "Connect")
             }
@@ -146,18 +117,17 @@ fun TerminalContentScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                enabled = isConnected.value,
+                enabled = isConnected,
                 value = textField,
                 onValueChange = { textField = it }
             )
 
             Button(
                 onClick = {
-                    connectionManager.send(textField)
                     onNewUserMassage(textField)
                     textField = ""
                 },
-                enabled = isConnected.value
+                enabled = isConnected
             ) {
                 Text(text = "Send")
             }

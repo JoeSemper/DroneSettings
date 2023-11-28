@@ -2,15 +2,14 @@ package com.joesemper.dronesettings.ui.terminal
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.res.stringResource
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.utils.unixTimeToTime
 import java.util.Calendar
 
 data class TerminalUiState(
-    val log: SnapshotStateList<TerminalMassage> = mutableStateListOf()
+    val log: List<TerminalMassage> = emptyList(),
+    val isConnected: Boolean = false
 )
 
 data class TerminalMassage(
