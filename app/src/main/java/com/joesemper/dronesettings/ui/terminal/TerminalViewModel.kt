@@ -36,7 +36,7 @@ class TerminalViewModel(
     private fun subscribeOnConnectionLog() {
         viewModelScope.launch {
             connectionManager.log.collect { massages ->
-                uiState = uiState.copy(log = massages.map { it.toTerminalMassage() })
+                uiState = uiState.copy(log = massages.map { it.toTerminalMassage() }.reversed())
             }
         }
     }
@@ -51,6 +51,7 @@ class TerminalViewModel(
 
     private fun UsbConnectionMassage.toTerminalMassage() = TerminalMassage(
         massage = this.text,
+        time = this.time,
         category = when (this) {
             is UsbConnectionMassage.Device -> TerminalMassageCategory.DEVICE
             is UsbConnectionMassage.Error -> TerminalMassageCategory.ERROR

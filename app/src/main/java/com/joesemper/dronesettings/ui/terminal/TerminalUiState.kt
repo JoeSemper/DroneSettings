@@ -4,8 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.joesemper.dronesettings.R
-import com.joesemper.dronesettings.utils.unixTimeToTime
-import java.util.Calendar
 
 data class TerminalUiState(
     val log: List<TerminalMassage> = emptyList(),
@@ -14,7 +12,7 @@ data class TerminalUiState(
 
 data class TerminalMassage(
     val massage: String,
-    val time: String = unixTimeToTime(Calendar.getInstance().timeInMillis),
+    val time: String,
     val category: TerminalMassageCategory
 ) {
     @Composable

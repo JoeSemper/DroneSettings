@@ -1,8 +1,11 @@
 package com.joesemper.dronesettings.usb
 
-sealed class UsbConnectionMassage(val text: String) {
-    class System(msg: String) : UsbConnectionMassage(msg)
-    class Device(msg: String) : UsbConnectionMassage(msg)
-    class Error(msg: String) : UsbConnectionMassage(msg)
-    class User(msg: String) : UsbConnectionMassage(msg)
+sealed class UsbConnectionMassage(
+    val text: String,
+    val time: String,
+) {
+    class System(msg: String, time: String) : UsbConnectionMassage(msg, time)
+    class Device(msg: String, time: String) : UsbConnectionMassage(msg, time)
+    class Error(msg: String, time: String) : UsbConnectionMassage(msg, time)
+    class User(msg: String, time: String) : UsbConnectionMassage(msg, time)
 }
