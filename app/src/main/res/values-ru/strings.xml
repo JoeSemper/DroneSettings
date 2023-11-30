@@ -114,4 +114,5 @@
     <string name="connection_error">Connection error</string>
     <string name="listener_attached">Listener attached</string>
     <string name="massage">Massage</string>
+    <string name="command">Command</string>
 </resources>

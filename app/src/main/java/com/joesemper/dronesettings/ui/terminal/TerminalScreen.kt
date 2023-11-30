@@ -1,5 +1,7 @@
 package com.joesemper.dronesettings.ui.terminal
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -47,21 +49,22 @@ fun TerminalScreen(
             modifier = Modifier.padding(paddingValues),
             uiState = viewModel.uiState,
             onNewUserMassage = { viewModel.sendUserMassage(it) },
-            connect = { viewModel.connect() }
+            connect = { viewModel.connect() },
+            disconnect = { viewModel.disconnect() }
         )
 
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TerminalContentScreen(
     modifier: Modifier = Modifier,
     uiState: TerminalUiState,
     onNewUserMassage: (String) -> Unit,
-    connect: () -> Unit
+    connect: () -> Unit,
+    disconnect: () -> Unit
 ) {
-    val log = uiState.log
-    val isConnected = uiState.isConnected
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -70,18 +73,19 @@ fun TerminalContentScreen(
 
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                tonalElevation = 1.dp
+                tonalElevation = 4.dp
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp, horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
 
                     Row(
@@ -91,16 +95,26 @@ fun TerminalContentScreen(
                         Surface(
                             modifier = Modifier.size(24.dp),
                             shape = CircleShape,
-                            color = if (isConnected) Color.Green else Color.Gray,
+                            color = if (uiState.isConnected) Color.Green else Color.Gray,
                             content = {}
                         )
                     }
 
-                    Button(
-                        onClick = { connect() },
-                        enabled = !isConnected
-                    ) {
-                        Text(text = "Connect")
+                    AnimatedContent(targetState = uiState.isConnected, label = "") {
+                        if (it) {
+                            Button(
+                                onClick = { disconnect() }
+                            ) {
+                                Text(text = "Disconnect")
+                            }
+                        } else {
+                            Button(
+                                onClick = { connect() }
+                            ) {
+                                Text(text = "Connect")
+                            }
+                        }
+
                     }
                 }
             }
@@ -111,15 +125,15 @@ fun TerminalContentScreen(
                     .fillMaxHeight()
                     .weight(1f),
                 contentPadding = PaddingValues(horizontal = 16.dp),
-                verticalArrangement = Arrangement.Bottom,
+                verticalArrangement = Arrangement.spacedBy(4.dp),
                 horizontalAlignment = Alignment.Start,
                 reverseLayout = true
             ) {
-                items(count = log.size) {
+                items(count = uiState.log.size) {
                     Text(
                         style = MaterialTheme.typography.bodyMedium,
-                        text = "${log[it].time} ${log[it].prefix()} ${log[it].massage}",
-                        color = log[it].color()
+                        text = "${uiState.log[it].time} ${uiState.log[it].prefix()} ${uiState.log[it].massage}",
+                        color = uiState.log[it].color()
                     )
                 }
             }
@@ -128,30 +142,39 @@ fun TerminalContentScreen(
 
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                tonalElevation = 1.dp,
+                tonalElevation = 4.dp,
                 color = MaterialTheme.colorScheme.surface
             ) {
                 TextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = isConnected,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    enabled = uiState.isConnected,
                     value = textField,
                     onValueChange = { textField = it },
-                    placeholder = { Text(text = stringResource(id = R.string.massage)) },
+                    placeholder = { Text(text = stringResource(id = R.string.command)) },
                     leadingIcon = {
-                        IconButton(onClick = {}) {
+                        IconButton(
+                            onClick = {},
+                            enabled = uiState.isConnected
+                        ) {
                             Icon(imageVector = Icons.Default.Menu, contentDescription = null)
                         }
                     },
                     trailingIcon = {
-                        IconButton(onClick = {
-                            onNewUserMassage(textField)
-                            textField = ""
-                        }) {
+                        IconButton(
+                            onClick = {
+                                onNewUserMassage(textField)
+                                textField = ""
+                            },
+                            enabled = uiState.isConnected
+                        ) {
                             Icon(imageVector = Icons.Default.Send, contentDescription = null)
                         }
                     }
                 )
             }
+
         }
     }
 }
