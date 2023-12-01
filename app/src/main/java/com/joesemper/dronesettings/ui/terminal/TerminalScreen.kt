@@ -125,12 +125,13 @@ fun TerminalContentScreen(
                     .fillMaxHeight()
                     .weight(1f),
                 contentPadding = PaddingValues(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.Start,
                 reverseLayout = true
             ) {
                 items(count = uiState.log.size) {
                     Text(
+                        modifier = Modifier.padding(vertical = 2.dp),
                         style = MaterialTheme.typography.bodyMedium,
                         text = "${uiState.log[it].time} ${uiState.log[it].prefix()} ${uiState.log[it].massage}",
                         color = uiState.log[it].color()
