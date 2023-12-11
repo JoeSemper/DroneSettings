@@ -20,10 +20,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -71,6 +67,13 @@ fun TerminalContentScreen(
     onNewUserMassage: (String) -> Unit,
 ) {
 
+    TerminalBottomSheet(
+        uiState = uiState.bottomSheetState,
+        onItemCopyClick = {
+            uiState.textFieldState.value = uiState.textFieldState.value + "$it "
+        }
+    )
+
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.surfaceVariant
@@ -99,18 +102,18 @@ fun TerminalContentScreen(
                 }
             }
 
-            var textField by remember { mutableStateOf("") }
-
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                value = textField,
-                onValueChange = { textField = it },
+                value = uiState.textFieldState.value,
+                onValueChange = { uiState.textFieldState.value = it },
                 placeholder = { Text(text = stringResource(id = R.string.command)) },
                 leadingIcon = {
                     IconButton(
-                        onClick = { },
+                        onClick = {
+                            uiState.bottomSheetState.showBottomSheet()
+                        },
                     ) {
                         Icon(imageVector = Icons.Default.Menu, contentDescription = null)
                     }
@@ -118,8 +121,8 @@ fun TerminalContentScreen(
                 trailingIcon = {
                     IconButton(
                         onClick = {
-                            onNewUserMassage(textField)
-                            textField = ""
+                            onNewUserMassage(uiState.textFieldState.value)
+                            uiState.textFieldState.value = ""
                         },
                     ) {
                         Icon(imageVector = Icons.Default.Send, contentDescription = null)

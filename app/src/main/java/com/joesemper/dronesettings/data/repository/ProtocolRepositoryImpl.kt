@@ -9,8 +9,6 @@ class ProtocolRepositoryImpl(private val dao: ProtocolDao): ProtocolRepository {
 
     override suspend fun getAllCommands(): List<Command> = dao.getAllCommands()
 
-    override suspend fun getAllVariables(): List<Variable> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getAllVariables(): List<Variable>  = dao.getAllVariables()
 
 }

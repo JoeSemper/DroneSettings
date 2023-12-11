@@ -38,7 +38,12 @@ class TerminalViewModel(
 
     private fun getCommands() {
         viewModelScope.launch {
-            uiState = uiState.copy(commands = protocolRepository.getAllCommands())
+            uiState = uiState.copy(bottomSheetState = uiState.bottomSheetState.copy(
+                commands = protocolRepository.getAllCommands()
+            ))
+            uiState = uiState.copy(bottomSheetState = uiState.bottomSheetState.copy(
+                variables = protocolRepository.getAllVariables()
+            ))
         }
     }
 

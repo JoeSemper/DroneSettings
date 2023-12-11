@@ -2,13 +2,17 @@ package com.joesemper.dronesettings.ui.terminal
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.res.stringResource
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.data.datasource.room.prepopulated.entity.Command
+import com.joesemper.dronesettings.data.datasource.room.prepopulated.entity.Variable
 
 data class TerminalUiState(
     val log: List<TerminalMassage> = emptyList(),
-    val commands: List<Command> = emptyList(),
+    val bottomSheetState: BottomSheetState = BottomSheetState(),
+    val textFieldState: MutableState<String> = mutableStateOf(""),
     val isConnected: Boolean = false
 )
 
@@ -31,6 +35,20 @@ data class TerminalMassage(
         TerminalMassageCategory.SYSTEM -> MaterialTheme.colorScheme.secondary
         TerminalMassageCategory.DEVICE -> MaterialTheme.colorScheme.primary
         TerminalMassageCategory.ERROR -> MaterialTheme.colorScheme.error
+    }
+}
+
+data class BottomSheetState(
+    val shouldShowBottomSheet: MutableState<Boolean> = mutableStateOf(false),
+    val commands: List<Command> = emptyList(),
+    val variables: List<Variable> = emptyList(),
+) {
+    fun showBottomSheet() {
+        shouldShowBottomSheet.value = true
+    }
+
+    fun hideBottomSheet() {
+        shouldShowBottomSheet.value = false
     }
 }
 
