@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.joesemper.dronesettings.data.datasource.room.entity.TimelinePreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.TimelinePreset
 import com.joesemper.dronesettings.domain.use_case.DeletePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetOrCreateTimelinePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase

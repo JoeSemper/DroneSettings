@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.joesemper.dronesettings.data.datasource.room.entity.SensorsPreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.SensorsPreset
 import com.joesemper.dronesettings.domain.use_case.DeletePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetOrCreateSensorsPresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase

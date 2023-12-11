@@ -40,11 +40,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.joesemper.dronesettings.R
-import com.joesemper.dronesettings.data.datasource.room.entity.MappingPreset
-import com.joesemper.dronesettings.data.datasource.room.entity.SensorsPreset
-import com.joesemper.dronesettings.data.datasource.room.entity.SettingsPreset
-import com.joesemper.dronesettings.data.datasource.room.entity.SignalPreset
-import com.joesemper.dronesettings.data.datasource.room.entity.TimelinePreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.MappingPreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.SensorsPreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.SettingsPreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.SignalPreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.TimelinePreset
 import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import com.joesemper.dronesettings.utils.toText
 import org.koin.androidx.compose.getViewModel

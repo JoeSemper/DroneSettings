@@ -1,16 +1,16 @@
-package com.joesemper.dronesettings.data.datasource.room.dao
+package com.joesemper.dronesettings.data.datasource.room.main.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.joesemper.dronesettings.data.datasource.room.entity.MappingPreset
-import com.joesemper.dronesettings.data.datasource.room.entity.PresetData
-import com.joesemper.dronesettings.data.datasource.room.entity.SensorsPreset
-import com.joesemper.dronesettings.data.datasource.room.entity.SettingsPreset
-import com.joesemper.dronesettings.data.datasource.room.entity.SignalPreset
-import com.joesemper.dronesettings.data.datasource.room.entity.TimelinePreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.MappingPreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.PresetData
+import com.joesemper.dronesettings.data.datasource.room.main.entity.SensorsPreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.SettingsPreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.SignalPreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.TimelinePreset
 import kotlinx.coroutines.flow.Flow
 
 

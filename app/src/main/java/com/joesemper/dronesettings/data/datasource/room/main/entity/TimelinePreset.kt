@@ -1,4 +1,4 @@
-package com.joesemper.dronesettings.data.datasource.room.entity
+package com.joesemper.dronesettings.data.datasource.room.main.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

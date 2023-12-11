@@ -1,9 +1,9 @@
 package com.joesemper.dronesettings.domain.use_case
 
-import com.joesemper.dronesettings.data.datasource.room.entity.MappingPreset
-import com.joesemper.dronesettings.data.datasource.room.entity.SensorsPreset
-import com.joesemper.dronesettings.data.datasource.room.entity.SignalPreset
-import com.joesemper.dronesettings.data.datasource.room.entity.TimelinePreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.MappingPreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.SensorsPreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.SignalPreset
+import com.joesemper.dronesettings.data.datasource.room.main.entity.TimelinePreset
 import com.joesemper.dronesettings.domain.repository.SettingsRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

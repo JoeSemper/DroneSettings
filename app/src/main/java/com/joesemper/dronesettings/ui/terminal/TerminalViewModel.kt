@@ -5,12 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.joesemper.dronesettings.domain.repository.ProtocolRepository
 import com.joesemper.dronesettings.usb.UsbConnectionManager
 import com.joesemper.dronesettings.usb.UsbConnectionMassage
 import kotlinx.coroutines.launch
 
 class TerminalViewModel(
-    private val connectionManager: UsbConnectionManager
+    private val connectionManager: UsbConnectionManager,
+    private val protocolRepository: ProtocolRepository
 ) : ViewModel() {
 
     var uiState by mutableStateOf(TerminalUiState())
@@ -19,6 +21,7 @@ class TerminalViewModel(
     init {
         subscribeOnConnectionLog()
         subscribeOnConnectionStatus()
+        getCommands()
     }
 
     fun sendUserMassage(massage: String) {
@@ -31,6 +34,12 @@ class TerminalViewModel(
 
     fun disconnect() {
         connectionManager.disconnect()
+    }
+
+    private fun getCommands() {
+        viewModelScope.launch {
+            uiState = uiState.copy(commands = protocolRepository.getAllCommands())
+        }
     }
 
     private fun subscribeOnConnectionLog() {

@@ -4,9 +4,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.data.datasource.room.prepopulated.entity.Command
 
 data class TerminalUiState(
     val log: List<TerminalMassage> = emptyList(),
+    val commands: List<Command> = emptyList(),
     val isConnected: Boolean = false
 )
 

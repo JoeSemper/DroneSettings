@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.joesemper.dronesettings.data.datasource.room.entity.PresetData
+import com.joesemper.dronesettings.data.datasource.room.main.entity.PresetData
 import com.joesemper.dronesettings.domain.use_case.CreatePresetDataUseCase
 import com.joesemper.dronesettings.domain.use_case.GetAllPresetsUseCase
 import com.joesemper.dronesettings.utils.unixTimeToDate

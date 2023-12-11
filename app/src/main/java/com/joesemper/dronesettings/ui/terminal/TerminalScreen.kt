@@ -110,7 +110,7 @@ fun TerminalContentScreen(
                 placeholder = { Text(text = stringResource(id = R.string.command)) },
                 leadingIcon = {
                     IconButton(
-                        onClick = {},
+                        onClick = { },
                     ) {
                         Icon(imageVector = Icons.Default.Menu, contentDescription = null)
                     }
