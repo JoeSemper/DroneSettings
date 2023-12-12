@@ -36,6 +36,10 @@ class TerminalViewModel(
         connectionManager.disconnect()
     }
 
+    fun clearLog() {
+        connectionManager.clearLog()
+    }
+
     private fun getCommands() {
         viewModelScope.launch {
             uiState = uiState.copy(bottomSheetState = uiState.bottomSheetState.copy(

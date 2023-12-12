@@ -118,4 +118,8 @@
     <string name="commands">Commands</string>
     <string name="variables">Variables</string>
     <string name="copied">Copied</string>
+    <string name="clear_log">Clear log</string>
+    <string name="help">Help</string>
+    <string name="show_user_massages_in_log">Show user massages in log</string>
+    <string name="add_string_end_symbol_to_commands">Add string end symbol to commands</string>
 </resources>

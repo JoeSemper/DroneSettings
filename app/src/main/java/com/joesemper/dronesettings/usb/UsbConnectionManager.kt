@@ -8,4 +8,5 @@ interface UsbConnectionManager {
     fun connect()
     fun disconnect()
     fun send(massage: String)
+    fun clearLog()
 }

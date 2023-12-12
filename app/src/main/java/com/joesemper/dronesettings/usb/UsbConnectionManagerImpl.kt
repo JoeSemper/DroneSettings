@@ -3,12 +3,10 @@ package com.joesemper.dronesettings.usb
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
-import androidx.activity.ComponentActivity
 import androidx.annotation.StringRes
 import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
@@ -25,6 +23,7 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 private const val ACTION_USB_PERMISSION = "com.joesemper.dronesettings.USB_PERMISSION"
+private const val RESPONSE_STRING_END = "\r\n"
 
 class UsbConnectionManagerImpl(
     private val context: Context,
@@ -41,6 +40,8 @@ class UsbConnectionManagerImpl(
 
     private val calendar = Calendar.getInstance()
 
+    private val serialPortQueue = mutableListOf<String>()
+
     private val activity = context
     private val usbManager: UsbManager =
         activity.getSystemService(Context.USB_SERVICE) as UsbManager
@@ -50,7 +51,18 @@ class UsbConnectionManagerImpl(
     private val listener = object : SerialInputOutputManager.Listener {
         override fun onNewData(data: ByteArray?) {
             data?.let {
-                sendDeviceMassage(String(data))
+                val newString = String(data)
+                serialPortQueue.add(newString)
+
+                if (newString.contains(RESPONSE_STRING_END)) {
+                    var response = ""
+                    serialPortQueue.forEach {
+                        response += it
+                    }
+                    sendDeviceMassage(response)
+                    serialPortQueue.clear()
+                }
+
             }
         }
 
@@ -100,11 +112,16 @@ class UsbConnectionManagerImpl(
         }
     }
 
+    override fun clearLog() {
+        _log.value = listOf()
+    }
+
     private fun sendToDevice(msg: String) {
         serialPort?.write(msg.toByteArray(), 500)
     }
 
     private fun setUpConnection(driver: UsbSerialDriver) {
+        serialPortQueue.clear()
         setUpPort(driver)
         sendSystemMassage(R.string.port_configured)
         setDisconnectListener()
@@ -168,6 +185,7 @@ class UsbConnectionManagerImpl(
     }
 
     private fun onDisconnect() {
+        serialPortQueue.clear()
         _connection.value = false
         sendSystemMassage(R.string.device_disconnected)
     }
@@ -299,16 +317,4 @@ private class PermissionBroadcastReceiver(
             }
         }
     }
-}
-
-internal fun Context.findActivity(): ComponentActivity {
-
-    var context = this
-
-    while (context is ContextWrapper) {
-        if (context is ComponentActivity) return context
-        context = context.baseContext
-    }
-
-    throw IllegalStateException("Permissions should be called in the context of an Activity")
 }

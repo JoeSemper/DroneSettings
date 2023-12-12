@@ -5,11 +5,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,9 +23,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,8 +38,75 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.ui.settings.CheckboxWithText
+import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TerminalTopBar(
+    isConnected: Boolean,
+    onConnectClick: () -> Unit,
+    onDisconnectClick: () -> Unit,
+    onClearLogClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onHelpClick: () -> Unit
+) {
+
+    var expanded by remember { mutableStateOf(false) }
+
+    TopAppBar(
+        title = {
+            Text(text = stringResource(id = R.string.terminal))
+        },
+        actions = {
+            ConnectButton(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                isConnected = isConnected,
+                onConnectClick = onConnectClick,
+                onDisconnectClick = onDisconnectClick
+            )
+
+            IconButton(onClick = { expanded = true }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = null
+                )
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.clear_log)) },
+                    onClick = {
+                        onClearLogClick()
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.settings)) },
+                    onClick = {
+                        onSettingsClick()
+                        expanded = false
+                    }
+                )
+                Divider()
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.help)) },
+                    onClick = {
+                        onHelpClick()
+                        expanded = false
+                    }
+                )
+
+            }
+        }
+    )
+}
 
 @Composable
 fun ConnectButton(
@@ -187,4 +265,41 @@ fun BottomSheetItem(
             )
         }
     }
+}
+
+@Composable
+fun TerminalSettingsDialog(
+    onDismiss: () -> Unit
+) {
+
+    var showMassages by remember { mutableStateOf(false) }
+    var addSymbol by remember { mutableStateOf(false) }
+
+    Dialog(
+        onDismissRequest = onDismiss
+    ) {
+        Card {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                TitleWithSubtitleView(title = stringResource(id = R.string.settings))
+
+                CheckboxWithText(
+                    text = stringResource(R.string.show_user_massages_in_log),
+                    checked = showMassages,
+                    onCheckedChange = { showMassages = it }
+                )
+
+                CheckboxWithText(
+                    text = stringResource(R.string.add_string_end_symbol_to_commands),
+                    checked = addSymbol,
+                    onCheckedChange = { addSymbol = it }
+                )
+
+            }
+        }
+    }
+
 }
