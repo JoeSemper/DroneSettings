@@ -117,4 +117,5 @@
     <string name="command">Command</string>
     <string name="commands">Commands</string>
     <string name="variables">Variables</string>
+    <string name="copied">Copied</string>
 </resources>

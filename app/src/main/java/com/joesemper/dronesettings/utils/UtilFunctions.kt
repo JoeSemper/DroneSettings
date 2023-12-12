@@ -1,9 +1,15 @@
 package com.joesemper.dronesettings.utils
 
 import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.icu.text.SimpleDateFormat
+import android.os.Build
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat.getSystemService
 import com.joesemper.dronesettings.R
 
 fun Int.roundToMinutes(): Int {
@@ -45,4 +51,12 @@ fun Int.toText(): String{
         2 -> stringResource(id = R.string.activation)
         else -> stringResource(id = R.string.none)
     }
+}
+
+fun copyTextToClipboard(context: Context, textCopied:String) {
+    val clipboardManager = getSystemService(context, ClipboardManager::class.java) as ClipboardManager
+    clipboardManager.setPrimaryClip(ClipData.newPlainText   ("", textCopied))
+
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2)
+        Toast.makeText(context, context.getString(R.string.copied), Toast.LENGTH_SHORT).show()
 }

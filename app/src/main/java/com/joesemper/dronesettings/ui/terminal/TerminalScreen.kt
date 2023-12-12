@@ -16,15 +16,20 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.utils.copyTextToClipboard
 import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,71 +72,74 @@ fun TerminalContentScreen(
     onNewUserMassage: (String) -> Unit,
 ) {
 
+    val context = LocalContext.current
+
     TerminalBottomSheet(
         uiState = uiState.bottomSheetState,
-        onItemCopyClick = {
-            uiState.textFieldState.value = uiState.textFieldState.value + "$it "
+        onItemCopyClick = { text ->
+            uiState.addTextToTextField(text)
+            copyTextToClipboard(context, text)
         }
     )
 
-    Surface(
+    Column(
         modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.surfaceVariant
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.Start,
+            reverseLayout = true
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.Start,
-                reverseLayout = true
-            ) {
-                items(count = uiState.log.size) {
-                    Text(
-                        modifier = Modifier.padding(vertical = 2.dp),
-                        style = MaterialTheme.typography.bodyMedium,
-                        text = "${uiState.log[it].time} ${uiState.log[it].prefix()} ${uiState.log[it].massage}",
-                        color = uiState.log[it].color()
-                    )
+            items(count = uiState.log.size) {
+                Text(
+                    modifier = Modifier.padding(vertical = 2.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                    text = "${uiState.log[it].time} ${uiState.log[it].prefix()} ${uiState.log[it].massage}",
+                    color = uiState.log[it].color()
+                )
+            }
+        }
+
+        val focusRequester = remember { FocusRequester() }
+        val focusManager = LocalFocusManager.current
+
+        OutlinedTextField(
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .fillMaxWidth()
+                .padding(8.dp),
+            value = uiState.textFieldState.value,
+            onValueChange = { uiState.textFieldState.value = it },
+            placeholder = { Text(text = stringResource(id = R.string.command)) },
+            leadingIcon = {
+                IconButton(
+                    onClick = {
+                        focusManager.clearFocus()
+                        uiState.bottomSheetState.showBottomSheet()
+                    },
+                ) {
+                    Icon(imageVector = Icons.Default.Menu, contentDescription = null)
+                }
+            },
+            trailingIcon = {
+                IconButton(
+                    onClick = {
+                        onNewUserMassage(uiState.textFieldState.value)
+                        uiState.clearTextField()
+                    },
+                ) {
+                    Icon(imageVector = Icons.Default.Send, contentDescription = null)
                 }
             }
+        )
 
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                value = uiState.textFieldState.value,
-                onValueChange = { uiState.textFieldState.value = it },
-                placeholder = { Text(text = stringResource(id = R.string.command)) },
-                leadingIcon = {
-                    IconButton(
-                        onClick = {
-                            uiState.bottomSheetState.showBottomSheet()
-                        },
-                    ) {
-                        Icon(imageVector = Icons.Default.Menu, contentDescription = null)
-                    }
-                },
-                trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            onNewUserMassage(uiState.textFieldState.value)
-                            uiState.textFieldState.value = ""
-                        },
-                    ) {
-                        Icon(imageVector = Icons.Default.Send, contentDescription = null)
-                    }
-                }
-            )
-
-        }
     }
+
 }
 
 

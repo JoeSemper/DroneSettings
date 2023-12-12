@@ -14,7 +14,15 @@ data class TerminalUiState(
     val bottomSheetState: BottomSheetState = BottomSheetState(),
     val textFieldState: MutableState<String> = mutableStateOf(""),
     val isConnected: Boolean = false
-)
+) {
+    fun clearTextField() {
+        textFieldState.value = ""
+    }
+
+    fun addTextToTextField(text: String) {
+        textFieldState.value = textFieldState.value + text + " "
+    }
+}
 
 data class TerminalMassage(
     val massage: String,
