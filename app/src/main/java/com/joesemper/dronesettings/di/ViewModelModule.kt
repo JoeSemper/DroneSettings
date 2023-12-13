@@ -17,5 +17,5 @@ val viewModelModule = module {
     viewModel { MappingViewModel(get(), get(), get(), get()) }
     viewModel { SignalViewModel(get(), get(), get(), get()) }
     viewModel { PresetViewModel(get(), get(), get(), get()) }
-    viewModel { TerminalViewModel(get(), get()) }
+    viewModel { TerminalViewModel(get(), get(), get()) }
 }

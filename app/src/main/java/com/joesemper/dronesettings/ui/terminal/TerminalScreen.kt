@@ -42,7 +42,8 @@ fun TerminalScreen(
 
     if (showDialog) {
         TerminalSettingsDialog(
-            onDismiss = { showDialog = false }
+            onDismiss = { showDialog = false },
+            uiState = viewModel.uiState.settings
         )
     }
 

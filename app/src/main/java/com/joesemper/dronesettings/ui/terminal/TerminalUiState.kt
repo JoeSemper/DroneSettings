@@ -13,7 +13,8 @@ data class TerminalUiState(
     val log: List<TerminalMassage> = emptyList(),
     val bottomSheetState: BottomSheetState = BottomSheetState(),
     val textFieldState: MutableState<String> = mutableStateOf(""),
-    val isConnected: Boolean = false
+    val isConnected: Boolean = false,
+    val settings: TerminalsSettings = TerminalsSettings()
 ) {
     fun clearTextField() {
         textFieldState.value = ""
@@ -59,6 +60,11 @@ data class BottomSheetState(
         shouldShowBottomSheet.value = false
     }
 }
+
+data class TerminalsSettings(
+    val shouldHideUserCommands: MutableState<Boolean> = mutableStateOf(false),
+    val shouldAddStringEndSymbol: MutableState<Boolean> = mutableStateOf(true)
+)
 
 
 enum class TerminalMassageCategory() {

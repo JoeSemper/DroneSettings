@@ -269,11 +269,9 @@ fun BottomSheetItem(
 
 @Composable
 fun TerminalSettingsDialog(
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    uiState: TerminalsSettings
 ) {
-
-    var showMassages by remember { mutableStateOf(false) }
-    var addSymbol by remember { mutableStateOf(false) }
 
     Dialog(
         onDismissRequest = onDismiss
@@ -287,15 +285,15 @@ fun TerminalSettingsDialog(
                 TitleWithSubtitleView(title = stringResource(id = R.string.settings))
 
                 CheckboxWithText(
-                    text = stringResource(R.string.show_user_massages_in_log),
-                    checked = showMassages,
-                    onCheckedChange = { showMassages = it }
+                    text = stringResource(R.string.hide_user_commands_in_log),
+                    checked = uiState.shouldHideUserCommands.value,
+                    onCheckedChange = { uiState.shouldHideUserCommands.value = it }
                 )
 
                 CheckboxWithText(
                     text = stringResource(R.string.add_string_end_symbol_to_commands),
-                    checked = addSymbol,
-                    onCheckedChange = { addSymbol = it }
+                    checked = uiState.shouldAddStringEndSymbol.value,
+                    onCheckedChange = { uiState.shouldAddStringEndSymbol.value = it }
                 )
 
             }

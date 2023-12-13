@@ -1,6 +1,7 @@
 package com.joesemper.dronesettings.di
 
 import androidx.room.Room
+import com.joesemper.dronesettings.data.datasource.datastore.TerminalSettingsDataStoreImpl
 import com.joesemper.dronesettings.data.datasource.room.main.DroneSettingsDatabase
 import com.joesemper.dronesettings.data.datasource.room.main.dao.SettingsDao
 import com.joesemper.dronesettings.data.datasource.room.prepopulated.ProtocolDatabase
@@ -9,6 +10,7 @@ import com.joesemper.dronesettings.data.repository.ProtocolRepositoryImpl
 import com.joesemper.dronesettings.data.repository.SettingsRepositoryImpl
 import com.joesemper.dronesettings.domain.repository.ProtocolRepository
 import com.joesemper.dronesettings.domain.repository.SettingsRepository
+import com.joesemper.dronesettings.domain.repository.TerminalSettingsDataStore
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -45,5 +47,7 @@ val databaseModule = module {
     }
 
     single<ProtocolRepository> { ProtocolRepositoryImpl(get()) }
+
+    single<TerminalSettingsDataStore> { TerminalSettingsDataStoreImpl(androidContext()) }
 
 }

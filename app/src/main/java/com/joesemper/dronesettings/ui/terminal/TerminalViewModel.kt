@@ -6,13 +6,16 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joesemper.dronesettings.domain.repository.ProtocolRepository
+import com.joesemper.dronesettings.domain.repository.TerminalSettingsDataStore
 import com.joesemper.dronesettings.usb.UsbConnectionManager
 import com.joesemper.dronesettings.usb.UsbConnectionMassage
+import com.joesemper.dronesettings.utils.Constants.Companion.COMMAND_STRING_END_SYMBOL
 import kotlinx.coroutines.launch
 
 class TerminalViewModel(
     private val connectionManager: UsbConnectionManager,
-    private val protocolRepository: ProtocolRepository
+    private val protocolRepository: ProtocolRepository,
+    private val settings: TerminalSettingsDataStore
 ) : ViewModel() {
 
     var uiState by mutableStateOf(TerminalUiState())
@@ -21,11 +24,15 @@ class TerminalViewModel(
     init {
         subscribeOnConnectionLog()
         subscribeOnConnectionStatus()
-        getCommands()
+        getProtocolCommands()
+        getSettings()
     }
 
     fun sendUserMassage(massage: String) {
-        connectionManager.send(massage)
+        if (uiState.settings.shouldAddStringEndSymbol.value) {
+            connectionManager.send(massage.plus(COMMAND_STRING_END_SYMBOL))
+        }
+
     }
 
     fun connect() {
@@ -40,21 +47,44 @@ class TerminalViewModel(
         connectionManager.clearLog()
     }
 
-    private fun getCommands() {
+    private fun getProtocolCommands() {
         viewModelScope.launch {
-            uiState = uiState.copy(bottomSheetState = uiState.bottomSheetState.copy(
-                commands = protocolRepository.getAllCommands()
-            ))
-            uiState = uiState.copy(bottomSheetState = uiState.bottomSheetState.copy(
-                variables = protocolRepository.getAllVariables()
-            ))
+            uiState = uiState.copy(
+                bottomSheetState = uiState.bottomSheetState.copy(
+                    commands = protocolRepository.getAllCommands()
+                )
+            )
+            uiState = uiState.copy(
+                bottomSheetState = uiState.bottomSheetState.copy(
+                    variables = protocolRepository.getAllVariables()
+                )
+            )
+        }
+    }
+
+    private fun getSettings() {
+        viewModelScope.launch {
+            settings.getShouldAddStringEndSymbol().collect {
+                uiState.settings.shouldAddStringEndSymbol.value = it
+            }
+
+            settings.getShouldHideUserCommands().collect {
+                uiState.settings.shouldHideUserCommands.value = it
+            }
         }
     }
 
     private fun subscribeOnConnectionLog() {
         viewModelScope.launch {
             connectionManager.log.collect { massages ->
-                uiState = uiState.copy(log = massages.map { it.toTerminalMassage() }.reversed())
+                uiState =
+                    uiState.copy(log = massages.map { it.toTerminalMassage() }.reversed().run {
+                        return@run if (uiState.settings.shouldHideUserCommands.value) {
+                            filterNot { it.category == TerminalMassageCategory.USER }
+                        } else {
+                            this
+                        }
+                    })
             }
         }
     }

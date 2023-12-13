@@ -57,6 +57,7 @@ dependencies {
     // Kotlin
     implementation("androidx.core:core-ktx:1.9.0")
 
+    //USB
     implementation ("com.github.mik3y:usb-serial-for-android:3.7.0")
 
     // Compose
@@ -71,6 +72,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation ("androidx.compose.material3:material3:1.1.2")
+
+    //Datastore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
