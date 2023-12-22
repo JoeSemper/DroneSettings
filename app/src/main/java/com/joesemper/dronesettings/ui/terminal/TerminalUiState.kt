@@ -11,6 +11,8 @@ import com.joesemper.dronesettings.data.datasource.room.prepopulated.entity.Vari
 
 data class TerminalUiState(
     val log: List<TerminalMassage> = emptyList(),
+    val text: String = "T",
+    val testText: String = "",
     val bottomSheetState: BottomSheetState = BottomSheetState(),
     val textFieldState: MutableState<String> = mutableStateOf(""),
     val isConnected: Boolean = false,
@@ -62,8 +64,9 @@ data class BottomSheetState(
 }
 
 data class TerminalsSettings(
-    val shouldHideUserCommands: MutableState<Boolean> = mutableStateOf(false),
-    val shouldAddStringEndSymbol: MutableState<Boolean> = mutableStateOf(true)
+    val shouldHideUserCommands: Boolean = false,
+    val shouldAddStringEndSymbol: Boolean = true,
+    val text: String = "T"
 )
 
 

@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
@@ -23,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -41,7 +43,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
-import com.joesemper.dronesettings.ui.settings.TitleWithSubtitleView
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -269,9 +270,13 @@ fun BottomSheetItem(
 
 @Composable
 fun TerminalSettingsDialog(
+    uiState: TerminalsSettings,
     onDismiss: () -> Unit,
-    uiState: TerminalsSettings
+    updateSettings: (hideCommands: Boolean, addSymbol: Boolean) -> Unit
 ) {
+
+    var hideUserCommands by remember { mutableStateOf(uiState.shouldHideUserCommands) }
+    var addStringEndSymbolToCommands by remember { mutableStateOf(uiState.shouldAddStringEndSymbol) }
 
     Dialog(
         onDismissRequest = onDismiss
@@ -282,19 +287,41 @@ fun TerminalSettingsDialog(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                TitleWithSubtitleView(title = stringResource(id = R.string.settings))
+                Text(
+                    text = stringResource(id = R.string.settings),
+                    style = MaterialTheme.typography.titleLarge
+                )
 
                 CheckboxWithText(
                     text = stringResource(R.string.hide_user_commands_in_log),
-                    checked = uiState.shouldHideUserCommands.value,
-                    onCheckedChange = { uiState.shouldHideUserCommands.value = it }
+                    checked = hideUserCommands,
+                    onCheckedChange = { hideUserCommands = it }
                 )
 
                 CheckboxWithText(
                     text = stringResource(R.string.add_string_end_symbol_to_commands),
-                    checked = uiState.shouldAddStringEndSymbol.value,
-                    onCheckedChange = { uiState.shouldAddStringEndSymbol.value = it }
+                    checked = addStringEndSymbolToCommands,
+                    onCheckedChange = { addStringEndSymbolToCommands = it }
                 )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text(text = stringResource(id = R.string.close))
+                    }
+
+                    Button(onClick = {
+                        updateSettings(
+                            hideUserCommands,
+                            addStringEndSymbolToCommands
+                        )
+                        onDismiss()
+                    }) {
+                        Text(text = stringResource(id = R.string.apply))
+                    }
+                }
 
             }
         }

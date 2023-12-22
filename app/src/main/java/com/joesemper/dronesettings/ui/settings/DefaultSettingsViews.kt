@@ -23,6 +23,8 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -45,10 +47,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -601,4 +606,41 @@ fun ErrorText(
 
         }
     }
+}
+
+@Composable
+fun TerminalTextInputView(
+    modifier: Modifier = Modifier,
+    textFieldState: String,
+    updateText: (String) -> Unit,
+    onMenuClick: () -> Unit,
+    onSendClick: () -> Unit
+
+) {
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+    OutlinedTextField(
+        modifier = modifier.focusRequester(focusRequester),
+        value = textFieldState,
+        onValueChange = updateText,
+        placeholder = { Text(text = stringResource(id = R.string.command)) },
+        leadingIcon = {
+            IconButton(
+                onClick = {
+                    focusManager.clearFocus()
+                    onMenuClick()
+                },
+            ) {
+                Icon(imageVector = Icons.Default.Menu, contentDescription = null)
+            }
+        },
+        trailingIcon = {
+            IconButton(
+                onClick = onSendClick,
+            ) {
+                Icon(imageVector = Icons.Default.Send, contentDescription = null)
+            }
+        }
+    )
 }

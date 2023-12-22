@@ -1,7 +1,10 @@
 package com.joesemper.dronesettings.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import com.joesemper.dronesettings.data.datasource.datastore.TerminalSettingsDataStoreImpl
+import com.joesemper.dronesettings.data.datasource.datastore.dataStore
 import com.joesemper.dronesettings.data.datasource.room.main.DroneSettingsDatabase
 import com.joesemper.dronesettings.data.datasource.room.main.dao.SettingsDao
 import com.joesemper.dronesettings.data.datasource.room.prepopulated.ProtocolDatabase
@@ -48,6 +51,8 @@ val databaseModule = module {
 
     single<ProtocolRepository> { ProtocolRepositoryImpl(get()) }
 
-    single<TerminalSettingsDataStore> { TerminalSettingsDataStoreImpl(androidContext()) }
+    
+    single<DataStore<Preferences>> { androidContext().dataStore }
+    single<TerminalSettingsDataStore> { TerminalSettingsDataStoreImpl(get()) }
 
 }

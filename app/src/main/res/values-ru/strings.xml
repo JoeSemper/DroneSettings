@@ -123,4 +123,5 @@
     <string name="show_user_massages_in_log">Show user massages in log</string>
     <string name="add_string_end_symbol_to_commands">Add string end symbol to commands</string>
     <string name="hide_user_commands_in_log">Hide user commands in log</string>
+    <string name="apply">Apply</string>
 </resources>

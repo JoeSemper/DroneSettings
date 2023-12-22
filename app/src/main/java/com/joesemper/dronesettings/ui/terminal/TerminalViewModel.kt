@@ -10,6 +10,7 @@ import com.joesemper.dronesettings.domain.repository.TerminalSettingsDataStore
 import com.joesemper.dronesettings.usb.UsbConnectionManager
 import com.joesemper.dronesettings.usb.UsbConnectionMassage
 import com.joesemper.dronesettings.utils.Constants.Companion.COMMAND_STRING_END_SYMBOL
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 
 class TerminalViewModel(
@@ -21,6 +22,8 @@ class TerminalViewModel(
     var uiState by mutableStateOf(TerminalUiState())
         private set
 
+    val channel = Channel<String>()
+
     init {
         subscribeOnConnectionLog()
         subscribeOnConnectionStatus()
@@ -29,7 +32,7 @@ class TerminalViewModel(
     }
 
     fun sendUserMassage(massage: String) {
-        if (uiState.settings.shouldAddStringEndSymbol.value) {
+        if (uiState.settings.shouldAddStringEndSymbol) {
             connectionManager.send(massage.plus(COMMAND_STRING_END_SYMBOL))
         }
 
@@ -47,6 +50,18 @@ class TerminalViewModel(
         connectionManager.clearLog()
     }
 
+    fun updateHideUserCommands(hide: Boolean) {
+        viewModelScope.launch {
+            settings.setShouldHideUserMassages(hide)
+        }
+    }
+
+    fun updateAddStringEndSymbol(add: Boolean) {
+        viewModelScope.launch {
+            settings.setShouldAddStringEndSymbol(add)
+        }
+    }
+
     private fun getProtocolCommands() {
         viewModelScope.launch {
             uiState = uiState.copy(
@@ -62,16 +77,50 @@ class TerminalViewModel(
         }
     }
 
+    fun test(text: String) {
+        viewModelScope.launch {
+            settings.setTest(text)
+        }
+    }
+
     private fun getSettings() {
         viewModelScope.launch {
-            settings.getShouldAddStringEndSymbol().collect {
-                uiState.settings.shouldAddStringEndSymbol.value = it
-            }
+            settings.getTest().collect{
 
-            settings.getShouldHideUserCommands().collect {
-                uiState.settings.shouldHideUserCommands.value = it
+                channel.send(it)
+
+                uiState = uiState.copy(
+                    testText = uiState.testText.plus(it)
+                )
+                uiState = uiState.copy(
+                    text = it
+                )
             }
         }
+//        viewModelScope.launch {
+//            settings.getTerminalSettings().collect {
+//                uiState = uiState.copy(settings = it)
+//            }
+//        }
+//        viewModelScope.launch {
+//            settings.getShouldAddStringEndSymbol().collect {
+//                uiState = uiState.copy(
+//                    settings = uiState.settings.copy(
+//                        shouldAddStringEndSymbol = it
+//                    )
+//                )
+//            }
+//        }
+//
+//        viewModelScope.launch {
+//            settings.getShouldHideUserCommands().collect {
+//                uiState = uiState.copy(
+//                    settings = uiState.settings.copy(
+//                        shouldHideUserCommands = it
+//                    )
+//                )
+//            }
+//        }
     }
 
     private fun subscribeOnConnectionLog() {
@@ -79,7 +128,7 @@ class TerminalViewModel(
             connectionManager.log.collect { massages ->
                 uiState =
                     uiState.copy(log = massages.map { it.toTerminalMassage() }.reversed().run {
-                        return@run if (uiState.settings.shouldHideUserCommands.value) {
+                        if (uiState.settings.shouldHideUserCommands) {
                             filterNot { it.category == TerminalMassageCategory.USER }
                         } else {
                             this
