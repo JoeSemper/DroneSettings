@@ -72,6 +72,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation ("androidx.compose.material3:material3:1.1.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
+
 
     //Datastore
     implementation("androidx.datastore:datastore-preferences:1.0.0")

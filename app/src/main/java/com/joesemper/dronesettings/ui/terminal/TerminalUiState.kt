@@ -11,12 +11,12 @@ import com.joesemper.dronesettings.data.datasource.room.prepopulated.entity.Vari
 
 data class TerminalUiState(
     val log: List<TerminalMassage> = emptyList(),
-    val text: String = "T",
-    val testText: String = "",
+    val text: MutableState<String> = mutableStateOf("T"),
+    val testText: MutableState<String> = mutableStateOf(""),
     val bottomSheetState: BottomSheetState = BottomSheetState(),
     val textFieldState: MutableState<String> = mutableStateOf(""),
     val isConnected: Boolean = false,
-    val settings: TerminalsSettings = TerminalsSettings()
+    val settings: TerminalsSettingsUiState = TerminalsSettingsUiState()
 ) {
     fun clearTextField() {
         textFieldState.value = ""
@@ -63,10 +63,9 @@ data class BottomSheetState(
     }
 }
 
-data class TerminalsSettings(
-    val shouldHideUserCommands: Boolean = false,
-    val shouldAddStringEndSymbol: Boolean = true,
-    val text: String = "T"
+data class TerminalsSettingsUiState(
+    val shouldHideUserCommands: MutableState<Boolean> = mutableStateOf(false),
+    val shouldAddStringEndSymbol: MutableState<Boolean> = mutableStateOf(false),
 )
 
 

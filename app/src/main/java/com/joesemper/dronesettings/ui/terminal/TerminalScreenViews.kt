@@ -1,6 +1,7 @@
 package com.joesemper.dronesettings.ui.terminal
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,7 +11,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -70,41 +74,54 @@ fun TerminalTopBar(
                 onDisconnectClick = onDisconnectClick
             )
 
-            IconButton(onClick = { expanded = true }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = null
-                )
+            Box {
+                IconButton(onClick = { expanded = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = null
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DropdownMenuItem(
+                        leadingIcon = {
+                            Icon(imageVector = Icons.Default.Clear, contentDescription = null)
+                        },
+                        text = { Text(text = stringResource(R.string.clear_log)) },
+                        onClick = {
+                            onClearLogClick()
+                            expanded = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        leadingIcon = {
+                            Icon(imageVector = Icons.Default.Settings, contentDescription = null)
+                        },
+                        text = { Text(text = stringResource(R.string.settings)) },
+                        onClick = {
+                            onSettingsClick()
+                            expanded = false
+                        }
+                    )
+                    Divider()
+                    DropdownMenuItem(
+                        leadingIcon = {
+                            Icon(imageVector = Icons.Default.Info, contentDescription = null)
+                        },
+                        text = { Text(text = stringResource(R.string.help)) },
+                        onClick = {
+                            onHelpClick()
+                            expanded = false
+                        }
+                    )
+
+                }
             }
 
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                DropdownMenuItem(
-                    text = { Text(text = stringResource(R.string.clear_log)) },
-                    onClick = {
-                        onClearLogClick()
-                        expanded = false
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text(text = stringResource(R.string.settings)) },
-                    onClick = {
-                        onSettingsClick()
-                        expanded = false
-                    }
-                )
-                Divider()
-                DropdownMenuItem(
-                    text = { Text(text = stringResource(R.string.help)) },
-                    onClick = {
-                        onHelpClick()
-                        expanded = false
-                    }
-                )
 
-            }
         }
     )
 }
@@ -270,7 +287,7 @@ fun BottomSheetItem(
 
 @Composable
 fun TerminalSettingsDialog(
-    uiState: TerminalsSettings,
+    uiState: TerminalsSettingsUiState,
     onDismiss: () -> Unit,
     updateSettings: (hideCommands: Boolean, addSymbol: Boolean) -> Unit
 ) {
@@ -294,14 +311,14 @@ fun TerminalSettingsDialog(
 
                 CheckboxWithText(
                     text = stringResource(R.string.hide_user_commands_in_log),
-                    checked = hideUserCommands,
-                    onCheckedChange = { hideUserCommands = it }
+                    checked = hideUserCommands.value,
+                    onCheckedChange = { hideUserCommands.value = it }
                 )
 
                 CheckboxWithText(
                     text = stringResource(R.string.add_string_end_symbol_to_commands),
-                    checked = addStringEndSymbolToCommands,
-                    onCheckedChange = { addStringEndSymbolToCommands = it }
+                    checked = addStringEndSymbolToCommands.value,
+                    onCheckedChange = { addStringEndSymbolToCommands.value = it }
                 )
 
                 Row(
@@ -314,8 +331,8 @@ fun TerminalSettingsDialog(
 
                     Button(onClick = {
                         updateSettings(
-                            hideUserCommands,
-                            addStringEndSymbolToCommands
+                            hideUserCommands.value,
+                            addStringEndSymbolToCommands.value
                         )
                         onDismiss()
                     }) {

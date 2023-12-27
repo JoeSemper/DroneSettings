@@ -5,10 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.joesemper.dronesettings.domain.repository.TerminalSettingsDataStore
-import com.joesemper.dronesettings.ui.terminal.TerminalsSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -16,6 +14,11 @@ import kotlinx.coroutines.flow.map
 private const val TERMINAL_DATASTORE_NAME = "terminal_settings"
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = TERMINAL_DATASTORE_NAME)
+
+data class TerminalSettings(
+    val shouldHideUserCommands: Boolean = true,
+    val shouldAddStringEndSymbol: Boolean = false,
+)
 
 class TerminalSettingsDataStoreImpl(private val dataStore: DataStore<Preferences>) : TerminalSettingsDataStore {
 
@@ -27,18 +30,6 @@ class TerminalSettingsDataStoreImpl(private val dataStore: DataStore<Preferences
         private val ADD_STRING_END_SYMBOL = booleanPreferencesKey("add_string_end_symbol")
         private const val DEFAULT_ADD_STRING_END = false
 
-        private val TEST = stringPreferencesKey("test")
-    }
-
-    override fun getTest(): Flow<String> =
-        dataStore.data.map {
-            it[TEST] ?: "Default"
-        }
-
-    override suspend fun setTest(test: String) {
-        dataStore.edit {
-            it[TEST] = test
-        }
     }
 
     override suspend fun setShouldHideUserMassages(hide: Boolean) {
@@ -47,11 +38,11 @@ class TerminalSettingsDataStoreImpl(private val dataStore: DataStore<Preferences
         }
     }
 
-    override fun getTerminalSettings(): Flow<TerminalsSettings> =
+    override fun getTerminalSettings(): Flow<TerminalSettings> =
         dataStore.data.map { preferences ->
             val hideUserCommands = preferences[HIDE_USER_COMMANDS] ?: DEFAULT_HIDE_USER_COMMANDS
             val addStringEndSymbol = preferences[ADD_STRING_END_SYMBOL] ?: DEFAULT_ADD_STRING_END
-            TerminalsSettings(hideUserCommands, addStringEndSymbol)
+            TerminalSettings(hideUserCommands, addStringEndSymbol)
         }
 
 
