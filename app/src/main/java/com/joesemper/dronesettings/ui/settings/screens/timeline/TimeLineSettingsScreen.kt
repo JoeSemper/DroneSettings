@@ -17,6 +17,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.settings.CheckboxWithText
+import com.joesemper.dronesettings.ui.settings.ParameterCardView
 import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
 import com.joesemper.dronesettings.ui.settings.TimeLayout
 import com.joesemper.dronesettings.ui.settings.TimeSelectDialog
@@ -97,6 +100,47 @@ fun TimelineScreenContent(
     Column(
         modifier = modifier
     ) {
+
+        var enabled by remember { mutableStateOf(true) }
+
+        ParameterCardView(
+            modifier = Modifier.padding(vertical = 8.dp),
+            title = stringResource(id = R.string.delay_time),
+            onClick = {},
+            content = {
+                Text(
+                    text = "10 : 30",
+                    style = MaterialTheme.typography.displayMedium
+                )
+            }
+        )
+
+        ParameterCardView(
+            modifier = Modifier.padding(vertical = 8.dp),
+            title = stringResource(id = R.string.delay_time),
+            switchable = true,
+            enabled = enabled,
+            onEnabledChange = { enabled = it },
+            onClick = {},
+            content = {
+                Text(
+                    text = "10 : 30",
+                    style = MaterialTheme.typography.displayMedium
+                )
+            }
+        )
+
+        ParameterCardView(
+            modifier = Modifier.padding(vertical = 8.dp),
+            title = stringResource(id = R.string.delay_time),
+            onClick = {},
+            content = {
+                Text(
+                    text = "10 : 30",
+                    style = MaterialTheme.typography.displayMedium
+                )
+            }
+        )
 
         DelayTimeSettingsView(
             state = state.delayTimeState,

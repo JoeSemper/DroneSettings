@@ -40,6 +40,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -644,3 +645,59 @@ fun TerminalTextInputView(
         }
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ParameterCardView(
+    modifier: Modifier = Modifier,
+    title: String,
+    subtitle: String? = null,
+    switchable: Boolean = false,
+    enabled: Boolean = true,
+    onEnabledChange: ((Boolean) -> Unit)? = null,
+    onClick: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Card(
+        modifier = modifier,
+        enabled = enabled,
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+            ) {
+
+            Column(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall
+                )
+
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    content()
+                }
+            }
+
+            if (switchable) {
+                Switch(
+                    modifier = Modifier,
+                    checked = enabled,
+                    onCheckedChange = { onEnabledChange?.invoke(it) }
+                )
+            }
+        }
+
+    }
+}
+
+
