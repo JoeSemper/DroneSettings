@@ -37,19 +37,19 @@ fun AppNavHost(
     val appState = rememberAppState()
 
     Scaffold(
-        bottomBar = {
-            AnimatedVisibility(
-                visible = appState.shouldShowBottomBar,
-                enter = slideInVertically(initialOffsetY = { it }),
-                exit = slideOutVertically(targetOffsetY = { it }),
-            ) {
-                BottomBar(
-                    tabs = bottomBarItems,
-                    currentRoute = appState.currentRoute!!,
-                    navigateToRoute = appState::navigateToBottomBarRoute
-                )
-            }
-        }
+//        bottomBar = {
+//            AnimatedVisibility(
+//                visible = appState.shouldShowBottomBar,
+//                enter = slideInVertically(initialOffsetY = { it }),
+//                exit = slideOutVertically(targetOffsetY = { it }),
+//            ) {
+//                BottomBar(
+//                    tabs = bottomBarItems,
+//                    currentRoute = appState.currentRoute!!,
+//                    navigateToRoute = appState::navigateToBottomBarRoute
+//                )
+//            }
+//        }
     ) { innerPadding ->
 
         val padding = calculateAnimatedPadding(innerPadding, appState.shouldShowBottomBar)

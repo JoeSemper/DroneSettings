@@ -74,7 +74,7 @@ class AppState(
 
     override fun navigateToTimelineSettings(itemId: Int, from: NavBackStackEntry) {
         if (from.lifecycleIsResumed()) {
-            navController.navigate("${HomeDestinations.HOME_NEW_PRESET_TIMELINE_ROUTE}/$itemId")
+            navController.navigate("${HomeDestinations.HOME_NEW_PRESET_SETTINGS_ROUTE}/$itemId")
         }
     }
 

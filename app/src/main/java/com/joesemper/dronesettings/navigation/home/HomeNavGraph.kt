@@ -7,7 +7,7 @@ import androidx.navigation.navArgument
 import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_NEW_PRESET_MAPPING_ROUTE
 import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_NEW_PRESET_SENSORS_ROUTE
 import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_NEW_PRESET_SIGNAL_ROUTE
-import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_NEW_PRESET_TIMELINE_ROUTE
+import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_NEW_PRESET_SETTINGS_ROUTE
 import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_PRESET_ID_KEY
 import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_PRESET_ROUTE
 import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_ROUTE
@@ -23,7 +23,7 @@ const val HOME_GRAPH = "home"
 object HomeDestinations {
     const val HOME_ROUTE = "root"
     const val HOME_PRESET_ROUTE = "preset"
-    const val HOME_NEW_PRESET_TIMELINE_ROUTE = "timeline"
+    const val HOME_NEW_PRESET_SETTINGS_ROUTE = "preset_settings"
     const val HOME_NEW_PRESET_SENSORS_ROUTE = "sensors"
     const val HOME_NEW_PRESET_MAPPING_ROUTE = "mapping"
     const val HOME_NEW_PRESET_SIGNAL_ROUTE = "signal"
@@ -49,12 +49,12 @@ fun NavGraphBuilder.addHomeGraph(
     }
 
     composable(
-        route = "$HOME_NEW_PRESET_TIMELINE_ROUTE/{$HOME_PRESET_ID_KEY}",
+        route = "$HOME_NEW_PRESET_SETTINGS_ROUTE/{$HOME_PRESET_ID_KEY}",
         arguments = listOf(navArgument(HOME_PRESET_ID_KEY) { type = NavType.IntType })
     ) { from ->
         TimeLineSettingsScreen(
             navigateNext = { id ->
-                homeState.navigateToSensorsSettings(id, from)
+                homeState.navigateToPreset(id, from)
             },
             onClose = {
                 homeState.navigateHome(from)

@@ -20,6 +20,6 @@ fun NavGraphBuilder.buildNavGraph(
             upPress = upPress,
             homeState = homeState
         )
-        addTerminalGraph()
+//        addTerminalGraph()
     }
 }

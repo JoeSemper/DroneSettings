@@ -192,19 +192,19 @@ fun PresetDataViewContent(
 
         TimelinePresetDataView(state = state.timelinePreset)
 
-        Divider(modifier = Modifier.fillMaxWidth())
+//        Divider(modifier = Modifier.fillMaxWidth())
 
-        SensorsPresetDataView(state = state.sensorsPreset)
-
-        Divider(modifier = Modifier.fillMaxWidth())
-
-        PulsePresetDataView(state = state.mappingPreset)
-
-        Divider(modifier = Modifier.fillMaxWidth())
-
-        SignalPresetDataView(state = state.signalPreset)
-
-        Spacer(modifier = Modifier.height(0.dp))
+//        SensorsPresetDataView(state = state.sensorsPreset)
+//
+//        Divider(modifier = Modifier.fillMaxWidth())
+//
+//        PulsePresetDataView(state = state.mappingPreset)
+//
+//        Divider(modifier = Modifier.fillMaxWidth())
+//
+//        SignalPresetDataView(state = state.signalPreset)
+//
+//        Spacer(modifier = Modifier.height(0.dp))
 
         WritePresetButtonView(
             onClick = { Toast.makeText(context, "Write is successful", Toast.LENGTH_SHORT).show() }

@@ -11,22 +11,22 @@ data class SettingsPreset(
         entity = TimelinePreset::class
     )
     val  timelinePreset: TimelinePreset = TimelinePreset(),
-    @Relation(
-        parentColumn = "dataId",
-        entityColumn = "dataId",
-        entity = SensorsPreset::class
-    )
-    val  sensorsPreset: SensorsPreset = SensorsPreset(),
-    @Relation(
-        parentColumn = "dataId",
-        entityColumn = "dataId",
-        entity = MappingPreset::class
-    )
-    val  mappingPreset: MappingPreset = MappingPreset(),
-    @Relation(
-        parentColumn = "dataId",
-        entityColumn = "dataId",
-        entity = SignalPreset::class
-    )
-    val  signalPreset: SignalPreset = SignalPreset(),
+//    @Relation(
+//        parentColumn = "dataId",
+//        entityColumn = "dataId",
+//        entity = SensorsPreset::class
+//    )
+//    val  sensorsPreset: SensorsPreset = SensorsPreset(),
+//    @Relation(
+//        parentColumn = "dataId",
+//        entityColumn = "dataId",
+//        entity = MappingPreset::class
+//    )
+//    val  mappingPreset: MappingPreset = MappingPreset(),
+//    @Relation(
+//        parentColumn = "dataId",
+//        entityColumn = "dataId",
+//        entity = SignalPreset::class
+//    )
+//    val  signalPreset: SignalPreset = SignalPreset(),
 )

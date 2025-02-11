@@ -7,6 +7,7 @@ class Constants {
         const val MAX_SECONDS = 59
         const val SECONDS_IN_MINUTE = 60
 
-        const val COMMAND_STRING_END_SYMBOL = "\r\n"
+        const val COMMAND_STRING_CARRIAGE_RETURN = '\r'
+        const val COMMAND_STRING_END_SYMBOL = '\n'
     }
 }

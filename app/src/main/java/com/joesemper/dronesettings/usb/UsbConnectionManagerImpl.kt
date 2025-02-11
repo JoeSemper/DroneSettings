@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 private const val ACTION_USB_PERMISSION = "com.joesemper.dronesettings.USB_PERMISSION"
-private const val RESPONSE_STRING_END = "\r\n"
+private const val RESPONSE_STRING_END = '\n'
 
 class UsbConnectionManagerImpl(
     private val context: Context,
@@ -52,6 +52,8 @@ class UsbConnectionManagerImpl(
         override fun onNewData(data: ByteArray?) {
             data?.let {
                 val newString = String(data)
+//                sendDeviceMassage(newString)
+
                 serialPortQueue.add(newString)
 
                 if (newString.contains(RESPONSE_STRING_END)) {

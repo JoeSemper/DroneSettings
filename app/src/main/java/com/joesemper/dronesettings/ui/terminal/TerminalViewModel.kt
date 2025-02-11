@@ -2,10 +2,12 @@ package com.joesemper.dronesettings.ui.terminal
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.util.joinIntoString
 import com.joesemper.dronesettings.domain.repository.ProtocolRepository
 import com.joesemper.dronesettings.domain.repository.TerminalSettingsDataStore
 import com.joesemper.dronesettings.usb.UsbConnectionManager
 import com.joesemper.dronesettings.usb.UsbConnectionMassage
+import com.joesemper.dronesettings.utils.Constants.Companion.COMMAND_STRING_CARRIAGE_RETURN
 import com.joesemper.dronesettings.utils.Constants.Companion.COMMAND_STRING_END_SYMBOL
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,11 +33,9 @@ class TerminalViewModel(
     }
 
     fun sendUserMassage(massage: String) {
-        connectionManager.send(massage.apply {
-            if (_uiState.value.settings.shouldAddStringEndSymbol.value) {
-                plus(COMMAND_STRING_END_SYMBOL)
-            }
-        })
+        connectionManager.send(
+            massage.plus(COMMAND_STRING_CARRIAGE_RETURN).plus(COMMAND_STRING_END_SYMBOL)
+        )
     }
 
     fun connect() {
