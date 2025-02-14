@@ -249,11 +249,6 @@ fun TimelinePresetDataView(
         )
 
         ParameterView(
-            parameter = stringResource(id = R.string.activate_cocking_time),
-            value = state.cockingTimeEnabled.toText()
-        )
-
-        ParameterView(
             parameter = stringResource(id = R.string.cocking_time),
             value = "${state.cockingTimeMin} ${stringResource(id = R.string.min)} " +
                     "${state.cockingTimeSec} ${stringResource(id = R.string.sec)}"
@@ -261,8 +256,12 @@ fun TimelinePresetDataView(
 
         ParameterView(
             parameter = stringResource(id = R.string.maximum_time),
-            value = "${state.selfDestructionTimeMin} ${stringResource(id = R.string.min)} " +
-                    "${state.selfDestructionTimeSec} ${stringResource(id = R.string.sec)}"
+            value = "${state.selfDestructionTimeMin} ${stringResource(id = R.string.min)}"
+        )
+
+        ParameterView(
+            parameter = stringResource(id = R.string.minimum_voltage),
+            value = "${state.minBatteryVoltage} ${stringResource(id = R.string.volts)}"
         )
     }
 }

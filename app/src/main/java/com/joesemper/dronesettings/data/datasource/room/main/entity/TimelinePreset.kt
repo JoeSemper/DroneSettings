@@ -22,7 +22,6 @@ data class TimelinePreset(
     @ColumnInfo val delayTimeMin: String = "",
     @ColumnInfo val cockingTimeSec: String = "",
     @ColumnInfo val cockingTimeMin: String = "",
-    @ColumnInfo val cockingTimeEnabled: Boolean = true,
-    @ColumnInfo val selfDestructionTimeSec: String = "",
-    @ColumnInfo val selfDestructionTimeMin: String = ""
+    @ColumnInfo val selfDestructionTimeMin: String = "",
+    @ColumnInfo val minBatteryVoltage: String = ""
 )

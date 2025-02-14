@@ -12,6 +12,7 @@ data class TimelineUiState(
     val delayTimeState: DelayTimeUiState = DelayTimeUiState(),
     val cockingTimeState: CockingTimeUiState = CockingTimeUiState(),
     val selfDestructionTimeState: SelfDestructionTimeUiState = SelfDestructionTimeUiState(),
+    val minBatteryVoltageUiState: MinBatteryVoltageUiState = MinBatteryVoltageUiState()
 ) {
     val isError =
         !((delayTimeState.error is TimeInputError.None) and
@@ -20,7 +21,6 @@ data class TimelineUiState(
 }
 
 data class DelayTimeUiState(
-    val t: TimeFieldState = DelayTimeFieldState(),
     val time: TimeState = TimeState(),
     val timeLimits: Limits = Limits(
         minValue = SettingsConstants.MIN_TIME_DELAY,
@@ -36,14 +36,22 @@ data class CockingTimeUiState(
         maxValue = SettingsConstants.MAX_COCKING_TIME
     ),
     val error: TimeInputError = TimeInputError.None,
-    val enabled: Boolean = false
 )
 
 data class SelfDestructionTimeUiState(
-    val time: TimeState = TimeState(),
+    val minutes: String = "00",
     val timeLimits: Limits = Limits(
         minValue = SettingsConstants.MIN_SELF_DESTRUCTION_TIME,
         maxValue = SettingsConstants.MAX_SELF_DESTRUCTION_TIME
+    ),
+    val error: TimeInputError = TimeInputError.None
+)
+
+data class MinBatteryVoltageUiState(
+    val voltage: String = "0",
+    val timeLimits: Limits = Limits(
+        minValue = SettingsConstants.MIN_VOLTAGE_VALUE,
+        maxValue = SettingsConstants.MAX_VOLTAGE_VALUE
     ),
     val error: TimeInputError = TimeInputError.None
 )

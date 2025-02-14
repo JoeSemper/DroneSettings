@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.ui.settings.state.SingleFieldDialogState
 import com.joesemper.dronesettings.ui.settings.state.TimeSelectDialogState
 
 @Composable
@@ -386,6 +387,81 @@ fun TimeSelectDialog(
     }
 }
 
+@Composable
+fun SingleFieldEditDialog(
+    onDismiss: () -> Unit,
+    title: String,
+    subtitle: String? = null,
+    trailingText: String = "",
+    isFloat: Boolean = false,
+    state: SingleFieldDialogState,
+    onApply: (value: String) -> Unit
+) {
+    val context = LocalContext.current
+    val toastMassage = stringResource(R.string.incorrect_value)
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                TitleWithSubtitleView(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = title,
+                    subtitle = subtitle
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                SingleFieldLayout(
+                    value = state.value,
+                    trailingText = trailingText,
+                    isError = state.isError,
+                    errorMassage = state.getErrorMassage(),
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                NumericKeyboard(
+                    onDigitClick = { state.updateValue(it) },
+                    onClear = { state.clearValue() },
+                    enableNext = false,
+                    enablePoint = isFloat,
+                    onNext = {  }
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text(text = stringResource(id = R.string.close))
+                    }
+
+                    Button(onClick = {
+                        state.enableShowErrors()
+                        if (state.isValid) {
+                            onApply(state.value)
+                            onDismiss()
+                        } else {
+                            Toast.makeText(context, toastMassage, Toast.LENGTH_SHORT).show()
+                        }
+                    }) {
+                        Text(text = stringResource(R.string.done))
+                    }
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimeLayout(
@@ -495,6 +571,69 @@ fun TimeLayout(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SingleFieldLayout(
+    modifier: Modifier = Modifier,
+    value: String = "",
+    trailingText: String = "",
+    isError: Boolean = false,
+    errorMassage: String = "",
+    enabled: Boolean = true,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.Center
+        ) {
+
+            FilterChip(
+                selected = true,
+                onClick = { },
+                enabled = enabled,
+                colors = InputChipDefaults.inputChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
+                trailingIcon = {
+                    Text(text = trailingText)
+                },
+                border = InputChipDefaults.inputChipBorder(
+                    borderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimaryContainer,
+                    selectedBorderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimaryContainer,
+                    borderWidth = 0.5.dp,
+                    selectedBorderWidth = 1.5.dp
+                ),
+                label = {
+                    MeasureUnconstrainedViewWidth(
+                        viewToMeasure = {
+                            Text(
+                                text = "000000",
+                                style = MaterialTheme.typography.displayMedium
+                            )
+                        }
+                    ) {
+                        Text(
+                            modifier = Modifier.width(it),
+                            textAlign = TextAlign.Center,
+                            text = value,
+                            style = MaterialTheme.typography.displayMedium
+                        )
+                    }
+                }
+            )
+        }
+
+        ErrorText(
+            isError = isError,
+            errorMassage = errorMassage
+        )
+    }
+}
+
 @Composable
 fun MeasureUnconstrainedViewWidth(
     viewToMeasure: @Composable () -> Unit,
@@ -518,6 +657,8 @@ fun NumericKeyboard(
     modifier: Modifier = Modifier,
     onDigitClick: (String) -> Unit,
     onClear: () -> Unit,
+    enableNext: Boolean = true,
+    enablePoint: Boolean = false,
     onNext: () -> Unit
 ) {
     Column(
@@ -563,9 +704,22 @@ fun NumericKeyboard(
                         style = MaterialTheme.typography.displaySmall
                     )
                 })
-            IconButton(onClick = onNext) {
-                Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null)
+            if(enableNext) {
+                IconButton(onClick = onNext) {
+                    Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null)
+                }
+            } else if(enablePoint) {
+                IconButton(onClick = onClear) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(R.drawable.dot),
+                        contentDescription = null
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.size(32.dp))
             }
+
         }
     }
 }
@@ -668,10 +822,12 @@ fun ParameterCardView(
                 .padding(8.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
-            ) {
+        ) {
 
             Column(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {

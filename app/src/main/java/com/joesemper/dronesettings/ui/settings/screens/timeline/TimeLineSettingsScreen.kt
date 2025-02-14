@@ -2,17 +2,26 @@
 
 package com.joesemper.dronesettings.ui.settings.screens.timeline
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,16 +29,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.ui.settings.ParameterCardView
-import com.joesemper.dronesettings.ui.settings.SettingsDefaultScreenContainer
+import com.joesemper.dronesettings.ui.settings.SingleFieldEditDialog
 import com.joesemper.dronesettings.ui.settings.TimeSelectDialog
 import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
 import com.joesemper.dronesettings.ui.settings.state.delayTimeValidator
+import com.joesemper.dronesettings.ui.settings.state.rememberSingleFieldDialogState
 import com.joesemper.dronesettings.ui.settings.state.rememberTimeSelectDialogState
+import com.joesemper.dronesettings.ui.settings.state.maximumTimeValidator
+import com.joesemper.dronesettings.ui.settings.state.minBatteryVoltageValidator
 import com.joesemper.dronesettings.utils.Constants.Companion.SECONDS_IN_MINUTE
 import org.koin.androidx.compose.getViewModel
 
@@ -57,27 +70,75 @@ fun TimeLineSettingsScreen(
         }
     }
 
-    SettingsDefaultScreenContainer(
-        title = stringResource(id = R.string.time_line),
-        backButtonEnabled = false,
-        onNavigateNext = { viewModel.onTimelineUiEvent(TimelineUiEvent.NextButtonClick) },
-        onTopBarNavigationClick = { viewModel.onTimelineUiEvent(TimelineUiEvent.CloseClick) }
-    ) {
-        AnimatedVisibility(
-            visible = viewModel.uiState.isLoaded,
-            enter = fadeIn()
-        ) {
-            TimelineScreenContent(
-                modifier = Modifier
-                    .verticalScroll(state = rememberScrollState())
-                    .padding(top = 8.dp, bottom = 16.dp)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxSize(),
-                state = viewModel.uiState,
-                onUiEvent = { viewModel.onTimelineUiEvent(it) }
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = stringResource(R.string.settings))
+                }
             )
         }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+            ) {
+                TimelineScreenContent(
+                    modifier = Modifier
+                        .verticalScroll(state = rememberScrollState())
+                        .padding(top = 8.dp, bottom = 16.dp)
+                        .padding(horizontal = 16.dp)
+                        .fillMaxSize(),
+                    state = viewModel.uiState,
+                    onUiEvent = { viewModel.onTimelineUiEvent(it) }
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(32.dp)
+            ) {
+                OutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    onClick = { onClose() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null
+                    )
+                    Text(text = stringResource(R.string.cancel))
+                }
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    onClick = { viewModel.onTimelineUiEvent(TimelineUiEvent.NextButtonClick) }
+                ) {
+                    Text(
+                        text = stringResource(R.string.finish)
+                    )
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null
+                    )
+
+                }
+            }
+        }
     }
+
 }
 
 @Composable
@@ -105,6 +166,11 @@ fun TimelineScreenContent(
             state = state.selfDestructionTimeState,
             onUiEvent = onUiEvent
         )
+
+        MinBatteryVoltageSettingsView(
+            state = state.minBatteryVoltageUiState,
+            onUiEvent = onUiEvent
+        )
     }
 }
 
@@ -122,13 +188,13 @@ fun DelayTimeSettingsView(
             title = stringResource(R.string.delay_time),
             subtitle = stringResource(
                 id = R.string.from_to_minutes,
-                (state.timeLimits.minValue.toInt() / SECONDS_IN_MINUTE),
-                (state.timeLimits.maxValue.toInt() / SECONDS_IN_MINUTE)
+                (state.timeLimits.minValue / SECONDS_IN_MINUTE),
+                (state.timeLimits.maxValue / SECONDS_IN_MINUTE)
             ),
             onDismiss = { showDialog = false },
             onApply = { min, sec ->
-                onUiEvent(TimelineUiEvent.DelayTimeMinutesChange(min))
-                onUiEvent(TimelineUiEvent.DelayTimeSecondsChange(sec))
+                onUiEvent(TimelineUiEvent.DelayTimeMinutesChange(min.toInt().toString()))
+                onUiEvent(TimelineUiEvent.DelayTimeSecondsChange(sec.toInt().toString()))
             },
             state = rememberTimeSelectDialogState(
                 initialMinutes = state.time.minutes,
@@ -143,10 +209,18 @@ fun DelayTimeSettingsView(
         title = stringResource(id = R.string.delay_time),
         onClick = { showDialog = true },
         content = {
-            Text(
-                text = "${state.time.minutes} : ${state.time.seconds}",
-                style = MaterialTheme.typography.displayMedium
-            )
+            if (state.time.minutes.isEmpty()) {
+                Text(
+                    text = "0 : 00",
+                    style = MaterialTheme.typography.displayMedium,
+                    color = Color.Gray
+                )
+            } else {
+                Text(
+                    text = "${state.time.minutes} : ${state.time.seconds}",
+                    style = MaterialTheme.typography.displayMedium
+                )
+            }
         }
     )
 
@@ -171,8 +245,8 @@ fun CockingTimeSettingsView(
             ),
             onDismiss = { showDialog = false },
             onApply = { min, sec ->
-                onUiEvent(TimelineUiEvent.CockingTimeMinutesChange(min))
-                onUiEvent(TimelineUiEvent.CockingTimeSecondsChange(sec))
+                onUiEvent(TimelineUiEvent.CockingTimeMinutesChange(min.toInt().toString()))
+                onUiEvent(TimelineUiEvent.CockingTimeSecondsChange(sec.toInt().toString()))
             },
             state = rememberTimeSelectDialogState(
                 initialMinutes = state.time.minutes,
@@ -185,15 +259,20 @@ fun CockingTimeSettingsView(
     ParameterCardView(
         modifier = modifier,
         title = stringResource(id = R.string.cocking_time),
-        switchable = true,
-        enabled = state.enabled,
-        onEnabledChange = {onUiEvent(TimelineUiEvent.CockingTimeActivationChange(it))},
         onClick = { showDialog = true },
         content = {
-            Text(
-                text = "${state.time.minutes} : ${state.time.seconds}",
-                style = MaterialTheme.typography.displayMedium
-            )
+            if (state.time.minutes.isEmpty()) {
+                Text(
+                    text = "0 : 00",
+                    style = MaterialTheme.typography.displayMedium,
+                    color = Color.Gray
+                )
+            } else {
+                Text(
+                    text = "${state.time.minutes} : ${state.time.seconds}",
+                    style = MaterialTheme.typography.displayMedium
+                )
+            }
         }
     )
 
@@ -209,22 +288,25 @@ fun MaximumTimeSettingsView(
     var showDialog by remember { mutableStateOf(false) }
 
     if (showDialog) {
-        TimeSelectDialog(
+
+        SingleFieldEditDialog(
             title = stringResource(R.string.maximum_time),
             subtitle = stringResource(
                 id = R.string.from_to_minutes,
-                (state.timeLimits.minValue.toInt() / SECONDS_IN_MINUTE),
-                (state.timeLimits.maxValue.toInt() / SECONDS_IN_MINUTE)
+                (state.timeLimits.minValue),
+                (state.timeLimits.maxValue)
             ),
             onDismiss = { showDialog = false },
-            onApply = { min, sec ->
-                onUiEvent(TimelineUiEvent.SelfDestructionTimeMinutesChange(min))
-                onUiEvent(TimelineUiEvent.SelfDestructionTimeSecondsChange(sec))
+            onApply = { value ->
+                onUiEvent(
+                    TimelineUiEvent.SelfDestructionTimeMinutesChange(
+                        value.toInt().toString()
+                    )
+                )
             },
-            state = rememberTimeSelectDialogState(
-                initialMinutes = state.time.minutes,
-                initialSeconds = state.time.seconds,
-                validator = ::delayTimeValidator,
+            state = rememberSingleFieldDialogState(
+                initialValue = state.minutes,
+                validator = ::maximumTimeValidator
             )
         )
     }
@@ -234,10 +316,68 @@ fun MaximumTimeSettingsView(
         title = stringResource(id = R.string.maximum_time),
         onClick = { showDialog = true },
         content = {
-            Text(
-                text = "${state.time.minutes} : ${state.time.seconds}",
-                style = MaterialTheme.typography.displayMedium
+            if (state.minutes.isEmpty()) {
+                Text(
+                    text = "00",
+                    style = MaterialTheme.typography.displayMedium,
+                    color = Color.Gray
+                )
+            } else {
+                Text(
+                    text = state.minutes,
+                    style = MaterialTheme.typography.displayMedium
+                )
+            }
+        }
+    )
+
+}
+
+@Composable
+fun MinBatteryVoltageSettingsView(
+    modifier: Modifier = Modifier,
+    state: MinBatteryVoltageUiState,
+    onUiEvent: (TimelineUiEvent) -> Unit
+) {
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+
+        SingleFieldEditDialog(
+            title = stringResource(R.string.minimum_voltage),
+            subtitle = stringResource(
+                id = R.string.from_to_volts, state.timeLimits.minValue, state.timeLimits.maxValue,
+            ),
+            onDismiss = { showDialog = false },
+            onApply = { value ->
+                onUiEvent(TimelineUiEvent.MinBatteryVoltageChange(value.toInt().toString()))
+            },
+            isFloat = true,
+            state = rememberSingleFieldDialogState(
+                initialValue = state.voltage,
+                validator = ::minBatteryVoltageValidator
             )
+        )
+    }
+
+    ParameterCardView(
+        modifier = modifier,
+        title = stringResource(id = R.string.minimum_voltage),
+        onClick = { showDialog = true },
+        content = {
+            if (state.voltage.isEmpty()) {
+                Text(
+                    text = "00",
+                    style = MaterialTheme.typography.displayMedium,
+                    color = Color.Gray
+                )
+            } else {
+                Text(
+                    text = state.voltage,
+                    style = MaterialTheme.typography.displayMedium
+                )
+            }
         }
     )
 

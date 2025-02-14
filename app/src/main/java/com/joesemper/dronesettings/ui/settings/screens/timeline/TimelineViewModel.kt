@@ -31,7 +31,7 @@ class TimelineViewModel(
     private val actions = Channel<SettingsUiAction>()
     val uiActions = actions.receiveAsFlow()
 
-    private val dataId: Int = checkNotNull(savedStateHandle[HOME_PRESET_ID_KEY])
+    val dataId: Int = checkNotNull(savedStateHandle[HOME_PRESET_ID_KEY])
     private var currentPreset: TimelinePreset? = null
 
     init {
@@ -65,13 +65,6 @@ class TimelineViewModel(
                 )
             }
 
-            is TimelineUiEvent.CockingTimeActivationChange -> {
-                uiState = uiState.copy(
-                    cockingTimeState = uiState.cockingTimeState.copy(
-                        enabled = event.isEnabled
-                    )
-                )
-            }
 
             is TimelineUiEvent.CockingTimeMinutesChange -> {
                 uiState = uiState.copy(
@@ -92,15 +85,15 @@ class TimelineViewModel(
             is TimelineUiEvent.SelfDestructionTimeMinutesChange -> {
                 uiState = uiState.copy(
                     selfDestructionTimeState = uiState.selfDestructionTimeState.copy(
-                        time = uiState.selfDestructionTimeState.time.copy(minutes = event.minutes)
+                        minutes = event.minutes
                     )
                 )
             }
 
-            is TimelineUiEvent.SelfDestructionTimeSecondsChange -> {
+            is TimelineUiEvent.MinBatteryVoltageChange -> {
                 uiState = uiState.copy(
-                    selfDestructionTimeState = uiState.selfDestructionTimeState.copy(
-                        time = uiState.selfDestructionTimeState.time.copy(seconds = event.seconds)
+                    minBatteryVoltageUiState = uiState.minBatteryVoltageUiState.copy(
+                        voltage = event.voltage
                     )
                 )
             }
@@ -166,14 +159,13 @@ class TimelineViewModel(
                         minutes = preset.cockingTimeMin,
                         seconds = preset.cockingTimeSec
                     ),
-                    enabled = preset.cockingTimeEnabled
                 ),
                 selfDestructionTimeState = uiState.selfDestructionTimeState.copy(
-                    time = uiState.selfDestructionTimeState.time.copy(
-                        minutes = preset.selfDestructionTimeMin,
-                        seconds = preset.selfDestructionTimeSec
-                    )
+                    minutes = preset.selfDestructionTimeMin
                 ),
+                minBatteryVoltageUiState = uiState.minBatteryVoltageUiState.copy(
+                    voltage = preset.minBatteryVoltage
+                )
             )
         }
     }
@@ -187,9 +179,8 @@ class TimelineViewModel(
                         delayTimeSec = uiState.delayTimeState.time.seconds,
                         cockingTimeMin = uiState.cockingTimeState.time.minutes,
                         cockingTimeSec = uiState.cockingTimeState.time.seconds,
-                        cockingTimeEnabled = uiState.cockingTimeState.enabled,
-                        selfDestructionTimeMin = uiState.selfDestructionTimeState.time.minutes,
-                        selfDestructionTimeSec = uiState.selfDestructionTimeState.time.seconds,
+                        selfDestructionTimeMin = uiState.selfDestructionTimeState.minutes,
+                        minBatteryVoltage = uiState.minBatteryVoltageUiState.voltage
                     )
                 )
             }

@@ -70,5 +70,5 @@ class PresetViewModel(
 data class PresetUiState(
     val isLoading: Boolean = true,
     val settingsPreset: SettingsPreset = SettingsPreset(),
-    )
+)
 
