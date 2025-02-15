@@ -11,17 +11,17 @@ import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.data.constants.SettingsConstants
 
 @Composable
-fun rememberSingleFieldDialogState(
+fun rememberFloatingFieldDialogState(
     initialValue: String = "",
     validator: (value: String) -> ValidationResult = { _ -> ValidationResult() }
-) = rememberSaveable(saver = SingleFieldDialogStateSaver) {
-    SingleFieldDialogState(
+) = rememberSaveable(saver = floatingFieldDialogStateSaver) {
+    FloatingFieldDialogState(
         initialValue = initialValue,
         validator = validator
     )
 }
 
-val SingleFieldDialogStateSaver = run {
+val floatingFieldDialogStateSaver = run {
     val value = "Value"
     val showErrors = "ShowErrors"
 
@@ -33,7 +33,7 @@ val SingleFieldDialogStateSaver = run {
             )
         },
         restore = {
-            SingleFieldDialogState(
+            FloatingFieldDialogState(
                 initialValue = it[value] as String,
                 initialShowErrors = it[showErrors] as Boolean
             )
@@ -41,11 +41,12 @@ val SingleFieldDialogStateSaver = run {
     )
 }
 
-class SingleFieldDialogState(
+class FloatingFieldDialogState(
     initialValue: String = "",
     initialShowErrors: Boolean = false,
     private val validator: (value: String) -> ValidationResult = { _ -> ValidationResult() },
 ) {
+
     var value by mutableStateOf(initialValue)
 
     var showErrors by mutableStateOf(initialShowErrors)
@@ -62,10 +63,16 @@ class SingleFieldDialogState(
     }
 
     fun updateValue(newValue: String) {
-        if (value.toList().size < 4) {
+        if (newValue == ".") {
+            if(!value.contains('.') && value.toList().size < 4) {
+                value += if (value.toList().isEmpty()) "0." else "."
+            } else {
+                clearValue()
+            }
+        } else if (value.toList().size < 5) {
             value += newValue
         } else {
-            value = newValue
+            clearValue()
         }
     }
 
@@ -82,9 +89,9 @@ class SingleFieldDialogState(
 
 }
 
-fun maximumTimeValidator(min: String): ValidationResult {
+fun minBatteryVoltageValidator(voltage: String): ValidationResult {
     return when {
-        min.isBlank() -> {
+        voltage.isBlank() -> {
             ValidationResult(
                 isValid = false,
                 errorMassage = { stringResource(id = R.string.fields_must_not_be_empty) }
@@ -92,7 +99,7 @@ fun maximumTimeValidator(min: String): ValidationResult {
         }
 
         else -> {
-            if (min.toInt() > SettingsConstants.MAX_SELF_DESTRUCTION_TIME) {
+            if (voltage.toFloat() > SettingsConstants.MAX_VOLTAGE_VALUE.toFloat()) {
                 ValidationResult(
                     isValid = false,
                     errorMassage = { stringResource(id = R.string.value_is_out_of_range) }
@@ -103,4 +110,3 @@ fun maximumTimeValidator(min: String): ValidationResult {
         }
     }
 }
-

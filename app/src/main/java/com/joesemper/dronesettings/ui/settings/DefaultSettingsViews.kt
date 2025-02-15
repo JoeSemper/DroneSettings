@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.ui.settings.state.FloatingFieldDialogState
 import com.joesemper.dronesettings.ui.settings.state.SingleFieldDialogState
 import com.joesemper.dronesettings.ui.settings.state.TimeSelectDialogState
 
@@ -431,7 +432,81 @@ fun SingleFieldEditDialog(
                     onClear = { state.clearValue() },
                     enableNext = false,
                     enablePoint = isFloat,
-                    onNext = {  }
+                    onNext = { }
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text(text = stringResource(id = R.string.close))
+                    }
+
+                    Button(onClick = {
+                        state.enableShowErrors()
+                        if (state.isValid) {
+                            onApply(state.value)
+                            onDismiss()
+                        } else {
+                            Toast.makeText(context, toastMassage, Toast.LENGTH_SHORT).show()
+                        }
+                    }) {
+                        Text(text = stringResource(R.string.done))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun FloatingFieldEditDialog(
+    onDismiss: () -> Unit,
+    title: String,
+    subtitle: String? = null,
+    trailingText: String = "",
+    state: FloatingFieldDialogState,
+    onApply: (value: String) -> Unit
+) {
+    val context = LocalContext.current
+    val toastMassage = stringResource(R.string.incorrect_value)
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                TitleWithSubtitleView(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = title,
+                    subtitle = subtitle
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                SingleFieldLayout(
+                    value = state.value,
+                    trailingText = trailingText,
+                    isError = state.isError,
+                    errorMassage = state.getErrorMassage(),
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                NumericKeyboard(
+                    onDigitClick = { state.updateValue(it) },
+                    onClear = { state.clearValue() },
+                    enableNext = false,
+                    enablePoint = true,
+                    onNext = { }
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -704,12 +779,12 @@ fun NumericKeyboard(
                         style = MaterialTheme.typography.displaySmall
                     )
                 })
-            if(enableNext) {
+            if (enableNext) {
                 IconButton(onClick = onNext) {
                     Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null)
                 }
-            } else if(enablePoint) {
-                IconButton(onClick = onClear) {
+            } else if (enablePoint) {
+                IconButton(onClick = { onDigitClick(".") }) {
                     Icon(
                         modifier = Modifier.size(24.dp),
                         painter = painterResource(R.drawable.dot),
@@ -717,7 +792,17 @@ fun NumericKeyboard(
                     )
                 }
             } else {
-                Spacer(modifier = Modifier.size(32.dp))
+                IconButton(
+                    onClick = { },
+                    enabled = false
+                ) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(R.drawable.dot),
+                        contentDescription = null,
+                        tint = Color.Transparent
+                    )
+                }
             }
 
         }

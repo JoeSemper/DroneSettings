@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.joesemper.dronesettings.R
+import com.joesemper.dronesettings.ui.settings.FloatingFieldEditDialog
 import com.joesemper.dronesettings.ui.settings.ParameterCardView
 import com.joesemper.dronesettings.ui.settings.SingleFieldEditDialog
 import com.joesemper.dronesettings.ui.settings.TimeSelectDialog
@@ -43,6 +44,7 @@ import com.joesemper.dronesettings.ui.settings.state.rememberSingleFieldDialogSt
 import com.joesemper.dronesettings.ui.settings.state.rememberTimeSelectDialogState
 import com.joesemper.dronesettings.ui.settings.state.maximumTimeValidator
 import com.joesemper.dronesettings.ui.settings.state.minBatteryVoltageValidator
+import com.joesemper.dronesettings.ui.settings.state.rememberFloatingFieldDialogState
 import com.joesemper.dronesettings.utils.Constants.Companion.SECONDS_IN_MINUTE
 import org.koin.androidx.compose.getViewModel
 
@@ -344,17 +346,16 @@ fun MinBatteryVoltageSettingsView(
 
     if (showDialog) {
 
-        SingleFieldEditDialog(
+        FloatingFieldEditDialog(
             title = stringResource(R.string.minimum_voltage),
             subtitle = stringResource(
                 id = R.string.from_to_volts, state.timeLimits.minValue, state.timeLimits.maxValue,
             ),
             onDismiss = { showDialog = false },
             onApply = { value ->
-                onUiEvent(TimelineUiEvent.MinBatteryVoltageChange(value.toInt().toString()))
+                onUiEvent(TimelineUiEvent.MinBatteryVoltageChange(value.toFloat().toString()))
             },
-            isFloat = true,
-            state = rememberSingleFieldDialogState(
+            state = rememberFloatingFieldDialogState(
                 initialValue = state.voltage,
                 validator = ::minBatteryVoltageValidator
             )
@@ -368,7 +369,7 @@ fun MinBatteryVoltageSettingsView(
         content = {
             if (state.voltage.isEmpty()) {
                 Text(
-                    text = "00",
+                    text = "0.0",
                     style = MaterialTheme.typography.displayMedium,
                     color = Color.Gray
                 )
