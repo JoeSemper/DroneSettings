@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import com.joesemper.dronesettings.R
 import com.joesemper.dronesettings.data.constants.SettingsConstants
+import com.joesemper.dronesettings.utils.Constants.Companion.SECONDS_IN_MINUTE
 
 @Composable
 fun rememberSingleFieldDialogState(
@@ -92,7 +93,7 @@ fun maximumTimeValidator(min: String): ValidationResult {
         }
 
         else -> {
-            if (min.toInt() > SettingsConstants.MAX_SELF_DESTRUCTION_TIME) {
+            if (min.toInt() > SettingsConstants.MAX_SELF_DESTRUCTION_TIME / SECONDS_IN_MINUTE) {
                 ValidationResult(
                     isValid = false,
                     errorMassage = { stringResource(id = R.string.value_is_out_of_range) }

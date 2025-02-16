@@ -39,6 +39,7 @@ import com.joesemper.dronesettings.ui.settings.ParameterCardView
 import com.joesemper.dronesettings.ui.settings.SingleFieldEditDialog
 import com.joesemper.dronesettings.ui.settings.TimeSelectDialog
 import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
+import com.joesemper.dronesettings.ui.settings.state.cockingTimeValidator
 import com.joesemper.dronesettings.ui.settings.state.delayTimeValidator
 import com.joesemper.dronesettings.ui.settings.state.rememberSingleFieldDialogState
 import com.joesemper.dronesettings.ui.settings.state.rememberTimeSelectDialogState
@@ -190,13 +191,17 @@ fun DelayTimeSettingsView(
             title = stringResource(R.string.delay_time),
             subtitle = stringResource(
                 id = R.string.from_to_minutes,
-                (state.timeLimits.minValue / SECONDS_IN_MINUTE),
-                (state.timeLimits.maxValue / SECONDS_IN_MINUTE)
+                (state.timeLimits.minValue),
+                (state.timeLimits.maxValue)
             ),
             onDismiss = { showDialog = false },
             onApply = { min, sec ->
-                onUiEvent(TimelineUiEvent.DelayTimeMinutesChange(min.toInt().toString()))
-                onUiEvent(TimelineUiEvent.DelayTimeSecondsChange(sec.toInt().toString()))
+                onUiEvent(
+                    TimelineUiEvent.DelayTimeChange(
+                        min.toInt().toString(),
+                        sec.toInt().toString()
+                    )
+                )
             },
             state = rememberTimeSelectDialogState(
                 initialMinutes = state.time.minutes,
@@ -209,6 +214,9 @@ fun DelayTimeSettingsView(
     ParameterCardView(
         modifier = modifier,
         title = stringResource(id = R.string.delay_time),
+        info = stringResource(R.string.delay_time_description),
+        errorMassage = state.getErrorMassage(),
+        units = stringResource(R.string.min_sec),
         onClick = { showDialog = true },
         content = {
             if (state.time.minutes.isEmpty()) {
@@ -242,18 +250,22 @@ fun CockingTimeSettingsView(
             title = stringResource(R.string.cocking_time),
             subtitle = stringResource(
                 id = R.string.from_to_minutes,
-                (state.timeLimits.minValue.toInt() / SECONDS_IN_MINUTE),
-                (state.timeLimits.maxValue.toInt() / SECONDS_IN_MINUTE)
+                (state.timeLimits.minValue),
+                (state.timeLimits.maxValue)
             ),
             onDismiss = { showDialog = false },
             onApply = { min, sec ->
-                onUiEvent(TimelineUiEvent.CockingTimeMinutesChange(min.toInt().toString()))
-                onUiEvent(TimelineUiEvent.CockingTimeSecondsChange(sec.toInt().toString()))
+                onUiEvent(
+                    TimelineUiEvent.CockingTimeChange(
+                        min.toInt().toString(),
+                        sec.toInt().toString()
+                    )
+                )
             },
             state = rememberTimeSelectDialogState(
                 initialMinutes = state.time.minutes,
                 initialSeconds = state.time.seconds,
-                validator = ::delayTimeValidator,
+                validator = ::cockingTimeValidator,
             )
         )
     }
@@ -261,6 +273,9 @@ fun CockingTimeSettingsView(
     ParameterCardView(
         modifier = modifier,
         title = stringResource(id = R.string.cocking_time),
+        info = stringResource(R.string.cocking_time_description),
+        errorMassage = state.getErrorMassage(),
+        units = stringResource(R.string.min_sec),
         onClick = { showDialog = true },
         content = {
             if (state.time.minutes.isEmpty()) {
@@ -316,6 +331,9 @@ fun MaximumTimeSettingsView(
     ParameterCardView(
         modifier = modifier,
         title = stringResource(id = R.string.maximum_time),
+        info = stringResource(R.string.maximum_time_description),
+        errorMassage = state.getErrorMassage(),
+        units = stringResource(R.string.min),
         onClick = { showDialog = true },
         content = {
             if (state.minutes.isEmpty()) {
@@ -365,6 +383,9 @@ fun MinBatteryVoltageSettingsView(
     ParameterCardView(
         modifier = modifier,
         title = stringResource(id = R.string.minimum_voltage),
+        info = stringResource(R.string.min_battery_description),
+        errorMassage = state.getErrorMassage(),
+        units = stringResource(R.string.volts),
         onClick = { showDialog = true },
         content = {
             if (state.voltage.isEmpty()) {

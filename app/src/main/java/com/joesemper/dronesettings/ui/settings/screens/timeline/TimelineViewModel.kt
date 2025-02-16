@@ -7,9 +7,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joesemper.dronesettings.data.datasource.room.main.entity.TimelinePreset
+import com.joesemper.dronesettings.domain.entity.Settings
 import com.joesemper.dronesettings.domain.use_case.DeletePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.GetOrCreateTimelinePresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase
+import com.joesemper.dronesettings.domain.use_case.validation.ValidateSettingsInputUseCase
 import com.joesemper.dronesettings.domain.use_case.validation.ValidateTimeInputUseCase
 import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_PRESET_ID_KEY
 import com.joesemper.dronesettings.ui.settings.state.SettingsUiAction
@@ -20,7 +22,7 @@ import kotlinx.coroutines.launch
 class TimelineViewModel(
     savedStateHandle: SavedStateHandle,
     private val getOrCreateTimelinePreset: GetOrCreateTimelinePresetUseCase,
-    private val validateTimeInput: ValidateTimeInputUseCase,
+    private val validateSettings: ValidateSettingsInputUseCase,
     private val deletePreset: DeletePresetUseCase,
     private val updatePreset: UpdatePresetUseCase
 ) : ViewModel() {
@@ -49,37 +51,28 @@ class TimelineViewModel(
 
     fun onTimelineUiEvent(event: TimelineUiEvent) {
         when (event) {
-            is TimelineUiEvent.DelayTimeMinutesChange -> {
+            is TimelineUiEvent.DelayTimeChange -> {
                 uiState = uiState.copy(
                     delayTimeState = uiState.delayTimeState.copy(
-                        time = uiState.delayTimeState.time.copy(minutes = event.minutes)
+                        time = uiState.delayTimeState.time.copy(
+                            minutes = event.minutes,
+                            seconds = event.seconds
+                        )
                     )
                 )
+                checkErrors()
             }
 
-            is TimelineUiEvent.DelayTimeSecondsChange -> {
-                uiState = uiState.copy(
-                    delayTimeState = uiState.delayTimeState.copy(
-                        time = uiState.delayTimeState.time.copy(seconds = event.seconds)
-                    )
-                )
-            }
-
-
-            is TimelineUiEvent.CockingTimeMinutesChange -> {
+            is TimelineUiEvent.CockingTimeChange -> {
                 uiState = uiState.copy(
                     cockingTimeState = uiState.cockingTimeState.copy(
-                        time = uiState.cockingTimeState.time.copy(minutes = event.minutes)
+                        time = uiState.cockingTimeState.time.copy(
+                            minutes = event.minutes,
+                            seconds = event.seconds
+                        )
                     )
                 )
-            }
-
-            is TimelineUiEvent.CockingTimeSecondsChange -> {
-                uiState = uiState.copy(
-                    cockingTimeState = uiState.cockingTimeState.copy(
-                        time = uiState.cockingTimeState.time.copy(seconds = event.seconds)
-                    )
-                )
+                checkErrors()
             }
 
             is TimelineUiEvent.SelfDestructionTimeMinutesChange -> {
@@ -88,6 +81,7 @@ class TimelineViewModel(
                         minutes = event.minutes
                     )
                 )
+                checkErrors()
             }
 
             is TimelineUiEvent.MinBatteryVoltageChange -> {
@@ -96,33 +90,15 @@ class TimelineViewModel(
                         voltage = event.voltage
                     )
                 )
+                checkErrors()
             }
 
             TimelineUiEvent.NextButtonClick -> {
                 uiState = uiState.copy(
-                    delayTimeState = uiState.delayTimeState.copy(
-                        error = validateTimeInput(
-                            uiState.delayTimeState.time,
-                            uiState.delayTimeState.timeLimits
-                        )
-                    )
+                    showErrors = true
                 )
-                uiState = uiState.copy(
-                    cockingTimeState = uiState.cockingTimeState.copy(
-                        error = validateTimeInput(
-                            uiState.cockingTimeState.time,
-                            uiState.cockingTimeState.timeLimits
-                        )
-                    )
-                )
-                uiState = uiState.copy(
-                    selfDestructionTimeState = uiState.selfDestructionTimeState.copy(
-                        error = validateTimeInput(
-                            uiState.cockingTimeState.time,
-                            uiState.cockingTimeState.timeLimits
-                        )
-                    )
-                )
+
+                checkErrors()
 
                 if (!uiState.isError) {
                     savePresetData()
@@ -141,6 +117,44 @@ class TimelineViewModel(
             }
 
         }
+    }
+
+    private fun checkErrors() {
+        if(!uiState.showErrors) return
+
+        val errors = validateSettings(
+            Settings(
+                delayTimeMin = uiState.delayTimeState.time.minutes,
+                delayTimeSec = uiState.delayTimeState.time.seconds,
+                cockingTimeMin = uiState.cockingTimeState.time.minutes,
+                cockingTimeSec = uiState.cockingTimeState.time.seconds,
+                selfDestructionTimeMin = uiState.selfDestructionTimeState.minutes,
+                minBatteryVoltage = uiState.minBatteryVoltageUiState.voltage
+            )
+        )
+
+
+        uiState = uiState.copy(
+            delayTimeState = uiState.delayTimeState.copy(
+                error = errors.delayTimeError
+            )
+        )
+        uiState = uiState.copy(
+            cockingTimeState = uiState.cockingTimeState.copy(
+                error = errors.cockingTimeError
+            )
+        )
+        uiState = uiState.copy(
+            selfDestructionTimeState = uiState.selfDestructionTimeState.copy(
+                error = errors.maximumTimeError
+            )
+        )
+
+        uiState = uiState.copy(
+            minBatteryVoltageUiState = uiState.minBatteryVoltageUiState.copy(
+                error = errors.batteryVoltageError
+            )
+        )
     }
 
     private fun updateUiStateData(newPreset: TimelinePreset) {

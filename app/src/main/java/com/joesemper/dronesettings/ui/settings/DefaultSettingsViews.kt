@@ -45,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -639,6 +640,9 @@ fun TimeLayout(
         }
 
         ErrorText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(24.dp),
             isError = isError,
             errorMassage = errorMassage
         )
@@ -703,6 +707,9 @@ fun SingleFieldLayout(
         }
 
         ErrorText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(24.dp),
             isError = isError,
             errorMassage = errorMassage
         )
@@ -811,13 +818,12 @@ fun NumericKeyboard(
 
 @Composable
 fun ErrorText(
+    modifier: Modifier = Modifier,
     isError: Boolean = false,
     errorMassage: String
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(24.dp),
+        modifier = modifier
     ) {
         AnimatedVisibility(
             visible = isError,
@@ -840,7 +846,8 @@ fun ErrorText(
                 Text(
                     text = errorMassage,
                     color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.titleSmall
+                    style = MaterialTheme.typography.titleSmall,
+                    textAlign = TextAlign.Center
                 )
             }
 
@@ -890,13 +897,26 @@ fun TerminalTextInputView(
 fun ParameterCardView(
     modifier: Modifier = Modifier,
     title: String,
-    subtitle: String? = null,
+    info: String? = null,
+    units: String? = null,
+    errorMassage: String = "",
     switchable: Boolean = false,
     enabled: Boolean = true,
     onEnabledChange: ((Boolean) -> Unit)? = null,
     onClick: () -> Unit,
     content: @Composable () -> Unit
 ) {
+    val showInfoDialog = remember {
+        mutableStateOf(false)
+    }
+    if (showInfoDialog.value) {
+        InfoDialogView(
+            onDismiss = { showInfoDialog.value = false },
+            title = title,
+            info = info
+        )
+    }
+
     Card(
         modifier = modifier,
         enabled = enabled,
@@ -916,16 +936,47 @@ fun ParameterCardView(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleSmall
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    IconButton(
+                        modifier = Modifier.size(24.dp),
+                        onClick = { showInfoDialog.value = true }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_help_outline_24),
+                            contentDescription = null
+                        )
+                    }
+                }
 
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    content()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        content()
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        units?.let { Text(text = units) }
+                    }
+                }
+                if(errorMassage.isNotEmpty()) {
+                    ErrorText(
+                        isError = true,
+                        errorMassage = errorMassage,
+                    )
                 }
             }
 
@@ -938,6 +989,48 @@ fun ParameterCardView(
             }
         }
 
+    }
+}
+
+@Composable
+fun InfoDialogView(
+    title: String,
+    info: String? = null,
+    onDismiss: () -> Unit,
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(32.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TitleWithSubtitleView(title = title)
+                }
+
+                Text(
+                    text = info ?: "",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                )
+                {
+                    TextButton(
+                        onClick = onDismiss
+                    ) {
+                        Text(text = stringResource(id = R.string.close))
+                    }
+                }
+            }
+        }
     }
 }
 

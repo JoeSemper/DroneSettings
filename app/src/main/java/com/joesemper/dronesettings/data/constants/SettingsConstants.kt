@@ -17,11 +17,11 @@ class SettingsConstants {
         // Максимальное время взведения, секунд
         const val MAX_COCKING_TIME = 3600
 
-        // Минимальное время самоуничтожения, минут
+        // Минимальное время самоуничтожения, секунд
         const val MIN_SELF_DESTRUCTION_TIME = 0
 
-        // Максимальное время самоуничтожения, минут
-        const val MAX_SELF_DESTRUCTION_TIME = 1440
+        // Максимальное время самоуничтожения, секунд
+        const val MAX_SELF_DESTRUCTION_TIME = 86400
 
         // Минимальное напряжение срабатывания, вольт
         const val MIN_VOLTAGE_VALUE = 0

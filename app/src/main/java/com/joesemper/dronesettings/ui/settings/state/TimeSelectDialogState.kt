@@ -186,6 +186,28 @@ fun delayTimeValidator(min: String, sec: String): ValidationResult {
     }
 }
 
+fun cockingTimeValidator(min: String, sec: String): ValidationResult {
+    return when {
+        min.isBlank() || sec.isBlank() -> {
+            ValidationResult(
+                isValid = false,
+                errorMassage = { stringResource(id = R.string.fields_must_not_be_empty) }
+            )
+        }
+
+        else -> {
+            if ((min.toInt() * 60 + sec.toInt()) > SettingsConstants.MAX_COCKING_TIME) {
+                ValidationResult(
+                    isValid = false,
+                    errorMassage = { stringResource(id = R.string.value_is_out_of_range) }
+                )
+            } else {
+                ValidationResult(isValid = true)
+            }
+        }
+    }
+}
+
 sealed class TimeFocus() {
     object Minutes : TimeFocus()
     object Seconds : TimeFocus()

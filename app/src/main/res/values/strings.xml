@@ -9,8 +9,7 @@
     <string name="delay_until_all_systems_activation">Delay until all systems activation</string>
     <string name="minutes">Minutes</string>
     <string name="seconds">Seconds</string>
-    <string name="cocking_time">Cocking time</string>
-    <string name="cocking_time_description">The time after which the cocking will begin</string>
+    <string name="cocking_time">Cocking time</string>>
     <string name="activate_cocking_time">Activate cocking time</string>
     <string name="maximum_time">Maximum time</string>
     <string name="self_destruction_time">Self-destruction time</string>
@@ -126,4 +125,13 @@
     <string name="cancel">Cancel</string>
     <string name="finish">Finish</string>
     <string name="from_to_volts">From %1$s to %2$s volts</string>
+    <string name="min_battery_description">Минимальное напряжение батареи, при котором произойдет самоуничтожение\n(расчёт напряжения начнется после срабатывания чеки)\nИзмеряемся в вольтах от 0 до 30 </string>
+    <string name="maximum_time_description">Максимальное время работы до самоуничтожения\n(отчёт времени начинается с момента срабатывания чеки)\nНе может быть меньше времени взведения\nИзмеряется в минутах от 0 до 1440 (24 часа)</string>
+    <string name="cocking_time_description">Время задержки взведения боеприпаса\n(отчёт времени начинается с момента срабатывания чеки)\nНе может быть меньше, чем время задержки\nИзмеряется в минутах и секундах от 0 до 60 минут</string>
+    <string name="delay_time_description">Задержка до активации всех систем\n(oтчёт времени начинается с момента срабатывания чеки)\nИзмеряется в минутах и секундах от 0 до 30 минут</string>
+    <string name="min_sec">min:sec</string>
+    <string name="field_conflict">Field conflict</string>
+    <string name="empty_string" />
+    <string name="cocking_time_field_conflict">Не может быть меньше, чем время задержки</string>
+    <string name="maximum_time_field_conflict">Не может быть меньше времени взведения</string>
 </resources>
