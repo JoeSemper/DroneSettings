@@ -52,7 +52,6 @@ class UsbConnectionManagerImpl(
         override fun onNewData(data: ByteArray?) {
             data?.let {
                 val newString = String(data)
-//                sendDeviceMassage(newString)
 
                 serialPortQueue.add(newString)
 

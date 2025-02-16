@@ -10,6 +10,8 @@ import com.joesemper.dronesettings.domain.use_case.GetOrCreateTimelinePresetUseC
 import com.joesemper.dronesettings.domain.use_case.GetSettingsPresetUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetDataUseCase
 import com.joesemper.dronesettings.domain.use_case.UpdatePresetUseCase
+import com.joesemper.dronesettings.domain.use_case.device.GenerateDeviceSettingsUseCase
+import com.joesemper.dronesettings.domain.use_case.device.GenerateSetCommandUseCase
 import com.joesemper.dronesettings.domain.use_case.validation.ValidateSettingsInputUseCase
 import com.joesemper.dronesettings.domain.use_case.validation.ValidateTimeInputUseCase
 import org.koin.dsl.module
@@ -27,4 +29,6 @@ val useCaseModule = module {
     factory { UpdatePresetDataUseCase(repository = get()) }
     factory { ValidateTimeInputUseCase() }
     factory { ValidateSettingsInputUseCase() }
+    factory { GenerateDeviceSettingsUseCase() }
+    factory { GenerateSetCommandUseCase(get()) }
 }
