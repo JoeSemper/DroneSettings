@@ -321,6 +321,7 @@ fun MaximumTimeSettingsView(
                     )
                 )
             },
+            trailingText = stringResource(R.string.min),
             state = rememberSingleFieldDialogState(
                 initialValue = state.minutes,
                 validator = ::maximumTimeValidator
@@ -373,6 +374,7 @@ fun MinBatteryVoltageSettingsView(
             onApply = { value ->
                 onUiEvent(TimelineUiEvent.MinBatteryVoltageChange(value.toFloat().toString()))
             },
+            trailingText = stringResource(R.string.volts),
             state = rememberFloatingFieldDialogState(
                 initialValue = state.voltage,
                 validator = ::minBatteryVoltageValidator

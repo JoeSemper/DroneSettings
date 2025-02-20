@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
+import android.util.Log
 import androidx.annotation.StringRes
 import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
@@ -17,13 +18,17 @@ import com.joesemper.dronesettings.utils.unixTimeToTime
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
 private const val ACTION_USB_PERMISSION = "com.joesemper.dronesettings.USB_PERMISSION"
-private const val RESPONSE_STRING_END = '\n'
+private const val STRING_END = '\n'
+private const val CARRIAGE_RETURN = '\r'
 
 class UsbConnectionManagerImpl(
     private val context: Context,
@@ -33,6 +38,9 @@ class UsbConnectionManagerImpl(
     private val _log = MutableStateFlow<List<UsbConnectionMassage>>(mutableListOf())
     override val log = _log.asStateFlow()
 
+    private val _deviceLogFlow = MutableSharedFlow<String>(replay = 0)
+    override val deviceLogFlow: SharedFlow<String> = _deviceLogFlow
+
     private val _connection = MutableStateFlow(false)
     override val connection = _connection.asStateFlow()
 
@@ -40,7 +48,7 @@ class UsbConnectionManagerImpl(
 
     private val calendar = Calendar.getInstance()
 
-    private val serialPortQueue = mutableListOf<String>()
+    private var serialPortQueue = String()
 
     private val activity = context
     private val usbManager: UsbManager =
@@ -53,15 +61,26 @@ class UsbConnectionManagerImpl(
             data?.let {
                 val newString = String(data)
 
-                serialPortQueue.add(newString)
+                Log.d("Debug", newString)
 
-                if (newString.contains(RESPONSE_STRING_END)) {
-                    var response = ""
-                    serialPortQueue.forEach {
-                        response += it
+                serialPortQueue += newString.filter { it != CARRIAGE_RETURN }
+
+                while (serialPortQueue.isNotBlank() && serialPortQueue.contains(STRING_END)) {
+
+                    val response = serialPortQueue.takeWhile { it != STRING_END }
+
+                    if(response.isNotBlank()) {
+                        scope.launch {
+                            _deviceLogFlow.emit(response)
+                        }
                     }
-                    sendDeviceMassage(response)
-                    serialPortQueue.clear()
+
+                    serialPortQueue = serialPortQueue.removePrefix(response)
+
+                    while (serialPortQueue.isNotBlank() && serialPortQueue.first() == STRING_END) {
+                        serialPortQueue = serialPortQueue.substring(1)
+                    }
+
                 }
 
             }
@@ -69,7 +88,7 @@ class UsbConnectionManagerImpl(
 
         override fun onRunError(e: Exception?) {
             e?.let {
-                sendErrorMassage(R.string.port_listener_error)
+                sendErrorMassage(e.message ?: "Port listener error")
             }
         }
     }
@@ -122,7 +141,7 @@ class UsbConnectionManagerImpl(
     }
 
     private fun setUpConnection(driver: UsbSerialDriver) {
-        serialPortQueue.clear()
+        serialPortQueue = ""
         setUpPort(driver)
         sendSystemMassage(R.string.port_configured)
         setDisconnectListener()
@@ -186,7 +205,7 @@ class UsbConnectionManagerImpl(
     }
 
     private fun onDisconnect() {
-        serialPortQueue.clear()
+        serialPortQueue = ""
         _connection.value = false
         sendSystemMassage(R.string.device_disconnected)
     }
@@ -282,6 +301,31 @@ class UsbConnectionManagerImpl(
                     time = unixTimeToTime(calendar.timeInMillis)
                 )
             )
+        }
+    }
+
+    private fun sendDeviceMassage(
+        msg: List<String>
+    ) {
+        scope.launch {
+            _log.value = _log.value.plus(
+                msg.map {
+                    Log.d("Debug", "Send: $it")
+                    UsbConnectionMassage.Device(
+                        msg = it,
+                        time = unixTimeToTime(calendar.timeInMillis)
+                    )
+                }
+
+            )
+
+
+//                UsbConnectionMassage.Device(
+//                    msg = it,
+//                    time = unixTimeToTime(calendar.timeInMillis)
+//                )
+
+
         }
     }
 

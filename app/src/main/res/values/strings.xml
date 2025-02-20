@@ -134,4 +134,12 @@
     <string name="empty_string" />
     <string name="cocking_time_field_conflict">Не может быть меньше, чем время задержки</string>
     <string name="maximum_time_field_conflict">Не может быть меньше времени взведения</string>
+    <string name="write_on_device">Write on device</string>
+    <string name="connect">Connect</string>
+    <string name="connect_device">Connect device</string>
+    <string name="writing_on_device">Writing on device</string>
+    <string name="writing">Writing</string>
+    <string name="checking">Checking</string>
+    <string name="complete">Complete</string>
+    <string name="ok">OK</string>
 </resources>

@@ -33,9 +33,7 @@ class TerminalViewModel(
     }
 
     fun sendUserMassage(massage: String) {
-        connectionManager.send(
-            massage.plus(COMMAND_STRING_CARRIAGE_RETURN).plus(COMMAND_STRING_END_SYMBOL)
-        )
+        connectionManager.send(massage)
     }
 
     fun connect() {

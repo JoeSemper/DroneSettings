@@ -11,12 +11,15 @@ import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_NEW_PRE
 import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_PRESET_ID_KEY
 import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_PRESET_ROUTE
 import com.joesemper.dronesettings.navigation.home.HomeDestinations.HOME_ROUTE
+import com.joesemper.dronesettings.navigation.terminal.ChatDestinations.TERMINAL_ROUTE
+import com.joesemper.dronesettings.navigation.terminal.TERMINAL_GRAPH
 import com.joesemper.dronesettings.ui.home.HomeScreen
 import com.joesemper.dronesettings.ui.preset.PresetScreen
 import com.joesemper.dronesettings.ui.settings.screens.mapping.SignalMappingSettingsScreen
 import com.joesemper.dronesettings.ui.settings.screens.sensors.SensorsSettingsScreen
 import com.joesemper.dronesettings.ui.settings.screens.signal.SignalSettingsScreen
 import com.joesemper.dronesettings.ui.settings.screens.timeline.TimeLineSettingsScreen
+import com.joesemper.dronesettings.ui.terminal.TerminalScreen
 
 const val HOME_GRAPH = "home"
 
@@ -34,6 +37,12 @@ fun NavGraphBuilder.addHomeGraph(
     homeState: HomeState,
     upPress: () -> Unit
 ) {
+//    composable(
+//        route = "$HOME_GRAPH/$HOME_ROUTE"
+//    ) {
+//        TerminalScreen()
+//    }
+
     composable("$HOME_GRAPH/$HOME_ROUTE") { from ->
         HomeScreen(
             navigateToPreset = { id -> homeState.navigateToPreset(id, from) },
